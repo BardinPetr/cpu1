@@ -35,6 +35,7 @@ def display(build_dir: str, name: str, root_block: _Block):
     gtkw.dumpfile(vcd_file)
     gtkw.savefile(gtkw_file)
     gtkw.sst_expanded(True)
+    gtkw.size(1920, 1080)
     gtkw.treeopen(name)
 
     _insert_signal_block(gtkw, root_block)
