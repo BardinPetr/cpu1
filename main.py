@@ -24,16 +24,3 @@ from myhdl import _Signal
 # if __name__ == "__main__":
 #     inst = bench()
 #     run_sim(inst, 1000, gtk_wave=True)
-
-
-memory = [intbv(0) for _ in range(4)]
-
-memory[0]= intbv(1)
-print(memory)
-memory[3]= intbv(2)
-print(memory)
-memory[2]= intbv(3)
-print(memory)
-memory[1]= intbv(4)
-print(memory)
-

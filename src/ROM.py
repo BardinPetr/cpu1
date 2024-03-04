@@ -3,8 +3,10 @@ from typing import List
 from myhdl import *
 from myhdl import _Signal
 
+from utils.hdl import hdl_block
 
-@block
+
+@hdl_block
 def AsyncROM(
         oe: _Signal,
         addr: _Signal,

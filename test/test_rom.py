@@ -6,7 +6,7 @@ from src.ROM import AsyncROM
 from utils.testutils import myhdl_pytest
 
 
-@myhdl_pytest(gui=True)
+@myhdl_pytest(gui=False)
 def test_rom():
     addr_bits = 8
     data_bits = 8
