@@ -1,8 +1,7 @@
 import logging
 import os
 
-IS_DEBUG = True
-# IS_DEBUG = os.getenv("DEBUG") is not None
+IS_DEBUG = os.getenv("DEBUG") is not None
 
 logging.basicConfig(
     level=logging.DEBUG,

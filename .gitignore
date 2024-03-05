@@ -169,3 +169,5 @@ pyrightconfig.json
 
 .idea/
 dist/
+
+*.v

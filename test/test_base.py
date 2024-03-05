@@ -2,32 +2,11 @@ import random
 
 from myhdl import *
 
-from src.base import Mux, Clock, Trig, RTrig
+from src.base import Clock, Trig, RTrig, Counter
 from utils.testutils import myhdl_pytest
 
 
 @myhdl_pytest(gui=False)
-def test_base_mux():
-    inputs = [Signal(intbv(i)[8:]) for i in range(32)]
-    outputs = [Signal(intbv(0)[8:]) for i in range(2)]
-    ctrls = [Signal(intbv(0)[8:]) for i in range(2)]
-
-    m2 = Mux(inputs[:2], outputs[0], ctrls[0])
-    m32 = Mux(inputs[:32], outputs[1], ctrls[1])
-
-    @instance
-    def stimulus():
-        for i, dim in enumerate([1, 5]):
-            for v in range(2 ** dim):
-                ctrls[i].next = v
-                yield delay(1)
-                assert outputs[i].val == v
-        raise StopSimulation
-
-    return instances()
-
-
-@myhdl_pytest(gui=True)
 def test_base_trig():
     clk = Signal(False)
     cld = Clock(clk, 10)
@@ -57,6 +36,38 @@ def test_base_trig():
 
             assert d_out1.val == val
             assert d_out2.val == (val if i != r_test else 0)
+
+        raise StopSimulation
+
+    return instances()
+
+
+@myhdl_pytest(gui=False)
+def test_base_counter():
+    clk = Signal(False)
+    cld = Clock(clk, 10)
+
+    rst = ResetSignal(False, active=True, isasync=True)
+
+    MAX = 1 << 4
+    val = Signal(intbv(0, 0, MAX + 1))
+
+    cntr = Counter(clk, rst, val)
+
+    @instance
+    def stimulus():
+        for i in range(1, MAX):
+            yield clk.negedge
+            assert val.val == i
+
+        rst.next = True
+        yield clk.negedge
+        rst.next = False
+        assert val.val == 0
+
+        for i in range(1, MAX // 2):
+            yield clk.negedge
+            assert val.val == i
 
         raise StopSimulation
 

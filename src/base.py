@@ -1,5 +1,3 @@
-from typing import List
-
 from myhdl import *
 from myhdl import _Signal
 
@@ -31,18 +29,21 @@ Reg = Trig
 
 
 @hdl_block
-def Mux(inputs: List[_Signal], output: _Signal, ctrl: _Signal):
-    @always(ctrl, *inputs)
+def Clock(clk: _Signal, period: int):
+    @always(delay(period))
     def run():
-        output.next = inputs[int(ctrl.val)]
+        clk.next = not clk
 
     return run
 
 
 @hdl_block
-def Clock(clk: _Signal, period: int):
-    @always(delay(period))
+def Counter(clk: _Signal, rst: ResetSignal, out: _Signal):
+    @always_seq(clk.posedge, rst)
     def run():
-        clk.next = not clk
+        if rst:
+            out.next = 0
+        else:
+            out.next = 1 + out
 
     return run
