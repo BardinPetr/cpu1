@@ -4,7 +4,9 @@ from myhdl import *
 from myhdl import _Signal
 
 from utils.hdl import hdl_block
+from utils.log import get_logger
 
+L = get_logger()
 
 @hdl_block
 def AsyncROM(
@@ -38,7 +40,7 @@ def AsyncROM(
             yield delay(access_time)  # simulate read access delay
 
             data.next = contents[_addr]
-            print(f"[ROM] Accessed {_addr:x}")
+            L.debug(f"Accessed {_addr:x}")
 
             yield oe.negedge
             yield delay(1)

@@ -3,7 +3,9 @@ from myhdl import _Signal
 from myhdl._ShadowSignal import _TristateSignal
 
 from utils.hdl import hdl_block
+from utils.log import get_logger
 
+L = get_logger()
 
 @hdl_block
 def SDRAM(
@@ -41,14 +43,14 @@ def SDRAM(
         if en:
             _addr = int(addr.val)
             if _addr >= size:
-                raise Exception(f"[RAM] Invalid address {_addr:x}")
+                raise Exception(f"Invalid address {_addr:x}")
 
             if we and not oe:
-                print(f"[RAM] WRITE [0x{_addr:x}] = {data.val}")
+                L.debug(f"WRITE [0x{_addr:x}] = {data.val}")
                 memory[_addr][:] = data.val
 
             if not we and oe:
-                print(f"[RAM] READ [0x{_addr:x}] == {memory[_addr]}")
+                L.debug(f"READ [0x{_addr:x}] == {memory[_addr]}")
                 data_out.next = memory[_addr]
 
     return instances()
@@ -80,18 +82,18 @@ def DRAM(
         if wr:
             _addr = int(addr.val)
             if _addr >= size:
-                raise Exception(f"[RAM] Invalid address {_addr:x}")
+                raise Exception(f"Invalid address {_addr:x}")
 
-            print(f"[RAM] WRITE [0x{_addr:x}] = {in_data.val}")
+            L.debug(f"WRITE [0x{_addr:x}] = {in_data.val}")
             memory[_addr][:] = in_data.val
 
     @always_comb
     def read():
         _addr = int(addr.val)
         if _addr >= size:
-            raise Exception(f"[RAM] Invalid address {_addr:x}")
+            raise Exception(f"Invalid address {_addr:x}")
 
-        print(f"[RAM] READ [0x{_addr:x}] == {memory[_addr]}")
+        L.debug(f"READ [0x{_addr:x}] == {memory[_addr]}")
         out_data.next = memory[_addr]
 
     return instances()
