@@ -1,5 +1,3 @@
-from myhdl import _Signal, Signal, intbv
-
 INSTR_BITS = 32
 DATA_BITS = 32
 ADDR_BITS = 32
