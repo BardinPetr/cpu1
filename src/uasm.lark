@@ -1,0 +1,46 @@
+start: line+
+
+
+line: label? instruction
+
+?instruction: _instr_exec
+           | _instr_jump -> jump
+           | _instr_cond -> cond
+
+
+// label
+?label: ID ":"
+
+// jumps
+_instr_jump: _INSTR_JUMP LOC
+
+_instr_cond: _MOD_IF _jump_condition _instr_jump
+_jump_condition: REGISTER "[" NUMBER "]" "==" BINNUMBER
+
+_INSTR_JUMP: "JMP"i
+_MOD_IF: "IF"i
+
+LOC: NUMBER | HEXNUMBER | ID
+
+// other instructions
+_instr_exec: INSTR_EXEC
+INSTR_EXEC: "ADD"i | "ADC"i
+
+
+// hardware
+REGISTER: "PS" | "CR" | "PC"
+
+
+// misc
+HEXNUMBER: "0x"i HEXDIGIT+
+BINNUMBER: "0" | "1"
+
+// imports
+%import common.CNAME -> ID
+%import common.INT -> NUMBER
+%import common.HEXDIGIT
+%import common.WS
+%import common.SH_COMMENT
+
+%ignore WS
+%ignore SH_COMMENT

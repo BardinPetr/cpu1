@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "mcasm"
+version = "0.1.0"
+description = ""
+authors = ["BardinPetr <bardin.petr@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+lark = "^1.1.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
