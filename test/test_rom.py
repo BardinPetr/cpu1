@@ -2,7 +2,7 @@ from random import randrange
 
 from myhdl import *
 
-from src.ROM import AsyncROM
+from src.components.ROM import AsyncROM
 from utils.testutils import myhdl_pytest
 
 

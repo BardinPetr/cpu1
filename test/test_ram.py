@@ -2,8 +2,8 @@ from random import randrange
 
 from myhdl import *
 
-from src.RAM import SDRAM, DRAM
-from src.base import Clock
+from src.components.RAM import SDRAM, DRAM
+from src.components.base import Clock
 from utils.testutils import myhdl_pytest
 
 

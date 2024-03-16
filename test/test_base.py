@@ -2,7 +2,7 @@ import random
 
 from myhdl import *
 
-from src.base import Clock, Trig, RTrig, Counter
+from src.components.base import Clock, Trig, RTrig, Counter
 from utils.testutils import myhdl_pytest
 
 

@@ -2,7 +2,7 @@ from random import randrange
 
 from myhdl import *
 
-from src.mux import Mux, DeMux
+from src.components.mux import Mux, DeMux
 from utils.testutils import myhdl_pytest
 
 
