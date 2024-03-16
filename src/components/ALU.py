@@ -1,7 +1,7 @@
 from myhdl import *
 from myhdl import _Signal
 
-from src.components.config import DATA_BITS
+from src.config import DATA_BITS
 from utils.hdl import hdl_block, dim
 
 ALU_CTRL = enum(

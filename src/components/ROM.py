@@ -8,6 +8,7 @@ from utils.log import get_logger
 
 L = get_logger()
 
+
 @hdl_block
 def AsyncROM(
         oe: _Signal,
@@ -46,5 +47,35 @@ def AsyncROM(
             yield delay(1)
 
             data.next = 0
+
+    return run
+
+
+@hdl_block
+def ROM(
+        clk: _Signal,
+        addr: _Signal,
+        data: _Signal,
+        contents: List[int]
+):
+    """
+    ROM emulation component
+    Outputs data from memory to data bus on OE pos front
+    :param clk:      clock input, read on rising
+    :param addr:     address bus
+    :param data:     output data bus
+    :param contents: emulated memory contents as list
+    """
+
+    size = len(contents)
+
+    @always(clk.posedge)
+    def run():
+        _addr = int(addr.val)
+        if _addr >= size:
+            raise Exception(f"[ROM] Invalid address {_addr:x}")
+
+        data.next = contents[_addr]
+        L.debug(f"Accessed {_addr:x}")
 
     return run
