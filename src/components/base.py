@@ -26,6 +26,7 @@ def RTrig(d_in, d_out, clk, rst):
 
 
 Reg = Trig
+Register = Trig
 
 
 @hdl_block

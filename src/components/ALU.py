@@ -64,10 +64,6 @@ def ALU(operation: _Signal,
             #     res[:] = op_a + op_b + in_carry
             case ALU_CTRL.MUL:
                 res[:] = op_a * op_b
-            case ALU_CTRL.DIV:
-                res[:] = op_a // op_b
-            case ALU_CTRL.MOD:
-                res[:] = op_a % op_b
             case ALU_CTRL.SHL:
                 op_b[:] = min(op_b, intbv(d))
                 res[:] = op_a << op_b

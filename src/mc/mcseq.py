@@ -5,7 +5,7 @@ from myhdl import *
 from src.components.ROM import ROM
 from src.config import *
 from src.mc.mcisa import *
-from utils.hdl import create_int_signal
+from utils.hdl import Bus
 from utils.hdl import hdl_block
 from utils.log import get_logger
 
@@ -13,8 +13,8 @@ L = get_logger()
 
 
 @hdl_block
-def MCSequencer(clk, mc_cr, cpu_cr, cpu_ps, mc_rom_data):
-    mc_pc = create_int_signal(MC_ADDR_SZ)
+def MCSequencer(clk, mc_cr, cpu_bus_a, mc_rom_data):
+    mc_pc = Bus(MC_ADDR_SZ)
 
     mc_rom = ROM(
         clk,
@@ -37,14 +37,17 @@ def MCSequencer(clk, mc_cr, cpu_cr, cpu_ps, mc_rom_data):
                 req = mc_get_cmp_val(mc_cr)
                 jmp = mc_get_cmp_jmp(mc_cr)
 
+                # TODO: cpu_bus_a should already have data from required register
+                """
                 reg_val = intbv(0)[DATA_BITS:]
                 match reg:
                     case MCRegId.MC_R_PS:
                         reg_val[:] = cpu_ps
                     case MCRegId.MC_R_CR:
                         reg_val[:] = cpu_cr
+                """
 
-                skip = reg_val[bit] ^ req
+                skip = cpu_bus_a[bit] ^ req
                 if skip:
                     mc_pc.next = mc_pc + 1
                 else:

@@ -5,7 +5,7 @@ from myhdl import *
 from src.components.base import Clock
 from src.config import *
 from src.mc.mcseq import MCSequencer, L as MCS_LOG
-from utils.hdl import create_int_signal
+from utils.hdl import Bus
 from utils.testutils import myhdl_pytest
 
 MCS_LOG.setLevel(logging.DEBUG)
@@ -16,10 +16,10 @@ def test_mc():
     clk = Signal(False)
     cld = Clock(clk, 10)
 
-    CR = create_int_signal(MC_INSTR_BIT)
-    PS = create_int_signal(MC_INSTR_BIT)
+    CR = Bus(MC_INSTR_BIT)
+    PS = Bus(MC_INSTR_BIT)
 
-    mc_cr = create_int_signal(MC_INSTR_BIT)
+    mc_cr = Bus(MC_INSTR_BIT)
 
     MC_ROM = [
         0b0_00000000_0_00000001_00,

@@ -3,7 +3,7 @@ from random import randint
 from myhdl import *
 
 from src.components.ALU import ALU, ALU_CTRL, ALU_PORT_CTRL
-from utils.hdl import create_int_signal
+from utils.hdl import Bus
 from utils.testutils import myhdl_pytest
 
 TEST_FUNCS = {
@@ -27,8 +27,8 @@ TEST_FUNCS = {
 def test_alu():
     DIM = 8
 
-    in_a, in_b = create_int_signal(DIM), create_int_signal(DIM)
-    out = create_int_signal(DIM + 1)
+    in_a, in_b = Bus(DIM), Bus(DIM)
+    out = Bus(DIM + 1)
 
     in_carry = Signal(False)
     ctrl = Signal(ALU_CTRL.ZERO)
