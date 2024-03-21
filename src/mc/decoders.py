@@ -1,5 +1,6 @@
 from myhdl import *
 
+from src.mc.mcisa import *
 from utils.hdl import hdl_block
 from utils.log import get_logger
 
@@ -10,10 +11,10 @@ L = get_logger()
 def ALUDecoder(control_bus, alu_ctrl, alu_port_a_ctrl, alu_port_b_ctrl, alu_flag_ctrl):
     @always_comb
     def run():
-        alu_ctrl.next = control_bus[:]
-        alu_port_a_ctrl.next = control_bus[:]
-        alu_port_b_ctrl.next = control_bus[:]
-        alu_flag_ctrl.next = control_bus[:]
+        alu_flag_ctrl.next = MCALUFlagCtrl.get(control_bus)
+        alu_port_b_ctrl.next = MCALUPortBCtrl.get(control_bus)
+        alu_port_a_ctrl.next = MCALUPortACtrl.get(control_bus)
+        alu_ctrl.next = MCALUCtrl.get(control_bus)
 
     return run
 

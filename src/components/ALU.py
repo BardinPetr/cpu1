@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import IntEnum, auto
 
 from myhdl import *
 from myhdl import _Signal
@@ -7,10 +7,21 @@ from src.arch import PSFlags
 from src.config import DATA_BITS
 from utils.hdl import hdl_block, dim, Bus
 
-ALU_CTRL = enum(
-    'ZERO', 'PASSA', 'PASSB', 'AND', 'OR', 'ADD', 'ADC', 'SHL', 'SHR', 'ASL', 'ASR', 'ROL', 'ROR',
-    encoding='binary'
-)
+
+class ALUCtrl(IntEnum):
+    ZERO = 0
+    PASSA = auto()
+    PASSB = auto()
+    AND = auto()
+    OR = auto()
+    ADD = auto()
+    ADC = auto()
+    SHL = auto()
+    SHR = auto()
+    ASL = auto()
+    ASR = auto()
+    ROL = auto()
+    ROR = auto()
 
 
 class ALUPortCtrl(IntEnum):
@@ -21,7 +32,7 @@ class ALUPortCtrl(IntEnum):
     SXT16 = 0b1000
 
 
-class ALUFlagControl(IntEnum):
+class ALUFlagCtrl(IntEnum):
     SETZ = 1
     SETN = 2
     SETV = 4
@@ -49,9 +60,9 @@ def ALU(operation: _Signal,
         flag_ctrl: _Signal,
         flags_in: _Signal, flags_out: _Signal):
     """
-    Asynchronous 2-port ALU with operations from ALU_CTRL enum.
+    Asynchronous 2-port ALU with operations from ALUCtrl enum.
     Each port has individual ALU_PORT_CTRL operations applied to it before main operation.
-    :param operation:   main opearation from ALU_CTRL
+    :param operation:   main opearation from ALUCtrl
     :param porta_ctrl:  input port 1 pre-operation from  ALU_PORT_CTRL
     :param portb_ctrl:  input port 2 pre-operation from  ALU_PORT_CTRL
     :param in_a:        input signal for port A
@@ -73,44 +84,44 @@ def ALU(operation: _Signal,
 
         res = intbv(0)[DATA_BITS + 1:]
         match operation:
-            case ALU_CTRL.ZERO:
+            case ALUCtrl.ZERO:
                 res[:] = 0
-            case ALU_CTRL.PASSA:
+            case ALUCtrl.PASSA:
                 res[:] = op_a
-            case ALU_CTRL.PASSB:
+            case ALUCtrl.PASSB:
                 res[:] = op_b
-            case ALU_CTRL.AND:
+            case ALUCtrl.AND:
                 res[:] = op_a & op_b
-            case ALU_CTRL.OR:
+            case ALUCtrl.OR:
                 res[:] = op_a | op_b
-            case ALU_CTRL.ADD:
+            case ALUCtrl.ADD:
                 res[:] = op_a + op_b
-            case ALU_CTRL.ADC:
+            case ALUCtrl.ADC:
                 res[:] = op_a + op_b + flags_in[PSFlags.C]
-            case ALU_CTRL.SHL:
+            case ALUCtrl.SHL:
                 res[:] = (op_a << op_b)[sz:]
-            case ALU_CTRL.SHR:
+            case ALUCtrl.SHR:
                 res[:] = op_a >> op_b
-            case ALU_CTRL.ASL:
+            case ALUCtrl.ASL:
                 raise Exception("Not implemented")
-            case ALU_CTRL.ASR:
+            case ALUCtrl.ASR:
                 raise Exception("Not implemented")
-            case ALU_CTRL.ROL:
+            case ALUCtrl.ROL:
                 raise Exception("Not implemented")
-            case ALU_CTRL.ROR:
+            case ALUCtrl.ROR:
                 raise Exception("Not implemented")
 
         out.next = res[DATA_BITS:]
 
         tmp_flags[:] = flags_in.val
 
-        if flag_ctrl.val & ALUFlagControl.SETZ:
+        if flag_ctrl.val & ALUFlagCtrl.SETZ:
             tmp_flags[PSFlags.Z] = not res
-        if flag_ctrl.val & ALUFlagControl.SETN:
+        if flag_ctrl.val & ALUFlagCtrl.SETN:
             tmp_flags[PSFlags.N] = res[DATA_BITS]
-        if flag_ctrl.val & ALUFlagControl.SETC:
+        if flag_ctrl.val & ALUFlagCtrl.SETC:
             tmp_flags[PSFlags.C] = res[DATA_BITS]
-        if flag_ctrl.val & ALUFlagControl.SETV:
+        if flag_ctrl.val & ALUFlagCtrl.SETV:
             tmp_flags[PSFlags.V] = res[DATA_BITS] ^ flags_in[PSFlags.C]
 
         flags_out.next = tmp_flags

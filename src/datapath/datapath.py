@@ -72,14 +72,20 @@ def DataPath(control_bus, bus_a, bus_b, bus_c):
         control_bus,
         alu_ctrl, alu_ctrl_pa, alu_ctrl_pb, alu_flag_ctrl
     )
-    reg_w_dec = RegWriteDecoder(
-        control_bus,
-        reg_cr_wr, reg_ps_wr, reg_ip_wr,
-        reg_alu_a_wr, reg_alu_b_wr, reg_alu_o_wr
-    )
+    # reg_w_dec = RegWriteDecoder(
+    #     control_bus,
+    #     reg_cr_wr, reg_ps_wr, reg_ip_wr,
+    #     reg_alu_a_wr, reg_alu_b_wr, reg_alu_o_wr
+    # )
     # reg_r_dec = RegReadDecoder(
     #     control_bus,
     #     ...  # TODO fill
     # )
+
+    @always_comb
+    def update():
+        alu_in_a.next = bus_a
+        alu_in_b.next = bus_b
+        bus_c.next = alu_out
 
     return instances()

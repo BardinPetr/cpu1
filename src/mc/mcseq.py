@@ -13,7 +13,7 @@ L = get_logger()
 
 
 @hdl_block
-def MCSequencer(clk, mc_cr, cpu_bus_a, mc_rom_data):
+def MCSequencer(clk, mc_cr, cpu_bus_c, mc_rom_data):
     mc_pc = Bus(MC_ADDR_SZ)
 
     mc_rom = ROM(
@@ -27,32 +27,24 @@ def MCSequencer(clk, mc_cr, cpu_bus_a, mc_rom_data):
     def load():
         L.debug(f"UPC: {int(mc_pc):032b} UCR: {int(mc_cr):032b}")
 
-        match mc_get_type(mc_cr):
+        match MCLType.get(mc_cr):
             case MCType.MC_RUN:
                 mc_pc.next = mc_pc + 1
 
             case MCType.MC_JMP:
-                reg = mc_get_cmp_reg(mc_cr)
-                bit = mc_get_cmp_bit(mc_cr)
-                req = mc_get_cmp_val(mc_cr)
-                jmp = mc_get_cmp_jmp(mc_cr)
+                reg = MCLJmpCmpReg.get(mc_cr)
+                bit = MCLJmpCmpBit.get(mc_cr)
+                val = MCLJmpCmpVal.get(mc_cr)
+                jmp = MCLJmpTarget.get(mc_cr)
 
                 # TODO: cpu_bus_a should already have data from required register
-                """
-                reg_val = intbv(0)[DATA_BITS:]
-                match reg:
-                    case MCRegId.MC_R_PS:
-                        reg_val[:] = cpu_ps
-                    case MCRegId.MC_R_CR:
-                        reg_val[:] = cpu_cr
-                """
 
-                skip = cpu_bus_a[bit] ^ req
+                skip = cpu_bus_c[bit] ^ val
                 if skip:
                     mc_pc.next = mc_pc + 1
                 else:
                     mc_pc.next = jmp
 
-                L.debug(f"JMP IF R{reg}[{bit}] == {req} TO {jmp}  ->  {'SKIP' if skip else 'JUMP'}")
+                L.debug(f"JMP IF R{reg}[{bit}] == {val} TO {jmp} -- (cur {cpu_bus_c[bit]:b}) => {'SKIP' if skip else 'JUMP'}")
 
     return instances()

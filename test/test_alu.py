@@ -4,7 +4,7 @@ from random import randint
 from myhdl import *
 
 from src.arch import PSFlags
-from src.components.ALU import ALU, ALU_CTRL, ALUPortCtrl
+from src.components.ALU import ALU, ALUCtrl, ALUPortCtrl
 from src.config import DATA_BITS
 from utils.hdl import Bus
 from utils.testutils import myhdl_pytest
@@ -22,25 +22,25 @@ def trunc(x, n=DIM):
 
 TEST_FUNCS = {
     # basic
-    'ZERO':   lambda a, b, c: (ALU_CTRL.ZERO, APC.PASS, APC.PASS, 0),
-    'PASSA':  lambda a, b, c: (ALU_CTRL.PASSA, APC.PASS, APC.PASS, a),
-    'PASSB':  lambda a, b, c: (ALU_CTRL.PASSB, APC.PASS, APC.PASS, b),
+    'ZERO':   lambda a, b, c: (ALUCtrl.ZERO, APC.PASS, APC.PASS, 0),
+    'PASSA':  lambda a, b, c: (ALUCtrl.PASSA, APC.PASS, APC.PASS, a),
+    'PASSB':  lambda a, b, c: (ALUCtrl.PASSB, APC.PASS, APC.PASS, b),
     # logic
-    'OR':     lambda a, b, c: (ALU_CTRL.OR, APC.PASS, APC.PASS, a | b),
-    'AND':    lambda a, b, c: (ALU_CTRL.AND, APC.PASS, APC.PASS, a & b),
+    'OR':     lambda a, b, c: (ALUCtrl.OR, APC.PASS, APC.PASS, a | b),
+    'AND':    lambda a, b, c: (ALUCtrl.AND, APC.PASS, APC.PASS, a & b),
     # check inversion on both ports
-    'ANDNN':  lambda a, b, c: (ALU_CTRL.AND, APC.NOT, APC.NOT, trunc(~(a | b))),
+    'ANDNN':  lambda a, b, c: (ALUCtrl.AND, APC.NOT, APC.NOT, trunc(~(a | b))),
     # addition
-    'ADD':    lambda a, b, c: (ALU_CTRL.ADD, APC.PASS, APC.PASS, trunc(a + b)),
-    'ADC':    lambda a, b, c: (ALU_CTRL.ADC, APC.PASS, APC.PASS, trunc(a + b + c)),
+    'ADD':    lambda a, b, c: (ALUCtrl.ADD, APC.PASS, APC.PASS, trunc(a + b)),
+    'ADC':    lambda a, b, c: (ALUCtrl.ADC, APC.PASS, APC.PASS, trunc(a + b + c)),
     # check negation (subtraction via addition)
-    'SUB':    lambda a, b, c: (ALU_CTRL.ADD, APC.PASS, APC.NOT | APC.INC, trunc(a - b)),
-    'SUBREV': lambda a, b, c: (ALU_CTRL.ADD, APC.NOT | APC.INC, APC.PASS, trunc(b - a)),
+    'SUB':    lambda a, b, c: (ALUCtrl.ADD, APC.PASS, APC.NOT | APC.INC, trunc(a - b)),
+    'SUBREV': lambda a, b, c: (ALUCtrl.ADD, APC.NOT | APC.INC, APC.PASS, trunc(b - a)),
     # check addition of 8bit sign extended value to normal
-    'ADDM8':  lambda a, b, c: (ALU_CTRL.ADD, APC.PASS, APC.SXT8, trunc(a - (trunc(~b + 1, 8) if b & (1 << 7) else -b))),
+    'ADDM8':  lambda a, b, c: (ALUCtrl.ADD, APC.PASS, APC.SXT8, trunc(a - (trunc(~b + 1, 8) if b & (1 << 7) else -b))),
     # logic shifts
-    'SHL':    lambda a, b, c: (ALU_CTRL.SHL, APC.PASS, APC.PASS, trunc(a << b)),
-    'SHR':    lambda a, b, c: (ALU_CTRL.SHR, APC.PASS, APC.PASS, trunc(a >> b)),
+    'SHL':    lambda a, b, c: (ALUCtrl.SHL, APC.PASS, APC.PASS, trunc(a << b)),
+    'SHR':    lambda a, b, c: (ALUCtrl.SHR, APC.PASS, APC.PASS, trunc(a >> b)),
 }
 
 
@@ -49,7 +49,7 @@ def test_alu():
     in_a, in_b = Bus(DIM), Bus(DIM)
     out = Bus(DIM)
 
-    ctrl = Signal(ALU_CTRL.ZERO)
+    ctrl = Signal(ALUCtrl.ZERO)
     ctrla = Signal(APC.PASS)
     ctrlb = Signal(APC.PASS)
     flag_ctrl = Bus(4, state=0b1111)
