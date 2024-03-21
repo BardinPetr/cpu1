@@ -40,13 +40,21 @@ def DataPath(control_bus, bus_a, bus_b, bus_c):
     """ALU SECTION"""
     # ALU control signals
     alu_ctrl = Bus(ALU_CTRL_BUS_SZ)
+    alu_flag_ctrl = Bus(ALU_CTRL_FLAG_BUS_SZ)
     alu_ctrl_pa, alu_ctrl_pb = [Bus(ALU_CTRL_PORT_BUS_SZ) for _ in range(2)]
 
     # ALU data signals
     alu_in_a, alu_in_b, alu_out = [Bus(DATA_BITS) for _ in range(3)]
 
     # ALU module
-    alu = ALU(alu_ctrl, alu_ctrl_pa, alu_ctrl_pb, alu_in_a, alu_in_b, alu_out)
+    alu = ALU(
+        alu_ctrl, alu_ctrl_pa, alu_ctrl_pb,
+        alu_in_a, alu_in_b,
+        alu_out,
+        alu_flag_ctrl,
+        reg_ps_out,
+        reg_ps_in
+    )
 
     ########################################################################
     """Temporary registers"""
@@ -62,16 +70,16 @@ def DataPath(control_bus, bus_a, bus_b, bus_c):
     """CONTROL SECTION"""
     alu_dec = ALUDecoder(
         control_bus,
-        alu_ctrl, alu_ctrl_pa, alu_ctrl_pb
+        alu_ctrl, alu_ctrl_pa, alu_ctrl_pb, alu_flag_ctrl
     )
     reg_w_dec = RegWriteDecoder(
         control_bus,
         reg_cr_wr, reg_ps_wr, reg_ip_wr,
         reg_alu_a_wr, reg_alu_b_wr, reg_alu_o_wr
     )
-    reg_r_dec = RegReadDecoder(
-        control_bus,
-        ...  # TODO fill
-    )
+    # reg_r_dec = RegReadDecoder(
+    #     control_bus,
+    #     ...  # TODO fill
+    # )
 
     return instances()

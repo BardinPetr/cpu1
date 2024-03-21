@@ -7,12 +7,13 @@ L = get_logger()
 
 
 @hdl_block
-def ALUDecoder(control_bus, alu_ctrl, alu_port_a_ctrl, alu_port_b_ctrl):
+def ALUDecoder(control_bus, alu_ctrl, alu_port_a_ctrl, alu_port_b_ctrl, alu_flag_ctrl):
     @always_comb
     def run():
-        alu_ctrl[:] = control_bus[:]
-        alu_port_a_ctrl[:] = control_bus[:]
-        alu_port_b_ctrl[:] = control_bus[:]
+        alu_ctrl.next = control_bus[:]
+        alu_port_a_ctrl.next = control_bus[:]
+        alu_port_b_ctrl.next = control_bus[:]
+        alu_flag_ctrl.next = control_bus[:]
 
     return run
 

@@ -4,9 +4,7 @@ from myhdl import instances, Signal, _Signal
 from myhdl._block import _Block, block
 
 from src.components.base import Register, Clock
-from src.config import ADDR_BITS
 from src.datapath.datapath import DataPath
-from src.mc.control import MCControl
 from src.mc.mcseq import MCSequencer
 from utils.hdl import hdl_block, Bus
 

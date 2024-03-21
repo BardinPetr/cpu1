@@ -1,62 +1,126 @@
+import random
 from random import randint
 
 from myhdl import *
 
-from src.components.ALU import ALU, ALU_CTRL, ALU_PORT_CTRL
+from src.arch import PSFlags
+from src.components.ALU import ALU, ALU_CTRL, ALUPortCtrl
+from src.config import DATA_BITS
 from utils.hdl import Bus
 from utils.testutils import myhdl_pytest
 
+DIM = DATA_BITS
+UMAX = (1 << DIM) - 1
+SMAX = (1 << (DIM - 1)) - 1
+
+APC = ALUPortCtrl
+
+
+def trunc(x, n=DIM):
+    return x & ((1 << n) - 1)
+
+
 TEST_FUNCS = {
-    ALU_CTRL.ZERO:  lambda a, b: 0,
-    ALU_CTRL.PASSA: lambda a, b: a,
-    ALU_CTRL.PASSB: lambda a, b: b,
-    ALU_CTRL.ADD:   lambda a, b: (a + b) % 256,
-    # ALU_CTRL.ADC:   lambda a, b:,
-    ALU_CTRL.SUB:   lambda a, b: a - b,
-    # ALU_CTRL.MUL:   lambda a, b: a * b,
-    ALU_CTRL.DIV:   lambda a, b: a // b,
-    ALU_CTRL.MOD:   lambda a, b: a % b,
-    # ALU_CTRL.SHL:   lambda a, b: a << b,
-    # ALU_CTRL.SHR:   lambda a, b: a >> b,
-    # ALU_CTRL.ROL:   lambda a, b:,
-    # ALU_CTRL.ROR:   lambda a, b:
+    # basic
+    'ZERO':   lambda a, b, c: (ALU_CTRL.ZERO, APC.PASS, APC.PASS, 0),
+    'PASSA':  lambda a, b, c: (ALU_CTRL.PASSA, APC.PASS, APC.PASS, a),
+    'PASSB':  lambda a, b, c: (ALU_CTRL.PASSB, APC.PASS, APC.PASS, b),
+    # logic
+    'OR':     lambda a, b, c: (ALU_CTRL.OR, APC.PASS, APC.PASS, a | b),
+    'AND':    lambda a, b, c: (ALU_CTRL.AND, APC.PASS, APC.PASS, a & b),
+    # check inversion on both ports
+    'ANDNN':  lambda a, b, c: (ALU_CTRL.AND, APC.NOT, APC.NOT, trunc(~(a | b))),
+    # addition
+    'ADD':    lambda a, b, c: (ALU_CTRL.ADD, APC.PASS, APC.PASS, trunc(a + b)),
+    'ADC':    lambda a, b, c: (ALU_CTRL.ADC, APC.PASS, APC.PASS, trunc(a + b + c)),
+    # check negation (subtraction via addition)
+    'SUB':    lambda a, b, c: (ALU_CTRL.ADD, APC.PASS, APC.NOT | APC.INC, trunc(a - b)),
+    'SUBREV': lambda a, b, c: (ALU_CTRL.ADD, APC.NOT | APC.INC, APC.PASS, trunc(b - a)),
+    # check addition of 8bit sign extended value to normal
+    'ADDM8':  lambda a, b, c: (ALU_CTRL.ADD, APC.PASS, APC.SXT8, trunc(a - (trunc(~b + 1, 8) if b & (1 << 7) else -b))),
+    # logic shifts
+    'SHL':    lambda a, b, c: (ALU_CTRL.SHL, APC.PASS, APC.PASS, trunc(a << b)),
+    'SHR':    lambda a, b, c: (ALU_CTRL.SHR, APC.PASS, APC.PASS, trunc(a >> b)),
 }
 
 
-@myhdl_pytest(gui=True)
+@myhdl_pytest(gui=False)
 def test_alu():
-    DIM = 8
-
     in_a, in_b = Bus(DIM), Bus(DIM)
-    out = Bus(DIM + 1)
+    out = Bus(DIM)
 
-    in_carry = Signal(False)
     ctrl = Signal(ALU_CTRL.ZERO)
-    ctrla = Signal(ALU_PORT_CTRL.INV)
-    ctrlb = Signal(ALU_PORT_CTRL.PASS)
+    ctrla = Signal(APC.PASS)
+    ctrlb = Signal(APC.PASS)
+    flag_ctrl = Bus(4, state=0b1111)
+    flag_in = Bus(4)
+    flag_out = Bus(4)
 
-    alu = ALU(ctrl, ctrla, ctrlb, in_a, in_b, out, in_carry)
-    alu.convert('Verilog')
+    alu = ALU(ctrl, ctrla, ctrlb, in_a, in_b, out, flag_ctrl, flag_in, flag_out)
 
-    def call_alu(c, ca, cb, a, b) -> int:
+    # alu.convert('Verilog')
+
+    def call_alu(c, ca, cb, a, b, cin) -> int:
         ctrl.next = c
         ctrla.next = ca
         ctrlb.next = cb
-        in_a.next = a
-        in_b.next = b
+        if a < 0:
+            in_a.next.signed = a
+        else:
+            in_a.next = a
+        if b < 0:
+            in_b.next.signed = b
+        else:
+            in_b.next = b
+        flag_in.next = (cin << PSFlags.C)
+
+    LARGE = [random.randrange(1 << 31, 1 << 32) for _ in range(2)]
+
+    CHECKS = [
+        ('ZERO', 123, 321, 0),
+        ('PASSA', 123, 321, 0),
+        ('PASSB', 123, 321, 0),
+        *[('AND', None, None, 0)] * 10,
+        *[('OR', None, None, 0)] * 10,
+        *[('ANDNN', None, None, 0)] * 2,
+        ('ADD', (1 << 32)-1, None, 0),
+        ('ADD', LARGE[0], LARGE[1], 0),
+        *[('ADD', None, None, 0)] * 10,
+        ('ADC', LARGE[0], LARGE[1], 0),
+        ('ADC', LARGE[0], LARGE[1], 1),
+        ('SUB', max(LARGE), min(LARGE), 0),
+        ('SUB', min(LARGE), max(LARGE), 0),
+        *[('SUB', None, None, 0)] * 10,
+        *[('SUBREV', None, None, 0)] * 10,
+        ('ADDM8', None, 0b11001101, 0),
+        ('ADDM8', None, 0b11111000, 0),
+        ('ADDM8', None, 0b00011111, 0),
+        ('ADDM8', None, 0b01010111, 0),
+        *[('SHL', None, i, 0) for i in range(0, DIM + 3, 3)],
+        *[('SHR', None, i, 0) for i in range(0, DIM + 3, 3)],
+    ]
 
     @instance
     def stimulus():
-        for t_ctrl, t_checker in TEST_FUNCS.items():
-            a, b = [randint(0, 1 << DIM) for _ in range(2)]
-            b, a = max(a, b), min(a, b)
-            call_alu(t_ctrl, ALU_PORT_CTRL.PASS, ALU_PORT_CTRL.PASS, a, b)
+        for t_func, t_a, t_b, t_cin in CHECKS:
+            if t_a is None:
+                t_a = random.randrange(1 << 2, 1 << 32)
+            if t_b is None:
+                t_b = random.randrange(1 << 2, 1 << 32)
+
+            t_ctrl, t_cpa, t_cpb, chk_out = TEST_FUNCS[t_func](t_a, t_b, t_cin)
+
+            call_alu(
+                t_ctrl,
+                t_cpa, t_cpb,
+                t_a, t_b,
+                t_cin
+            )
             yield delay(1)
-            res = int(out.val)
-            print(f"{t_ctrl}({a=}, {b=})={res}; should be {t_checker(a, b)}")
-            # assert t_checker(a, b) == res
-            yield delay(1)
+
+            # print(f"{t_func} A=0x{t_a:08x} B=0x{t_b:08x} -> real=0x{int(out.val):08x} required=0x{int(chk_out):08x}")
+            assert out.val == chk_out
 
         raise StopSimulation
 
-    return alu, stimulus
+    return instances()

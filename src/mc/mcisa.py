@@ -24,6 +24,14 @@ class MCRegId(IntEnum):
     MC_R_CR = 0b1
 
 
+class MCALUCtrl(IntEnum):
+    pass
+
+
+class MCALUPortCtrl(IntEnum):
+    pass
+
+
 def mc_get_cmp_reg(mc: intbv) -> intbv:
     return mc[2:0]
 

@@ -16,10 +16,10 @@ def test_mc():
     clk = Signal(False)
     cld = Clock(clk, 10)
 
-    CR = Bus(MC_INSTR_BIT)
-    PS = Bus(MC_INSTR_BIT)
+    CR = Bus(MC_INSTR_SZ)
+    PS = Bus(MC_INSTR_SZ)
 
-    mc_cr = Bus(MC_INSTR_BIT)
+    mc_cr = Bus(MC_INSTR_SZ)
 
     MC_ROM = [
         0b0_00000000_0_00000001_00,
