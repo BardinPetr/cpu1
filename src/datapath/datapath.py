@@ -96,7 +96,4 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c):
         regfile_wr, regfile_in_id
     )
 
-    # @always_comb
-    # def update():
-
     return instances()

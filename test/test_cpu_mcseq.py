@@ -3,6 +3,7 @@ from myhdl import *
 from src.components.ALU import ALUCtrl
 from src.cpu import CPU
 from src.mc.mc import MCInstruction, MCInstructionJump
+from test.test_cpu_regio import get_first_sub
 from utils.log import get_logger
 from utils.testutils import myhdl_pytest
 
@@ -26,15 +27,15 @@ def get_signals(root):
     return root.sigdict
 
 
-@myhdl_pytest(gui=True, duration=None)
-def test_cpu0():
+@myhdl_pytest(gui=False, duration=None)
+def test_cpu_mcseq():
     for src, comp in zip(MC_ROM, MC_ROM_COMPILED):
         L.info(f"MC{comp:064b}: {src}")
 
     cpu = CPU(MC_ROM_COMPILED)
 
-    mc_signals = get_signals(get_subs(cpu)['MCSequencer0'])
-    dp_signals = get_signals(get_subs(cpu)['DataPath0'])
+    mc_signals = get_signals(get_first_sub(cpu, 'MCSequencer'))
+    dp_signals = get_signals(get_first_sub(cpu, 'DataPath'))
 
     print(mc_signals)
     print(dp_signals)

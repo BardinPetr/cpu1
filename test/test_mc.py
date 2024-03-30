@@ -4,6 +4,7 @@ from myhdl import *
 
 from src.components.base import Clock
 from src.config import *
+from src.mc.mc import MCInstruction, MCInstructionJump
 from src.mc.mcseq import MCSequencer, L as MCS_LOG
 from utils.hdl import Bus
 from utils.testutils import myhdl_pytest
@@ -17,21 +18,22 @@ def test_mc():
     cld = Clock(clk, 10)
 
     CR = Bus(MC_INSTR_SZ)
-    PS = Bus(MC_INSTR_SZ)
+    busc = Bus(MC_INSTR_SZ, state=0b10)
 
     mc_cr = Bus(MC_INSTR_SZ)
 
     MC_ROM = [
-        0b0_00000000_0_00000001_00,
-        0b0_00000000_0_00000011_00,
-        0b1_00000010_1_00000000_00,  # should NOT jump as PS=0, cmp_val=1
-        0b0_00000000_0_00000111_00,
-        0b0_00000000_0_00001111_00,
-        0b1_00000001_0_00000000_00  # should jump as PS=0, cmp_val=0
+        MCInstruction(),
+        MCInstruction(),
+        MCInstructionJump(jmp_target=100, jmp_cmp_bit=1, jmp_cmp_val=False),
+        MCInstruction(),
+        MCInstruction(),
+        MCInstructionJump(jmp_target=1, jmp_cmp_bit=1, jmp_cmp_val=True),
     ]
+    MC_ROM = [i.compile() for i in MC_ROM]
 
     # running to 0x2
-    # jump at 0x2 to 0x2 is not working as ps hardcoded to 0
+    # jump at 0x2 to 0x2 is not working as BUSC hardcoded to 0b10 and jump if BUSC[1]==False
     # running to 0x5
     # jumped from 0x5 to 0x1
     # loop from 0x1
@@ -42,7 +44,7 @@ def test_mc():
         *MC_ROM[1:]
     ]
 
-    mcc = MCSequencer(clk, mc_cr, CR, PS, mc_rom_data=MC_ROM)
+    mcc = MCSequencer(clk, mc_cr, busc, mc_rom_data=MC_ROM)
 
     @instance
     def stimulus():

@@ -7,7 +7,6 @@ from src.config import *
 from src.datapath.datapath import DataPath
 from src.mc.mcseq import MCSequencer
 from utils.hdl import hdl_block, Bus
-from utils.runutils import run_sim
 
 
 @hdl_block
