@@ -22,9 +22,9 @@ def RegisterFile(clk, write_enable,
         out_port0_bus.next = registers[out_port0_reg]
         out_port1_bus.next = registers[out_port1_reg]
 
-    @always(clk.negedge)
+    @always(write_enable.posedge)
     def write():
-        if write_enable:
-            registers[in_port_reg].next = in_port_bus
+        L.debug(f"Regfile write [{in_port_reg}] = 0x{in_port_bus.val}")
+        registers[in_port_reg].next = in_port_bus
 
     return instances()

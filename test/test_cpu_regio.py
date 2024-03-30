@@ -1,38 +1,31 @@
 from myhdl import *
 
-from src.components.ALU import ALUCtrl
+from src.arch import *
+from src.components.ALU import ALUCtrl, ALUPortCtrl
 from src.cpu import CPU
 from src.mc.mc import MCInstruction, MCInstructionJump
+from test.test_cpu_mcseq import get_signals
+from test.utils import get_first_sub
 from utils.log import get_logger
 from utils.testutils import myhdl_pytest
 
 L = get_logger()
 
 MC_ROM = [
-    MCInstruction(alu_ctrl=ALUCtrl.PASSA),
-    MCInstructionJump(alu_ctrl=ALUCtrl.PASSA, jmp_target=10, jmp_cmp_bit=5, jmp_cmp_val=True),
-    MCInstruction(alu_ctrl=ALUCtrl.ADD),
+    MCInstruction(
+        alu_ctrl=ALUCtrl.ADD,
+        alu_port_b_ctrl=ALUPortCtrl.INC,
+        bus_a_in_ctrl=MainBusInCtrl.RF_IP,
+        bus_c_out_ctrl=MainBusOutCtrl.RF_IP
+    ),
+    MCInstruction(
+        alu_ctrl=ALUCtrl.PASSA,
+        bus_a_in_ctrl=MainBusInCtrl.RF_IP
+    ),
     MCInstructionJump(jmp_target=0, jmp_cmp_bit=0, jmp_cmp_val=False),
 ]
 
 MC_ROM_COMPILED = [i.compile() for i in MC_ROM]
-
-
-def get_subs(root):
-    return {i.name: i for i in root.subs}
-
-
-def get_first_sub(root, name_prefix):
-    subs = get_subs(root)
-    try:
-        name = next(filter(lambda x: x.startswith(name_prefix), subs.keys()))
-        return subs[name]
-    except:
-        raise Exception(f"No submodule {name_prefix}*")
-
-
-def get_signals(root):
-    return root.sigdict
 
 
 @myhdl_pytest(gui=False, duration=None)
@@ -60,6 +53,8 @@ def test_cpu_regio():
     def check_mcpc():
         seq_mc_pc.append(int(mc_pc))
 
+    END = 20
+
     @instance
     def stimulus():
         mc_ttl = 100
@@ -67,14 +62,30 @@ def test_cpu_regio():
             yield clk.negedge
             yield delay(1)
 
-            seq_bus_c.append(int(bus_c))
-
-            if mc_cr == 0:
+            c_val = int(bus_c)
+            if c_val > END:
                 break
+            seq_bus_c.append(c_val)
 
             mc_ttl -= 1
         else:
-            raise StopSimulation
             raise Exception("Haven't reached microcode end before 100 ticks")
+
+        """
+        ON falling edge BUS_C HAS:
+        1st:  A=IP, B=1, C=A+B => store C to IP  (IP += 1)   so on that instruction C is the next IP
+        2nd:  C = IP
+        3rd:  Jump (no ALU op)
+        """
+        target_bus_c = []
+        for i in range(END - 1):
+            target_bus_c += [i + 2, i + 1, 0]
+
+        print("TARGET :", target_bus_c)
+        print("REAL   :", seq_bus_c)
+
+        assert target_bus_c == seq_bus_c
+
+        raise StopSimulation()
 
     return instances()

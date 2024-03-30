@@ -17,11 +17,9 @@ class MainBusCtrl(IntEnum):
 
 @hdl_block
 def ALUDecoder(
-        # clk,
         control_bus,
         alu_ctrl, alu_port_a_ctrl, alu_port_b_ctrl, alu_flag_ctrl
 ):
-    # @always(clk.posedge)
     @always_comb
     def run():
         alu_flag_ctrl.next = MCALUFlagCtrl.get(control_bus)
@@ -34,21 +32,19 @@ def ALUDecoder(
 
 @hdl_block
 def RegReadDecoder(
-        # clk,
         control_bus,
-        mux_busa_rfnr_ctrl, mux_busb_rfnr_ctrl,
+        mux_busa_nr_rf_ctrl, mux_busb_nr_rf_ctrl,
         mux_busa_in_ctrl, mux_busb_in_ctrl,
         regfile_out0_id, regfile_out1_id
 ):
-    # @always(clk.posedge)
     @always_comb
     def run():
         rd_a = MCBusACtrl.get(control_bus)
         rd_b = MCBusBCtrl.get(control_bus)
 
         # if rd_X[2] == 1 then  rd_X[2:] is regfile register, else register source
-        mux_busa_rfnr_ctrl.next = rd_a[2]
-        mux_busb_rfnr_ctrl.next = rd_b[2]
+        mux_busa_nr_rf_ctrl.next = rd_a[2]
+        mux_busb_nr_rf_ctrl.next = rd_b[2]
         mux_busa_in_ctrl.next = rd_a[2:]
         mux_busb_in_ctrl.next = rd_b[2:]
         regfile_out0_id.next = rd_a[2:]
@@ -62,6 +58,7 @@ def RegWriteDecoder(
         clk,
         control_bus,
         reg_ps_wr,
+        demux_bus_c_nr_rf,
         regfile_wr, regfile_in_id
 ):
     register_wr_cmd = Signal(False)
@@ -71,6 +68,14 @@ def RegWriteDecoder(
         [reg_ps_wr],
         register_demux_id
     )
+
+    @always_comb
+    def update():
+        wr_ctrl = MCBusCCtrl.get(control_bus)
+
+        regfile_in_id.next = wr_ctrl[2:]
+        register_demux_id.next = wr_ctrl[2:]
+        demux_bus_c_nr_rf.next = wr_ctrl[2]
 
     @always(clk.negedge)
     def run():
@@ -82,7 +87,5 @@ def RegWriteDecoder(
         register_wr_cmd.next = enable and (not wr_ctrl[2])
         regfile_wr.next = enable and wr_ctrl[2]
 
-        regfile_in_id.next = wr_ctrl[2:]
-        register_demux_id.next = wr_ctrl[2:]
 
     return instances()

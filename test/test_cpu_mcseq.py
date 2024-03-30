@@ -3,7 +3,7 @@ from myhdl import *
 from src.components.ALU import ALUCtrl
 from src.cpu import CPU
 from src.mc.mc import MCInstruction, MCInstructionJump
-from test.test_cpu_regio import get_first_sub
+from test.utils import get_first_sub, get_signals
 from utils.log import get_logger
 from utils.testutils import myhdl_pytest
 
@@ -17,14 +17,6 @@ MC_ROM = [
 ]
 
 MC_ROM_COMPILED = [i.compile() for i in MC_ROM]
-
-
-def get_subs(root):
-    return {i.name: i for i in root.subs}
-
-
-def get_signals(root):
-    return root.sigdict
 
 
 @myhdl_pytest(gui=False, duration=None)
