@@ -8,8 +8,12 @@ L = get_logger()
 
 
 @hdl_block
-def ALUDecoder(control_bus, alu_ctrl, alu_port_a_ctrl, alu_port_b_ctrl, alu_flag_ctrl):
-    @always_comb
+def ALUDecoder(
+        clk,
+        control_bus,
+        alu_ctrl, alu_port_a_ctrl, alu_port_b_ctrl, alu_flag_ctrl
+):
+    @always(clk.posedge)
     def run():
         alu_flag_ctrl.next = MCALUFlagCtrl.get(control_bus)
         alu_port_b_ctrl.next = MCALUPortBCtrl.get(control_bus)
@@ -21,11 +25,12 @@ def ALUDecoder(control_bus, alu_ctrl, alu_port_a_ctrl, alu_port_b_ctrl, alu_flag
 
 @hdl_block
 def RegWriteDecoder(
+        clk,
         control_bus,
         reg_cr_wr, reg_ps_wr, reg_ip_wr,
         reg_alu_a_wr, reg_alu_b_wr, reg_alu_o_wr
 ):
-    @always_comb
+    @always(clk.posedge)
     def run():
         pass
 
@@ -34,11 +39,12 @@ def RegWriteDecoder(
 
 @hdl_block
 def RegReadDecoder(
+        clk,
         control_bus,
         reg_cr_wr, reg_ps_wr, reg_ip_wr,
         reg_alu_a_wr, reg_alu_b_wr, reg_alu_o_wr
 ):
-    @always_comb
+    @always(clk.posedge)
     def run():
         pass
 

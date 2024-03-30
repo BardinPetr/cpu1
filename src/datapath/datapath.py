@@ -2,6 +2,8 @@ from myhdl import *
 
 from src.components.ALU import ALU
 from src.components.base import Register
+from src.components.mux import Mux
+from src.datapath.regfile import RegisterFile
 from src.mc.decoders import *
 
 from utils.hdl import hdl_block, Bus, create_reg_signals
@@ -13,7 +15,7 @@ L = get_logger()
 
 
 @hdl_block
-def DataPath(control_bus, bus_a, bus_b, bus_c):
+def DataPath(clk, control_bus, bus_a, bus_b, bus_c):
     """
     Description of CPU datapath
     :param control_bus:
@@ -26,15 +28,33 @@ def DataPath(control_bus, bus_a, bus_b, bus_c):
     ########################################################################
     """REGISTERS SECTION"""
     # register signals
-    reg_cr_in, reg_cr_out, reg_cr_wr = create_reg_signals(REG_SZ)
     reg_ps_in, reg_ps_out, reg_ps_wr = create_reg_signals(REG_SZ)
-    reg_ip_in, reg_ip_out, reg_ip_wr = create_reg_signals(REG_SZ)
-    # reg__in, reg__out, reg__wr = create_reg_signals(REG_SZ)
+
+    regfile_wr = Signal(False)
+    regfile_out0_id, regfile_out1_id, regfile_in_id = [Bus(REGFILE_CTRL_SZ) for _ in range()]
+    regfile_out0, regfile_out1, regfile_in = [Bus() for _ in range(3)]
 
     # registers
-    reg_cr = Register(reg_cr_in, reg_cr_out, reg_cr_wr)
-    reg_ps = Register(reg_ps_in, reg_ps_out, reg_ps_wr)
-    reg_ip = Register(reg_ip_in, reg_ip_out, reg_ip_wr)
+    rf = RegisterFile(
+        clk, regfile_wr,
+        regfile_out0_id, regfile_out1_id, regfile_in_id,
+        regfile_out0, regfile_out1, regfile_in,
+        count=REGFILE_COUNT
+    )
+
+    ########################################################################
+    """BUS INPUT SECTION"""
+
+    mux_busa_in_ctrl, mux_busb_in_ctrl = Bus(2), Bus(2)
+
+    mux_bus_a_in = Mux(
+        [regfile_out0, 0, 0, 0],
+        bus_a, mux_busa_in_ctrl
+    )
+    mux_bus_b_in = Mux(
+        [regfile_out1, 0, 0, 0],
+        bus_a, mux_busb_in_ctrl
+    )
 
     ########################################################################
     """ALU SECTION"""
@@ -44,13 +64,13 @@ def DataPath(control_bus, bus_a, bus_b, bus_c):
     alu_ctrl_pa, alu_ctrl_pb = [Bus(ALU_CTRL_PORT_BUS_SZ) for _ in range(2)]
 
     # ALU data signals
-    alu_in_a, alu_in_b, alu_out = [Bus(DATA_BITS) for _ in range(3)]
+    # alu_in_a, alu_in_b, alu_out = [Bus(DATA_BITS) for _ in range(3)]
 
     # ALU module
     alu = ALU(
         alu_ctrl, alu_ctrl_pa, alu_ctrl_pb,
-        alu_in_a, alu_in_b,
-        alu_out,
+        bus_a, bus_b,
+        bus_c,
         alu_flag_ctrl,
         reg_ps_out,
         reg_ps_in
@@ -59,33 +79,31 @@ def DataPath(control_bus, bus_a, bus_b, bus_c):
     ########################################################################
     """Temporary registers"""
     # ALU registers signals
-    reg_alu_a_wr, reg_alu_b_wr, reg_alu_o_wr = [Signal(False) for _ in range(3)]
+    # reg_alu_a_wr, reg_alu_b_wr, reg_alu_o_wr = [Signal(False) for _ in range(3)]
 
     # ALU registers
-    reg_alu_a = Register(bus_a, alu_in_a, reg_alu_a_wr)
-    reg_alu_b = Register(bus_b, alu_in_b, reg_alu_b_wr)
-    reg_alu_o = Register(alu_out, bus_c, reg_alu_o_wr)
+    # reg_alu_a = Register(bus_a, alu_in_a, reg_alu_a_wr)
+    # reg_alu_b = Register(bus_b, alu_in_b, reg_alu_b_wr)
+    # reg_alu_o = Register(alu_out, bus_c, reg_alu_o_wr)
 
     ########################################################################
     """CONTROL SECTION"""
     alu_dec = ALUDecoder(
+        clk,
         control_bus,
         alu_ctrl, alu_ctrl_pa, alu_ctrl_pb, alu_flag_ctrl
     )
+
     # reg_w_dec = RegWriteDecoder(
     #     control_bus,
-    #     reg_cr_wr, reg_ps_wr, reg_ip_wr,
-    #     reg_alu_a_wr, reg_alu_b_wr, reg_alu_o_wr
+    #     reg_ps_wr, regfile_wr,
     # )
     # reg_r_dec = RegReadDecoder(
     #     control_bus,
     #     ...  # TODO fill
     # )
 
-    @always_comb
-    def update():
-        alu_in_a.next = bus_a
-        alu_in_b.next = bus_b
-        bus_c.next = alu_out
+    # @always_comb
+    # def update():
 
     return instances()
