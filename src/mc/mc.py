@@ -1,16 +1,19 @@
 from dataclasses import dataclass
 
-from src.components.ALU import *
+from src.config import MC_INSTR_SZ
 from src.mc.mcisa import *
 
 
 @dataclass
 class MCInstruction:
-    instr_type: MCType
-    alu_ctrl: ALUCtrl
-    alu_flag_ctrl: ALUFlagCtrl
-    alu_port_a_ctrl: ALUPortCtrl
-    alu_port_b_ctrl: ALUPortCtrl
+    instr_type: MCType = MCType.MC_RUN
+    alu_ctrl: ALUCtrl = ALUCtrl.ZERO
+    alu_flag_ctrl: ALUFlagCtrl = 0
+    alu_port_a_ctrl: ALUPortCtrl = ALUPortCtrl.PASS
+    alu_port_b_ctrl: ALUPortCtrl = ALUPortCtrl.PASS
+    bus_a_in_ctrl: MainBusInCtrl = MainBusInCtrl.IGNORE
+    bus_b_in_ctrl: MainBusInCtrl = MainBusInCtrl.IGNORE
+    bus_c_out_ctrl: MainBusOutCtrl = MainBusInCtrl.IGNORE
 
     def compile(self) -> int:
         res = intbv(0)[MC_INSTR_SZ:]
@@ -19,6 +22,9 @@ class MCInstruction:
         MCALUPortBCtrl.put(res, self.alu_port_b_ctrl)
         MCALUFlagCtrl.put(res, self.alu_flag_ctrl)
         MCLType.put(res, self.instr_type)
+        MCBusACtrl.put(res, self.bus_a_in_ctrl)
+        MCBusBCtrl.put(res, self.bus_b_in_ctrl)
+        MCBusCCtrl.put(res, self.bus_c_out_ctrl)
         return int(res)
 
     @staticmethod
@@ -30,14 +36,15 @@ class MCInstruction:
 
 @dataclass
 class MCInstructionJump(MCInstruction):
-    jmp_cmp_reg: int
-    jmp_cmp_bit: int
-    jmp_cmp_val: bool
-    jmp_target: int
+    jmp_cmp_bit: int = 0
+    jmp_cmp_val: bool = False
+    jmp_target: int = 0
+
+    def __post_init__(self):
+        self.instr_type = MCType.MC_JMP
 
     def compile(self) -> int:
         res = intbv(super().compile())
-        MCLJmpCmpReg.put(res, self.jmp_cmp_reg)
         MCLJmpCmpBit.put(res, self.jmp_cmp_bit)
         MCLJmpCmpVal.put(res, self.jmp_cmp_val)
         MCLJmpTarget.put(res, self.jmp_target)

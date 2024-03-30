@@ -1,7 +1,5 @@
 from myhdl import *
 
-from myhdl import *
-
 from src.components.ROM import ROM
 from src.config import *
 from src.mc.mcisa import *
@@ -25,19 +23,16 @@ def MCSequencer(clk, mc_cr, cpu_bus_c, mc_rom_data):
 
     @always(clk.negedge)
     def load():
-        L.debug(f"UPC: {int(mc_pc):032b} UCR: {int(mc_cr):032b}")
+        L.debug(f"UPC: {int(mc_pc):010b} UCR: {int(mc_cr):064b}")
 
         match MCLType.get(mc_cr):
             case MCType.MC_RUN:
                 mc_pc.next = mc_pc + 1
 
             case MCType.MC_JMP:
-                reg = MCLJmpCmpReg.get(mc_cr)
                 bit = MCLJmpCmpBit.get(mc_cr)
                 val = MCLJmpCmpVal.get(mc_cr)
                 jmp = MCLJmpTarget.get(mc_cr)
-
-                # TODO: cpu_bus_a should already have data from required register
 
                 skip = cpu_bus_c[bit] ^ val
                 if skip:
@@ -45,6 +40,7 @@ def MCSequencer(clk, mc_cr, cpu_bus_c, mc_rom_data):
                 else:
                     mc_pc.next = jmp
 
-                L.debug(f"JMP IF R{reg}[{bit}] == {val} TO {jmp} -- (cur {cpu_bus_c[bit]:b}) => {'SKIP' if skip else 'JUMP'}")
+                L.debug(
+                    f"JMP IF BUSC[{bit}] == {val} TO {jmp} -- (cur {cpu_bus_c[bit]:b}) => {'SKIP' if skip else 'JUMP'}")
 
     return instances()

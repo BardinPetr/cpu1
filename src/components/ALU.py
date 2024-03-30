@@ -1,11 +1,10 @@
 from enum import IntEnum, auto
 
 from myhdl import *
-from myhdl import _Signal
 
 from src.arch import PSFlags
 from src.config import DATA_BITS
-from utils.hdl import hdl_block, dim, Bus
+from utils.hdl import hdl_block, dim
 
 
 class ALUCtrl(IntEnum):
@@ -53,12 +52,12 @@ def alu_apply_port(port_data: intbv, port_ctrl):
 
 
 @hdl_block
-def ALU(operation: _Signal,
-        porta_ctrl: _Signal, portb_ctrl: _Signal,
-        in_a: _Signal, in_b: _Signal,
-        out: _Signal,
-        flag_ctrl: _Signal,
-        flags_in: _Signal, flags_out: _Signal):
+def ALU(operation,
+        porta_ctrl, portb_ctrl,
+        in_a, in_b,
+        out,
+        flag_ctrl,
+        flags_in, flags_out):
     """
     Asynchronous 2-port ALU with operations from ALUCtrl enum.
     Each port has individual ALU_PORT_CTRL operations applied to it before main operation.
@@ -67,7 +66,10 @@ def ALU(operation: _Signal,
     :param portb_ctrl:  input port 2 pre-operation from  ALU_PORT_CTRL
     :param in_a:        input signal for port A
     :param in_b:        input signal for port B
-    :param out:         output signal. should have 1 bit more than input ports
+    :param out:         output signal.
+    :param flag_ctrl:
+    :param flags_in:
+    :param flags_out:
     """
 
     sz = dim(in_a)
@@ -75,7 +77,6 @@ def ALU(operation: _Signal,
     assert sz == dim(out)
 
     tmp_flags = intbv(0)[4:]
-    flag_c = intbv(False)
 
     @always_comb
     def run():
