@@ -32,8 +32,8 @@ def test_alu_flags():
         ctrl.next = mode
         ctrla.next = APC.PASS
         ctrlb.next = APC.PASS
-        safe_next(in_a, a)
-        safe_next(in_b, b)
+        set_signed(in_a, a)
+        set_signed(in_b, b)
         flag_in.next = (cin << PSFlags.C)
 
     TESTS = [

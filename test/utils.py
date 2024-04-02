@@ -33,5 +33,5 @@ def negate(x, n=DIM):
     return trunc(~x + 1, n)
 
 
-def safe_next(sig, val):
+def set_signed(sig, val):
     sig.next = trunc(~abs(val) + 1) if val < 0 else val

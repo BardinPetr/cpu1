@@ -3,7 +3,7 @@ from enum import IntEnum, auto
 from myhdl import *
 
 from src.arch import PSFlags
-from src.config import DATA_BITS
+from src.config import DATA_BITS, REG_PS_SZ
 from utils.hdl import hdl_block, dim
 
 
@@ -32,10 +32,10 @@ class ALUPortCtrl(IntEnum):
 
 
 class ALUFlagCtrl(IntEnum):
-    SETZ = 1
-    SETN = 2
-    SETV = 4
-    SETC = 8
+    SETZ = 1 << PSFlags.Z
+    SETN = 1 << PSFlags.N
+    SETV = 1 << PSFlags.V
+    SETC = 1 << PSFlags.C
 
 
 def alu_apply_port(port_data: intbv, port_ctrl):
@@ -76,7 +76,7 @@ def ALU(operation,
     assert sz == dim(in_b)
     assert sz == dim(out)
 
-    tmp_flags = intbv(0)[4:]
+    tmp_flags = intbv(0)[REG_PS_SZ:]
 
     @always_comb
     def run():

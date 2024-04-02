@@ -1,4 +1,5 @@
 from src.components.ALU import ALU
+from src.components.base import Register
 from src.components.mux import Mux
 from src.config import *
 from src.datapath.regfile import RegisterFile
@@ -14,17 +15,19 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c):
     """
     Description of CPU datapath
     """
+    zerobus = Bus(DATA_BITS, state=0)
 
     ########################################################################
     """REGISTERS SECTION"""
-    # register signals
+    # classic registers
     reg_ps_in, reg_ps_out, reg_ps_wr = create_reg_signals(REG_SZ)
+    reg_ps = Register(reg_ps_in, reg_ps_out, reg_ps_wr)
 
+    # regfile
     regfile_wr = Signal(False)
     regfile_out0_id, regfile_out1_id, regfile_in_id = [Bus(REGFILE_CTRL_SZ) for _ in range(3)]
     regfile_out0, regfile_out1, regfile_in = [Bus(REG_SZ) for _ in range(3)]
 
-    # registers
     rf = RegisterFile(
         clk, regfile_wr,
         regfile_out0_id, regfile_out1_id, regfile_in_id,
@@ -39,11 +42,11 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c):
     tmp_bus_a_sig, tmp_bus_b_sig = Bus(REG_SZ), Bus(REG_SZ)
 
     mux_bus_a_registers_in = Mux(
-        [reg_ps_out, reg_ps_out, reg_ps_out, reg_ps_out],
+        [zerobus, reg_ps_out, zerobus, zerobus],
         tmp_bus_a_sig, mux_bus_a_reg_in_ctrl
     )
     mux_bus_b_registers_in = Mux(
-        [reg_ps_out, reg_ps_out, reg_ps_out, reg_ps_out],
+        [zerobus, reg_ps_out, zerobus, zerobus],
         tmp_bus_b_sig, mux_bus_b_reg_in_ctrl
     )
 

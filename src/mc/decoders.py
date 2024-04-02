@@ -87,5 +87,8 @@ def RegWriteDecoder(
         register_wr_cmd.next = enable and (not wr_ctrl[2])
         regfile_wr.next = enable and wr_ctrl[2]
 
+        # if alu has any flag outputs, then set write to PS register directly
+        alu_flag_ctrl = MCALUFlagCtrl.get(control_bus)
+        reg_ps_wr.next = alu_flag_ctrl > 0
 
     return instances()
