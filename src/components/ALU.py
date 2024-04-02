@@ -47,7 +47,7 @@ def alu_apply_port(port_data: intbv, port_ctrl):
     if int(port_ctrl) & ALUPortCtrl.SXT8:
         res[32:8] = ((1 << 24) - 1) if res[7] else 0
     if int(port_ctrl) & ALUPortCtrl.SXT16:
-        res[32:16] = ((1 << 16) - 1) if res[7] else 0
+        res[32:16] = ((1 << 16) - 1) if res[15] else 0
     return res
 
 
@@ -119,11 +119,13 @@ def ALU(operation,
         if flag_ctrl.val & ALUFlagCtrl.SETZ:
             tmp_flags[PSFlags.Z] = not res
         if flag_ctrl.val & ALUFlagCtrl.SETN:
-            tmp_flags[PSFlags.N] = res[DATA_BITS]
+            tmp_flags[PSFlags.N] = res[DATA_BITS - 1]
         if flag_ctrl.val & ALUFlagCtrl.SETC:
             tmp_flags[PSFlags.C] = res[DATA_BITS]
         if flag_ctrl.val & ALUFlagCtrl.SETV:
-            tmp_flags[PSFlags.V] = res[DATA_BITS] ^ flags_in[PSFlags.C]
+            out_sign = res[DATA_BITS - 1]
+            a_sign, b_sign = op_a[DATA_BITS - 1], op_b[DATA_BITS - 1]
+            tmp_flags[PSFlags.V] = (out_sign ^ a_sign) & (out_sign ^ b_sign)
 
         flags_out.next = tmp_flags
 

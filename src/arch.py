@@ -1,4 +1,5 @@
 from enum import IntEnum, auto
+from typing import Union
 
 
 class PSFlags(IntEnum):
@@ -6,6 +7,17 @@ class PSFlags(IntEnum):
     N = 1
     C = 2
     V = 3
+
+    @staticmethod
+    def decode_flags(val: Union['PSFlags', int]) -> dict:
+        val = int(val)
+        return {i.name: bool(val & (1 << i.value)) for i in PSFlags}
+
+    @staticmethod
+    def print_flags(val: Union['PSFlags', int]) -> str:
+        decoded = PSFlags.decode_flags(val)
+        decoded = sorted(decoded.items(), key=lambda x: -PSFlags[x[0]].value)
+        return ''.join((n if v else '-') for n, v in decoded)
 
 
 class RegFileIdCtrl(IntEnum):
