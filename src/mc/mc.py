@@ -11,9 +11,9 @@ class MCInstruction:
     alu_flag_ctrl: ALUFlagCtrl = 0
     alu_port_a_ctrl: ALUPortCtrl = ALUPortCtrl.PASS
     alu_port_b_ctrl: ALUPortCtrl = ALUPortCtrl.PASS
-    bus_a_in_ctrl: MainBusInCtrl = MainBusInCtrl.IGNORE
-    bus_b_in_ctrl: MainBusInCtrl = MainBusInCtrl.IGNORE
-    bus_c_out_ctrl: MainBusOutCtrl = MainBusInCtrl.IGNORE
+    bus_a_in_ctrl: BusInCtrl = BusInCtrl.IGNORE
+    bus_b_in_ctrl: BusInCtrl = BusInCtrl.IGNORE
+    bus_c_out_ctrl: BusOutCtrl = BusInCtrl.IGNORE
 
     def compile(self) -> int:
         res = intbv(0)[MC_INSTR_SZ:]

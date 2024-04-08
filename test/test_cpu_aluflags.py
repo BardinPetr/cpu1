@@ -19,7 +19,7 @@ MC_ROM_COMPILED = [i.compile() for i in MC_ROM]
 
 
 @myhdl_pytest(gui=False, duration=None)
-def test_cpu_regio():
+def test_cpu_aluflags():
     for src, comp in zip(MC_ROM, MC_ROM_COMPILED):
         L.info(f"MC{comp:064b}: {src}")
 
@@ -58,12 +58,15 @@ def test_cpu_regio():
             set_signed(bus_a, a)
             set_signed(bus_b, b)
             yield clk.negedge
-            yield clk.posedge
+            yield delay(1)
 
             ps_output.append(PSFlags.decode_flags(ps.val))
 
             yield clk.negedge
             yield delay(1)
+
+        print(ps_output)
+        print(TARGET_PS)
 
         for real, test in zip(ps_output, TARGET_PS):
             for name, val in test.items():

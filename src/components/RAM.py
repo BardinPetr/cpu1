@@ -2,7 +2,6 @@ from typing import List, Optional
 
 from myhdl import *
 from myhdl import _Signal
-from myhdl._ShadowSignal import _TristateSignal
 
 from utils.hdl import hdl_block
 from utils.log import get_logger
@@ -35,9 +34,12 @@ def RAMSyncSP(
 
     memory = [Signal(intbv(0)[width:]) for _ in range(depth)]
 
-    if contents is not None:
-        for i, v in enumerate(contents):
-            memory[i][:] = v
+    @instance
+    def init():
+        if contents is not None:
+            for i, v in enumerate(contents):
+                memory[i].next = v
+        yield None
 
     @always(clk.posedge)
     def write():

@@ -15,12 +15,12 @@ MC_ROM = [
     MCInstruction(
         alu_ctrl=ALUCtrl.ADD,
         alu_port_b_ctrl=ALUPortCtrl.INC,
-        bus_a_in_ctrl=MainBusInCtrl.RF_IP,
-        bus_c_out_ctrl=MainBusOutCtrl.RF_IP
+        bus_a_in_ctrl=BusInCtrl.RF_IP,
+        bus_c_out_ctrl=BusOutCtrl.RF_IP
     ),
     MCInstruction(
         alu_ctrl=ALUCtrl.PASSA,
-        bus_a_in_ctrl=MainBusInCtrl.RF_IP
+        bus_a_in_ctrl=BusInCtrl.RF_IP
     ),
     MCInstructionJump(jmp_target=0, jmp_cmp_bit=0, jmp_cmp_val=False),
 ]

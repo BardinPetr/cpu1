@@ -1,4 +1,4 @@
-from enum import IntEnum, auto
+from enum import IntEnum
 from typing import Union
 
 
@@ -25,42 +25,48 @@ class PSFlags(IntEnum):
 
 class RegFileIdCtrl(IntEnum):
     XX = 0
-    IP = auto()
-    CR = auto()
-    DR = auto()
+    IP = 1
+    CR = 2
+    YY = 3
 
 
 class RegisterIdCtrl(IntEnum):
     CR = 0
 
 
-class MainBusInCtrl(IntEnum):
+class BusInCtrl(IntEnum):
     """
     Format:
     0xx - xx is classic source
     1xx - xx is regfile ID
     """
     IGNORE = 0b000
-    SRC_1 = 0b001
-    SRC_2 = 0b010
+    PS = 0b001
+    DR = 0b010
     SRC_3 = 0b011
     RF_XX = 0b100 + RegFileIdCtrl.XX
     RF_IP = 0b100 + RegFileIdCtrl.IP
     RF_CR = 0b100 + RegFileIdCtrl.CR
-    RF_DR = 0b100 + RegFileIdCtrl.DR
+    RF_YY = 0b100 + RegFileIdCtrl.YY
 
 
-class MainBusOutCtrl(IntEnum):
+class BusOutCtrl(IntEnum):
     """
     Format:
     0xx - xx is classic source
     1xx - xx is regfile ID
     """
     IGNORE = 0b000
-    SRC_1 = 0b001
-    SRC_2 = 0b010
+    PS = 0b001
+    AR = 0b010
     SRC_3 = 0b011
     RF_XX = 0b100 + RegFileIdCtrl.XX
     RF_IP = 0b100 + RegFileIdCtrl.IP
     RF_CR = 0b100 + RegFileIdCtrl.CR
-    RF_DR = 0b100 + RegFileIdCtrl.DR
+    RF_YY = 0b100 + RegFileIdCtrl.YY
+
+
+class MemOpCtrl(IntEnum):
+    NO = 0b0
+    RD = 0b01
+    WR = 0b10

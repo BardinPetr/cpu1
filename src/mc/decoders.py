@@ -2,9 +2,8 @@ from enum import auto
 
 from myhdl import *
 
-from src.components.mux import DeMux
 from src.mc.mcisa import *
-from utils.hdl import hdl_block, Bus
+from utils.hdl import hdl_block
 from utils.log import get_logger
 
 L = get_logger()
@@ -57,18 +56,10 @@ def RegReadDecoder(
 def RegWriteDecoder(
         clk,
         control_bus,
-        reg_ps_wr,
-        demux_bus_c_nr_rf,
+        reg_ps_wr_drv,
+        register_wr, register_demux_id, demux_bus_c_nr_rf,
         regfile_wr, regfile_in_id
 ):
-    register_wr_cmd = Signal(False)
-    register_demux_id = Bus(2)
-    demux = DeMux(
-        register_wr_cmd,
-        [reg_ps_wr],
-        register_demux_id
-    )
-
     @always_comb
     def update():
         wr_ctrl = MCBusCCtrl.get(control_bus)
@@ -77,18 +68,23 @@ def RegWriteDecoder(
         register_demux_id.next = wr_ctrl[2:]
         demux_bus_c_nr_rf.next = wr_ctrl[2]
 
+        enable = wr_ctrl != 0
+
+        # if wr_ctrl[2] == 1 then  wr_ctrl[2:] is regfile register, else register source
+        # regfile write occurring on neg edge of clk!
+        regfile_wr.next = enable and wr_ctrl[2]
+
     @always(clk.negedge)
     def run():
         wr_ctrl = MCBusCCtrl.get(control_bus)
 
-        enable = wr_ctrl != MainBusInCtrl.IGNORE
-
-        # if wr_ctrl[2] == 1 then  wr_ctrl[2:] is regfile register, else register source
-        register_wr_cmd.next = enable and (not wr_ctrl[2])
-        regfile_wr.next = enable and wr_ctrl[2]
+        register_wr.next = (wr_ctrl != 0) and (not wr_ctrl[2])
 
         # if alu has any flag outputs, then set write to PS register directly
         alu_flag_ctrl = MCALUFlagCtrl.get(control_bus)
-        reg_ps_wr.next = alu_flag_ctrl > 0
+        if alu_flag_ctrl > 0:
+            reg_ps_wr_drv.next = True
+        else:
+            reg_ps_wr_drv.next = None
 
     return instances()

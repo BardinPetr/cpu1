@@ -1,5 +1,4 @@
 import random
-from random import randint
 
 from myhdl import *
 
@@ -83,7 +82,7 @@ def test_alu():
         *[('AND', None, None, 0)] * 10,
         *[('OR', None, None, 0)] * 10,
         *[('ANDNN', None, None, 0)] * 2,
-        ('ADD', (1 << 32)-1, None, 0),
+        ('ADD', (1 << 32) - 1, None, 0),
         ('ADD', LARGE[0], LARGE[1], 0),
         *[('ADD', None, None, 0)] * 10,
         ('ADC', LARGE[0], LARGE[1], 0),

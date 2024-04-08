@@ -1,6 +1,7 @@
 from src.components.ALU import ALU
+from src.components.RAM import RAMSyncSP
 from src.components.base import Register
-from src.components.mux import Mux
+from src.components.mux import Mux, DeMux
 from src.config import *
 from src.datapath.regfile import RegisterFile
 from src.mc.decoders import *
@@ -11,7 +12,7 @@ L = get_logger()
 
 
 @hdl_block
-def DataPath(clk, control_bus, bus_a, bus_b, bus_c):
+def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     """
     Description of CPU datapath
     """
@@ -20,10 +21,20 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c):
     ########################################################################
     """REGISTERS SECTION"""
     # classic registers
-    reg_ps_in, reg_ps_out, reg_ps_wr = create_reg_signals(REG_SZ)
+    # Program State register (see PSFlags)
+    reg_ps_out = Bus(REG_PS_SZ)
+    reg_ps_wr = TristateSignal(intbv(False))
+    reg_ps_in = TristateSignal(intbv(0)[REG_PS_SZ:])
     reg_ps = Register(reg_ps_in, reg_ps_out, reg_ps_wr)
 
-    # regfile
+    # register tied to ram input addr
+    reg_ar_in, reg_ar_out, reg_ar_wr = create_reg_signals(REG_SZ)
+    reg_ar = Register(reg_ar_in, reg_ar_out, reg_ar_wr)
+
+    # no need to make real register for DR, just using output bus from memory module
+    reg_dr_out = Bus()
+
+    """REGISTER FILE SECTION"""
     regfile_wr = Signal(False)
     regfile_out0_id, regfile_out1_id, regfile_in_id = [Bus(REGFILE_CTRL_SZ) for _ in range(3)]
     regfile_out0, regfile_out1, regfile_in = [Bus(REG_SZ) for _ in range(3)]
@@ -41,12 +52,13 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c):
     mux_bus_a_nr_rf_ctrl, mux_bus_b_nr_rf_ctrl = Bus(1), Bus(1)
     tmp_bus_a_sig, tmp_bus_b_sig = Bus(REG_SZ), Bus(REG_SZ)
 
+    _reg_inputs = [zerobus, reg_ps_out, reg_dr_out, zerobus]
     mux_bus_a_registers_in = Mux(
-        [zerobus, reg_ps_out, zerobus, zerobus],
+        _reg_inputs,
         tmp_bus_a_sig, mux_bus_a_reg_in_ctrl
     )
     mux_bus_b_registers_in = Mux(
-        [zerobus, reg_ps_out, zerobus, zerobus],
+        _reg_inputs,
         tmp_bus_b_sig, mux_bus_b_reg_in_ctrl
     )
 
@@ -61,12 +73,26 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c):
 
     ########################################################################
     """BUS OUTPUT SECTION"""
-    demux_bus_c_to_nr = Bus(REG_SZ)
-
+    demux_tmp_bus_c = Bus(REG_SZ)
+    demux_bus_c_reg_wr = Bus(1)
+    demux_bus_c_reg_id = Bus(2)
     demux_bus_c_nr_rf = Bus(1)
+
+    demux_bus_c_reg_wr_cmd = DeMux(
+        demux_bus_c_reg_wr,
+        [zerobus, reg_ps_wr.driver(), reg_ar_wr, zerobus],
+        demux_bus_c_reg_id
+    )
+
+    # TODO add write from BusC to PS via reg_ps_in.driver()
+    demux_bus_c_reg_wr_data = DeMux(
+        demux_tmp_bus_c,
+        [zerobus, zerobus, reg_ar_in, zerobus],
+        demux_bus_c_reg_id
+    )
     demux_bus_c = DeMux(
         bus_c,
-        [demux_bus_c_to_nr, regfile_in],
+        [demux_tmp_bus_c, regfile_in],
         demux_bus_c_nr_rf
     )
 
@@ -84,7 +110,19 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c):
         bus_c,
         alu_flag_ctrl,
         reg_ps_out,
-        reg_ps_in
+        reg_ps_in.driver()
+    )
+
+    ########################################################################
+    """RAM SECTION"""
+    ram_a_wr = Signal(False)
+    ram_a_in, ram_a_out = Bus(DATA_BITS), Bus(DATA_BITS)
+
+    ram = RAMSyncSP(
+        clk,
+        ram_a_wr, reg_ar_out, ram_a_in, reg_dr_out,
+        depth=2 ** ADDR_BITS, width=DATA_BITS,
+        contents=ram
     )
 
     ########################################################################
@@ -104,8 +142,8 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c):
     reg_w_dec = RegWriteDecoder(
         clk,
         control_bus,
-        reg_ps_wr,
-        demux_bus_c_nr_rf,
+        reg_ps_wr.driver(),
+        demux_bus_c_reg_wr, demux_bus_c_reg_id, demux_bus_c_nr_rf,
         regfile_wr, regfile_in_id
     )
 

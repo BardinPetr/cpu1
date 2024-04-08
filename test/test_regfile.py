@@ -44,6 +44,7 @@ def test_regfile():
             yield clk.posedge
             inid.next = i
             inbus.next = val
+            we.next = True
 
             # request for that register
             out0id.next = i
@@ -56,7 +57,6 @@ def test_regfile():
             assert rf_sim[i] == out1bus.val
 
             yield clk.negedge
-            we.next = True
 
             # write should occur on falling edge
             rf_sim[i] = val

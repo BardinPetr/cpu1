@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from myhdl import *
 
@@ -10,7 +10,7 @@ from utils.hdl import hdl_block, Bus
 
 
 @hdl_block
-def CPU(mc_rom: List[int]):
+def CPU(mc_rom: List[int], ram: Optional[List[int]] = None):
     # control module base clock
     clk = Signal(False)
     clg = Clock(clk, 10)
@@ -25,6 +25,6 @@ def CPU(mc_rom: List[int]):
 
     # submodules
     control = MCSequencer(clk, control_bus, bus_c, mc_rom_data=mc_rom)
-    datapath = DataPath(clk, control_bus, bus_a, bus_b, bus_c)
+    datapath = DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=ram)
 
     return instances()

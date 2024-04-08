@@ -1,7 +1,7 @@
 from typing import List
 
 from myhdl import *
-from myhdl import _Signal
+from myhdl import _Signal, _ShadowSignal
 
 from utils.hdl import hdl_block
 
@@ -46,6 +46,9 @@ def DeMux(input: _Signal, outputs: List[_Signal], ctrl: _Signal):
     def run():
         n = int(ctrl.val)
         for i in range(len(outputs)):
-            outputs[i].next = input if i == n else 0
+            if isinstance(outputs[i], _ShadowSignal._TristateDriver):
+                outputs[i].next = input if i == n else None
+            else:
+                outputs[i].next = input if i == n else 0
 
     return run
