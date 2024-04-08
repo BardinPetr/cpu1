@@ -7,6 +7,9 @@ class PSFlags(IntEnum):
     N = 1
     C = 2
     V = 3
+    RUN = 4
+    INT = 5
+    IEN = 6
 
     @staticmethod
     def decode_flags(val: Union['PSFlags', int]) -> dict:

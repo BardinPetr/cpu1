@@ -2,7 +2,7 @@ from random import randrange
 
 from myhdl import *
 
-from src.components.ROM import AsyncROM
+from src.components.ROM import ROM
 from utils.testutils import myhdl_pytest
 
 
@@ -12,26 +12,25 @@ def test_rom():
     data_bits = 8
     size = 1 << addr_bits
 
-    en = Signal(False)
+    clk = Signal(False)
     addr = Signal(intbv(0)[addr_bits:])
     data = Signal(intbv(0)[data_bits:])
 
     test_data = [randrange(0, size) for _ in range(size)]
 
-    mem = AsyncROM(en, addr, data, test_data)
+    mem = ROM(clk, addr, data, test_data)
 
     @instance
     def stimulus():
         for a, v in enumerate(test_data):
             addr.next = a
-            yield delay(1)
-            en.next = 1
 
-            # wait for data to be present
-            yield delay(10)
+            yield delay(5)
+            clk.next = 1
+            yield delay(5)
+            clk.next = 0
 
             assert data.val == v
-            en.next = 0
 
             yield delay(20)
 

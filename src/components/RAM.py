@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from myhdl import *
 from myhdl import _Signal
 from myhdl._ShadowSignal import _TristateSignal
@@ -7,93 +9,86 @@ from utils.log import get_logger
 
 L = get_logger()
 
-@hdl_block
-def SDRAM(
-        clk: _Signal,
-        en: _Signal,
-        we: _Signal,
-        oe: _Signal,
-        addr: _Signal,
-        data: _TristateSignal,
-        size: int):
-    """
-    SDRAM emulation component
-    Write and read on rising edge of clock according to WE/OE
-    :param clk:     clock in
-    :param en:      1 - enable, 0 - disable
-    :param we:      WriteEnable: 1 - write, 0 - read
-    :param oe:      OutputEnable: 1 - data lane is output, 0 - data lane as input
-    :param addr:    address bus
-    :param data:    RW data bus
-    :param size:    emulated memory size in bytes
-    """
-
-    memory = [intbv(0) for _ in range(size)]
-
-    data_out = data.driver()
-
-    @always(oe)
-    def tristate():
-        if not en or not oe:
-            delay(1)
-            data_out.next = None
-
-    @always(clk.posedge)
-    def run():
-        if en:
-            _addr = int(addr.val)
-            if _addr >= size:
-                raise Exception(f"Invalid address {_addr:x}")
-
-            if we and not oe:
-                L.debug(f"WRITE [0x{_addr:x}] = {data.val}")
-                memory[_addr][:] = data.val
-
-            if not we and oe:
-                L.debug(f"READ [0x{_addr:x}] == {memory[_addr]}")
-                data_out.next = memory[_addr]
-
-    return instances()
-
 
 @hdl_block
-def DRAM(
+def RAMSyncSP(
         clk: _Signal,
         wr: _Signal,
         addr: _Signal,
         in_data: _Signal,
         out_data: _Signal,
-        size: int):
+        depth: int,
+        width: int,
+        contents: Optional[List[int]] = None):
     """
-    DRAM emulation component
-    Write on rising edge of clock according to WR, read always
+    Synchronous RAM emulation component
+    Read on rising clk, write when rising clk and WR
     :param clk:        clock in
     :param wr:         1 - write, 0 - no
     :param addr:       address bus
     :param in_data:    Write data bus
     :param out_data:   Read data bus
-    :param size:       emulated memory size in bytes
+    :param width:
+    :param depth:
+    :param contents:
     """
 
-    memory = [intbv(0) for _ in range(size)]
+    memory = [Signal(intbv(0)[width:]) for _ in range(depth)]
+
+    if contents is not None:
+        for i, v in enumerate(contents):
+            memory[i][:] = v
 
     @always(clk.posedge)
     def write():
         if wr:
-            _addr = int(addr.val)
-            if _addr >= size:
-                raise Exception(f"Invalid address {_addr:x}")
+            L.debug(f"WRITE [0x{int(addr.val):x}] = {in_data.val}")
+            memory[addr].next = in_data
 
-            L.debug(f"WRITE [0x{_addr:x}] = {in_data.val}")
-            memory[_addr][:] = in_data.val
-
-    @always_comb
+    @always(clk.posedge)
     def read():
-        _addr = int(addr.val)
-        if _addr >= size:
-            raise Exception(f"Invalid address {_addr:x}")
+        L.debug(f"READ [0x{int(addr.val):x}] == {memory[addr]}")
+        out_data.next = memory[addr]
 
-        L.debug(f"READ [0x{_addr:x}] == {memory[_addr]}")
-        out_data.next = memory[_addr]
+    return instances()
+
+
+@hdl_block
+def RAMSyncDP(
+        clk_a: _Signal,
+        addr_a: _Signal,
+        wr_a: _Signal,
+        di_a: _Signal,
+        do_a: _Signal,
+        clk_b: _Signal,
+        addr_b: _Signal,
+        wr_b: _Signal,
+        di_b: _Signal,
+        do_b: _Signal,
+        depth: int,
+        width: int,
+        contents: Optional[List[int]] = None):
+    """
+    Synchronous read-first "true"-dual-port RAM emulation component
+    Read on rising clk, write when rising clk and WR
+    """
+
+    memory = [Signal(intbv(0)[width:]) for _ in range(depth)]
+
+    if contents is not None:
+        for i, v in enumerate(contents):
+            memory[i][:] = v
+
+    @always(clk_a.posedge)
+    def write():
+        do_a.next = memory[addr_a]
+        if wr_a:
+            memory[addr_a].next = di_a
+
+    @always(clk_b.posedge)
+    def write():
+        do_b.next = memory[addr_b]
+        if wr_b:
+            memory[addr_b].next = di_b
 
     return instances()
