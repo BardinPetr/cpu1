@@ -14,6 +14,7 @@ class MCInstruction:
     bus_a_in_ctrl: BusInCtrl = BusInCtrl.IGNORE
     bus_b_in_ctrl: BusInCtrl = BusInCtrl.IGNORE
     bus_c_out_ctrl: BusOutCtrl = BusInCtrl.IGNORE
+    mem_ctrl: MemCtrl = MemCtrl.IGN
 
     def compile(self) -> int:
         res = intbv(0)[MC_INSTR_SZ:]
@@ -25,6 +26,7 @@ class MCInstruction:
         MCBusACtrl.put(res, self.bus_a_in_ctrl)
         MCBusBCtrl.put(res, self.bus_b_in_ctrl)
         MCBusCCtrl.put(res, self.bus_c_out_ctrl)
+        MCMemCtrl.put(res, self.mem_ctrl)
         return int(res)
 
     @staticmethod

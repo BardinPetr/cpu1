@@ -31,9 +31,6 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     reg_ar_in, reg_ar_out, reg_ar_wr = create_reg_signals(REG_SZ)
     reg_ar = Register(reg_ar_in, reg_ar_out, reg_ar_wr)
 
-    # no need to make real register for DR, just using output bus from memory module
-    reg_dr_out = Bus()
-
     """REGISTER FILE SECTION"""
     regfile_wr = Signal(False)
     regfile_out0_id, regfile_out1_id, regfile_in_id = [Bus(REGFILE_CTRL_SZ) for _ in range(3)]
@@ -44,6 +41,20 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
         regfile_out0_id, regfile_out1_id, regfile_in_id,
         regfile_out0, regfile_out1, regfile_in,
         count=REGFILE_COUNT
+    )
+
+    ########################################################################
+    """RAM SECTION"""
+
+    ram_a_wr = Signal(False)
+    ram_a_in, ram_a_out = Bus(DATA_BITS), Bus(DATA_BITS)
+    reg_dr_out = Bus()  # no need to make real register for DR, just using output bus from memory module
+
+    ram = RAMSyncSP(
+        clk,
+        ram_a_wr, reg_ar_out, ram_a_in, reg_dr_out,
+        depth=2 ** ADDR_BITS, width=DATA_BITS,
+        contents=ram
     )
 
     ########################################################################
@@ -78,16 +89,17 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     demux_bus_c_reg_id = Bus(2)
     demux_bus_c_nr_rf = Bus(1)
 
+    # Order of demux out should be according to BusOutCtrl!
+    # TODO add write from BusC to PS via reg_ps_in.driver()
+
     demux_bus_c_reg_wr_cmd = DeMux(
         demux_bus_c_reg_wr,
-        [zerobus, reg_ps_wr.driver(), reg_ar_wr, zerobus],
+        [zerobus, reg_ps_wr.driver(), ram_a_wr, reg_ar_wr],
         demux_bus_c_reg_id
     )
-
-    # TODO add write from BusC to PS via reg_ps_in.driver()
     demux_bus_c_reg_wr_data = DeMux(
         demux_tmp_bus_c,
-        [zerobus, zerobus, reg_ar_in, zerobus],
+        [zerobus, zerobus, ram_a_in, reg_ar_in],
         demux_bus_c_reg_id
     )
     demux_bus_c = DeMux(
@@ -114,18 +126,6 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     )
 
     ########################################################################
-    """RAM SECTION"""
-    ram_a_wr = Signal(False)
-    ram_a_in, ram_a_out = Bus(DATA_BITS), Bus(DATA_BITS)
-
-    ram = RAMSyncSP(
-        clk,
-        ram_a_wr, reg_ar_out, ram_a_in, reg_dr_out,
-        depth=2 ** ADDR_BITS, width=DATA_BITS,
-        contents=ram
-    )
-
-    ########################################################################
     """CONTROL SECTION"""
     alu_dec = ALUDecoder(
         control_bus,
@@ -142,6 +142,7 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     reg_w_dec = RegWriteDecoder(
         clk,
         control_bus,
+        ram_a_wr,
         reg_ps_wr.driver(),
         demux_bus_c_reg_wr, demux_bus_c_reg_id, demux_bus_c_nr_rf,
         regfile_wr, regfile_in_id

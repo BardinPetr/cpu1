@@ -42,7 +42,7 @@ class BusInCtrl(IntEnum):
     """
     IGNORE = 0b000
     PS = 0b001
-    DR = 0b010
+    DRR = 0b010
     SRC_3 = 0b011
     RF_XX = 0b100 + RegFileIdCtrl.XX
     RF_IP = 0b100 + RegFileIdCtrl.IP
@@ -58,15 +58,14 @@ class BusOutCtrl(IntEnum):
     """
     IGNORE = 0b000
     PS = 0b001
-    AR = 0b010
-    SRC_3 = 0b011
+    DRW = 0b010
+    AR = 0b011
     RF_XX = 0b100 + RegFileIdCtrl.XX
     RF_IP = 0b100 + RegFileIdCtrl.IP
     RF_CR = 0b100 + RegFileIdCtrl.CR
     RF_YY = 0b100 + RegFileIdCtrl.YY
 
 
-class MemOpCtrl(IntEnum):
-    NO = 0b0
-    RD = 0b01
-    WR = 0b10
+class MemCtrl(IntEnum):
+    IGN = 0
+    WR = 1

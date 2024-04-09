@@ -56,14 +56,17 @@ def RegReadDecoder(
 def RegWriteDecoder(
         clk,
         control_bus,
+        ram_a_wr,
         reg_ps_wr_drv,
         register_wr, register_demux_id, demux_bus_c_nr_rf,
         regfile_wr, regfile_in_id
 ):
     @always_comb
     def update():
-        wr_ctrl = MCBusCCtrl.get(control_bus)
+        mem_ctrl = MCMemCtrl.get(control_bus)
+        ram_a_wr.next = mem_ctrl[0]
 
+        wr_ctrl = MCBusCCtrl.get(control_bus)
         regfile_in_id.next = wr_ctrl[2:]
         register_demux_id.next = wr_ctrl[2:]
         demux_bus_c_nr_rf.next = wr_ctrl[2]

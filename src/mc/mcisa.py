@@ -18,7 +18,7 @@ from typing import TypeVar, Optional, Sized
 
 from myhdl import intbv
 
-from src.arch import BusInCtrl, BusOutCtrl
+from src.arch import BusInCtrl, BusOutCtrl, MemCtrl
 from src.components.ALU import ALUCtrl, ALUPortCtrl, ALUFlagCtrl
 
 T = TypeVar('T', bound=IntEnum)
@@ -87,6 +87,7 @@ MCALUFlagCtrl = LCMUL(ALUFlagCtrl).after(MCALUPortBCtrl)
 MCBusACtrl = LCSIN(BusInCtrl).after(MCALUFlagCtrl)
 MCBusBCtrl = LCSIN(BusInCtrl).after(MCBusACtrl)
 MCBusCCtrl = LCSIN(BusOutCtrl).after(MCBusBCtrl)
+MCMemCtrl = LCMUL(MemCtrl).after(MCBusCCtrl)
 
 MCLJmpCmpBit = LCSIN(bits=16).after(MCBusCCtrl)
 MCLJmpCmpVal = MCLocator(MCSelectType.AS_IS, bits=1).after(MCLJmpCmpBit)
