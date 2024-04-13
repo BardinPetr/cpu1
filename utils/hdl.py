@@ -20,8 +20,8 @@ def dim(sig: _Signal | intbv | modbv) -> int:
     :param sig: signal
     :return:    bit count
     """
-    if isinstance(sig, _Signal):
-        sig = sig.val
+    # if isinstance(sig, _Signal):
+    #     sig = sig.val
     return sig._nrbits
 
 

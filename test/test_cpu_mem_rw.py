@@ -6,6 +6,7 @@ from src.cpu import CPU
 from src.mc.mc import MCInstruction, MCInstructionJump
 from utils.introspection import IntrospectionTree, Trace, TraceData
 from utils.log import get_logger
+from utils.runutils import display_vcd
 from utils.testutils import myhdl_pytest
 
 L = get_logger()
@@ -92,13 +93,9 @@ def test_cpu_mem_rw():
         # print("REAL   RAM:", ram_real)
         assert RAM_TARGET == ram_real
 
-        trace_res.stop()
-        print()
-        print(trace_res.as_list())
-        print(trace_res.as_list_front(0))
-        print(trace_res.as_list_front(1))
-        print(trace_res.as_list_joined())
-        print(trace_res.as_dict())
+        # trace_res.as_vcd('f.vcd')
+        # display_vcd('.', 'f', lambda gtkw: 0)
+
         raise StopSimulation()
 
     return cpu, stimulus, tracer

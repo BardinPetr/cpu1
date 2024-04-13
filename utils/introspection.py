@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, Optional, List, Iterable, Tuple
 
 import myhdl
+import vcd
 from myhdl import Cosimulation, delay
 from myhdl._Signal import _Signal
 from myhdl._block import _Block
@@ -14,7 +15,7 @@ from myhdl._extractHierarchy import _MemInfo
 from myhdl._instance import _Instantiator, instance
 
 from utils.colors import Colors
-from utils.hdl import hdl_block
+from utils.hdl import hdl_block, dim
 
 
 @dataclass
@@ -24,15 +25,6 @@ class BlockIntrospection:
     modules: Dict[str, _Block] = field(default_factory=dict)
     signals: Dict[str, _Signal] = field(default_factory=dict)
     memories: Dict[str, _MemInfo] = field(default_factory=dict)
-
-
-# class IntrospectedValue:
-#     def __init__(self, sig: _Signal):
-#         super().__init__()
-#         self.sig = sig
-#
-#     def __call__(self, *args, **kwargs):
-#         return int(self.sig.val)
 
 
 class IntrospectedMemory:
@@ -103,10 +95,13 @@ class IntrospectionTree(BlockIntrospection):
 
 class TraceData:
 
-    def __init__(self):
+    def __init__(self, period_ns: int = 10):
         self._run = True
-        self._labels = []
+        self._labels: List[str] = []
+        self._dims: List[int] = []
         self._history: List[List[int]] = []
+        self._period = period_ns
+        self._half_period = period_ns // 2
 
     def clear(self):
         self._history = []
@@ -114,6 +109,9 @@ class TraceData:
 
     def set_labels(self, labels: Iterable[str]):
         self._labels = list(labels)
+
+    def set_types(self, example: Iterable[_Signal]):
+        self._dims = [dim(i) for i in example]
 
     def as_list(self) -> List[List[int]]:
         return self._history
@@ -134,11 +132,31 @@ class TraceData:
         if self._run:
             self._history.append(x)
 
+    def as_vcd(self, filepath: str):
+        if not self._history:
+            return False
+
+        with open(filepath, 'w') as file:
+            with vcd.VCDWriter(file, timescale='1 ns') as writer:
+                vars = [
+                    writer.register_var('main', name, 'reg', size=sz)
+                    for name, sz in zip(self._labels, self._dims)
+                ]
+
+                ts = 0
+                for line in self._history:
+                    for var, value in zip(vars, line):
+                        writer.change(var, ts, value)
+                    ts += self._half_period
+
+        return True
+
 
 @hdl_block
 def Trace(clk: _Signal, data: TraceData, watches: Dict[str, _Signal]):
     data.clear()
     data.set_labels(watches.keys())
+    data.set_types(watches.values())
 
     def checkpoint():
         data.add([int(tp) for tp in watches.values()])
@@ -205,6 +223,12 @@ def introspect():
         intro: BlockIntrospection = sub.introspection
         intro.name = sub_name
         intro.memories.update(sub.memdict)
+
+        # Important!
+        # MyHDL by default decides not to append some signals to tacking list
+        # because they are "not used" with modules,
+        # however it is not true
+        sub.sigdict.update(intro.signals)
 
     # print(f"Registered {block_classname}")
 
