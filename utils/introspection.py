@@ -13,6 +13,8 @@ from myhdl._block import _Block
 from myhdl._extractHierarchy import _MemInfo
 from myhdl._instance import _Instantiator
 
+from utils.colors import Colors
+
 
 @dataclass
 class BlockIntrospection:
@@ -58,6 +60,27 @@ class IntrospectionTree(BlockIntrospection):
         base: BlockIntrospection = blk.introspection
         name = base.type if is_root else base.name
         return IntrospectionTree(name, base.type, base.modules, base.signals, base.memories)
+
+    def draw(self, level: int = 0):
+        padding = "|  " * level
+
+        if level == 0:
+            print(f"\n{'=' * 20}\nTree:")
+
+        print(
+            f"{padding}"
+            f"{Colors.RED}{Colors.BOLD}-{Colors.END}"
+            f"{Colors.GREEN}{Colors.BOLD}{self.type}{Colors.END} as "
+            f"{Colors.BLUE}{self.name}{Colors.END}"
+            f"{':' if self._children else ''}"
+            f"\n{padding} {Colors.PURPLE}sigs{Colors.END}=({', '.join(self._symbols.keys())})"
+        )
+
+        for i in sorted(self._children.values(), key=lambda x: str(x)):
+            i.draw(level + 1)
+
+        if level == 0:
+            print(f"{'=' * 20}\n")
 
 
 def _is_hdl_runnable(obj: Any) -> bool:
@@ -110,7 +133,7 @@ def introspect():
         intro.name = sub_name
         intro.memories.update(sub.memdict)
 
-    print(f"Registered {block_classname}")
+    # print(f"Registered {block_classname}")
 
     # mimic MyHDL instances() and return all submodules that should be evaluated (blocks and functions with decorators)
     return [
