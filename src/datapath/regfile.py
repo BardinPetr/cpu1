@@ -1,6 +1,7 @@
 from src.config import *
 from src.mc.decoders import *
 from utils.hdl import hdl_block, dim
+from utils.introspection import introspect
 from utils.log import get_logger
 
 L = get_logger()
@@ -28,4 +29,4 @@ def RegisterFile(clk, write_enable,
             L.debug(f"Regfile write [{in_port_reg}] = 0x{in_port_bus.val}")
             registers[in_port_reg].next = in_port_bus
 
-    return instances()
+    return introspect()

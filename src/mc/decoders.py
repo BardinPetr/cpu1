@@ -4,6 +4,7 @@ from myhdl import *
 
 from src.mc.mcisa import *
 from utils.hdl import hdl_block
+from utils.introspection import introspect
 from utils.log import get_logger
 
 L = get_logger()
@@ -26,7 +27,7 @@ def ALUDecoder(
         alu_port_a_ctrl.next = MCALUPortACtrl.get(control_bus)
         alu_ctrl.next = MCALUCtrl.get(control_bus)
 
-    return run
+    return introspect()
 
 
 @hdl_block
@@ -49,7 +50,7 @@ def RegReadDecoder(
         regfile_out0_id.next = rd_a[2:]
         regfile_out1_id.next = rd_b[2:]
 
-    return instances()
+    return introspect()
 
 
 @hdl_block
@@ -90,4 +91,4 @@ def RegWriteDecoder(
         else:
             reg_ps_wr_drv.next = None
 
-    return instances()
+    return introspect()

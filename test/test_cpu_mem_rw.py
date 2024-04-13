@@ -6,8 +6,12 @@ from src.cpu import CPU
 from src.mc.mc import MCInstruction, MCInstructionJump
 from test.test_cpu_mcseq import get_signals
 from test.utils import get_first_sub
+from utils import introspection
+from utils.introspection import IntrospectionTree
 from utils.log import get_logger
 from utils.testutils import myhdl_pytest
+
+introspection.use()
 
 L = get_logger()
 
@@ -85,4 +89,12 @@ def test_cpu_mem_read():
 
         raise StopSimulation()
 
-    return cpu, stimulus
+    intro = IntrospectionTree.build(cpu)
+
+    @instance
+    def pull():
+        while True:
+            yield clk.posedge
+            yield clk.negedge
+
+    return cpu, stimulus, pull

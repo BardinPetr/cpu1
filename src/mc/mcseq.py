@@ -4,6 +4,7 @@ from src.components.ROM import ROM
 from src.config import *
 from src.mc.mcisa import *
 from utils.hdl import Bus
+from utils.introspection import introspect
 from utils.hdl import hdl_block
 from utils.log import get_logger
 
@@ -43,4 +44,4 @@ def MCSequencer(clk, mc_cr, cpu_bus_c, mc_rom_data):
                 L.debug(
                     f"JMP IF BUSC[{bit}] == {val} TO {jmp} -- (cur {cpu_bus_c[bit]:b}) => {'SKIP' if skip else 'JUMP'}")
 
-    return instances()
+    return introspect()

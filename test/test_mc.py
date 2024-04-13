@@ -7,6 +7,7 @@ from src.config import *
 from src.mc.mc import MCInstruction, MCInstructionJump
 from src.mc.mcseq import MCSequencer, L as MCS_LOG
 from utils.hdl import Bus
+from utils.introspection import introspect
 from utils.testutils import myhdl_pytest
 
 MCS_LOG.setLevel(logging.DEBUG)
@@ -59,4 +60,4 @@ def test_mc():
 
         raise StopSimulation
 
-    return instances()
+    return introspect()

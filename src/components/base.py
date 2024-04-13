@@ -2,6 +2,7 @@ from myhdl import *
 from myhdl import _Signal
 
 from utils.hdl import hdl_block
+from utils.introspection import introspect
 
 
 @hdl_block
@@ -10,7 +11,7 @@ def Trig(d_in, d_out, clk):
     def run():
         d_out.next = d_in
 
-    return run
+    return introspect()
 
 
 @hdl_block
@@ -22,7 +23,7 @@ def RTrig(d_in, d_out, clk, rst):
         else:
             d_out.next = d_in
 
-    return run
+    return introspect()
 
 
 Reg = Trig
@@ -35,7 +36,7 @@ def Clock(clk: _Signal, period: int):
     def run():
         clk.next = not clk
 
-    return run
+    return introspect()
 
 
 @hdl_block
@@ -47,4 +48,4 @@ def Counter(clk: _Signal, rst: ResetSignal, out: _Signal):
         else:
             out.next = 1 + out
 
-    return run
+    return introspect()

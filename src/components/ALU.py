@@ -5,6 +5,7 @@ from myhdl import *
 from src.arch import PSFlags
 from src.config import DATA_BITS, REG_PS_SZ
 from utils.hdl import hdl_block, dim
+from utils.introspection import introspect
 
 
 class ALUCtrl(IntEnum):
@@ -129,4 +130,4 @@ def ALU(operation,
 
         flags_out.next = tmp_flags
 
-    return instances()
+    return introspect()

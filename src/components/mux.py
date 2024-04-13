@@ -4,6 +4,7 @@ from myhdl import *
 from myhdl import _Signal, _ShadowSignal
 
 from utils.hdl import hdl_block
+from utils.introspection import introspect
 
 
 @hdl_block
@@ -27,7 +28,7 @@ def Mux(inputs: List[_Signal], output: _Signal, ctrl: _Signal):
         else:
             output.next = inputs[n]
 
-    return run
+    return introspect()
 
 
 @hdl_block
@@ -51,4 +52,4 @@ def DeMux(input: _Signal, outputs: List[_Signal], ctrl: _Signal):
             else:
                 outputs[i].next = input if i == n else 0
 
-    return run
+    return introspect()

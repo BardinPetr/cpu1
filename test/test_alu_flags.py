@@ -6,6 +6,7 @@ from src.arch import PSFlags
 from src.components.ALU import ALU, ALUCtrl, ALUPortCtrl
 from test.utils import *
 from utils.hdl import Bus
+from utils.introspection import introspect
 from utils.log import get_logger
 from utils.testutils import myhdl_pytest
 
@@ -97,4 +98,4 @@ def test_alu_flags():
 
         raise StopSimulation
 
-    return instances()
+    return introspect()

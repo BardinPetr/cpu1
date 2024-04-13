@@ -4,6 +4,7 @@ from myhdl import *
 
 from src.components.RAM import RAMSyncSP
 from src.components.base import Clock
+from utils.introspection import introspect
 from utils.testutils import myhdl_pytest
 
 
@@ -62,4 +63,4 @@ def test_sp_sync_ram():
 
         raise StopSimulation
 
-    return instances()
+    return introspect()

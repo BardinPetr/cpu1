@@ -6,6 +6,7 @@ from src.config import *
 from src.datapath.regfile import RegisterFile
 from src.mc.decoders import *
 from utils.hdl import hdl_block, Bus, create_reg_signals
+from utils.introspection import introspect
 from utils.log import get_logger
 
 L = get_logger()
@@ -50,7 +51,7 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     ram_a_in, ram_a_out = Bus(DATA_BITS), Bus(DATA_BITS)
     reg_dr_out = Bus()  # no need to make real register for DR, just using output bus from memory module
 
-    ram = RAMSyncSP(
+    ram_mod = RAMSyncSP(
         clk,
         ram_a_wr, reg_ar_out, ram_a_in, reg_dr_out,
         depth=2 ** ADDR_BITS, width=DATA_BITS,
@@ -148,4 +149,4 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
         regfile_wr, regfile_in_id
     )
 
-    return instances()
+    return introspect()

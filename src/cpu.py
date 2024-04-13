@@ -7,6 +7,7 @@ from src.config import *
 from src.datapath.datapath import DataPath
 from src.mc.mcseq import MCSequencer
 from utils.hdl import hdl_block, Bus
+from utils.introspection import introspect
 
 
 @hdl_block
@@ -27,4 +28,4 @@ def CPU(mc_rom: List[int], ram: Optional[List[int]] = None):
     control = MCSequencer(clk, control_bus, bus_c, mc_rom_data=mc_rom)
     datapath = DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=ram)
 
-    return instances()
+    return introspect()

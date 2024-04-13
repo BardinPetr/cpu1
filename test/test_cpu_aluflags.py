@@ -5,6 +5,7 @@ from src.components.ALU import ALUCtrl
 from src.cpu import CPU
 from src.mc.mc import MCInstruction, MCInstructionJump
 from test.utils import *
+from utils.introspection import introspect
 from utils.log import get_logger
 from utils.testutils import myhdl_pytest
 
@@ -74,4 +75,4 @@ def test_cpu_aluflags():
 
         raise StopSimulation()
 
-    return instances()
+    return introspect()

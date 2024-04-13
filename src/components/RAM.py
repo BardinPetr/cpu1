@@ -4,6 +4,7 @@ from myhdl import *
 from myhdl import _Signal
 
 from utils.hdl import hdl_block
+from utils.introspection import introspect
 from utils.log import get_logger
 
 L = get_logger()
@@ -52,7 +53,7 @@ def RAMSyncSP(
         L.debug(f"READ [0x{int(addr.val):x}] == {memory[addr]}")
         out_data.next = memory[addr]
 
-    return instances()
+    return introspect()
 
 
 @hdl_block
@@ -93,4 +94,4 @@ def RAMSyncDP(
         if wr_b:
             memory[addr_b].next = di_b
 
-    return instances()
+    return introspect()

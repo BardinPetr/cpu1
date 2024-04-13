@@ -5,6 +5,7 @@ from myhdl import *
 from src.components.base import Clock
 from src.datapath.regfile import RegisterFile
 from utils.hdl import Bus
+from utils.introspection import introspect
 from utils.log import get_logger
 from utils.testutils import myhdl_pytest
 
@@ -82,4 +83,4 @@ def test_regfile():
 
         raise StopSimulation
 
-    return instances()
+    return introspect()

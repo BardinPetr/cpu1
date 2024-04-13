@@ -3,6 +3,7 @@ import random
 from myhdl import *
 
 from src.components.base import Clock, Trig, RTrig, Counter
+from utils.introspection import introspect
 from utils.testutils import myhdl_pytest
 
 
@@ -39,7 +40,7 @@ def test_base_trig():
 
         raise StopSimulation
 
-    return instances()
+    return introspect()
 
 
 @myhdl_pytest(gui=False)
@@ -71,4 +72,4 @@ def test_base_counter():
 
         raise StopSimulation
 
-    return instances()
+    return introspect()

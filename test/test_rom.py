@@ -3,6 +3,7 @@ from random import randrange
 from myhdl import *
 
 from src.components.ROM import ROM
+from utils.introspection import introspect
 from utils.testutils import myhdl_pytest
 
 
@@ -36,4 +37,4 @@ def test_rom():
 
         raise StopSimulation
 
-    return instances()
+    return introspect()

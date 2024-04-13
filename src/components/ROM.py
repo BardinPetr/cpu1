@@ -4,6 +4,7 @@ from myhdl import *
 from myhdl import _Signal
 
 from utils.hdl import hdl_block
+from utils.introspection import introspect
 from utils.log import get_logger
 
 L = get_logger()
@@ -34,4 +35,4 @@ def ROM(
         data.next = contents.get(_addr, 0)
         L.debug(f"Accessed {_addr:x}")
 
-    return run
+    return introspect()
