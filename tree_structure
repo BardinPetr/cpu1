@@ -1,0 +1,43 @@
+====================
+Tree:
+-CPU as CPU:
+ sigs=(clk, control_bus, bus_a, bus_b, bus_c)
+|  -Clock as clg
+|   sigs=(clk)
+|  -MCSequencer as control:
+|   sigs=(clk, mc_cr, cpu_bus_c, mc_pc)
+|  |  -ROM as mc_rom
+|  |   sigs=(clk, addr, data)
+|  -DataPath as datapath:
+|   sigs=(clk, control_bus, bus_a, bus_b, bus_c, zerobus, reg_ps_out, reg_ps_wr, reg_ps_in, reg_ar_in, reg_ar_out, reg_ar_wr, regfile_wr, regfile_out0_id, regfile_out1_id, regfile_in_id, regfile_out0, regfile_out1, regfile_in, ram_a_wr, ram_a_in, ram_a_out, reg_dr_out, mux_bus_a_reg_in_ctrl, mux_bus_b_reg_in_ctrl, mux_bus_a_nr_rf_ctrl, mux_bus_b_nr_rf_ctrl, tmp_bus_a_sig, tmp_bus_b_sig, demux_tmp_bus_c, demux_bus_c_reg_wr, demux_bus_c_reg_id, demux_bus_c_nr_rf, alu_ctrl, alu_flag_ctrl, alu_ctrl_pa, alu_ctrl_pb)
+|  |  -ALU as alu
+|  |   sigs=(operation, porta_ctrl, portb_ctrl, in_a, in_b, out, flag_ctrl, flags_in, flags_out)
+|  |  -ALUDecoder as alu_dec
+|  |   sigs=(control_bus, alu_ctrl, alu_port_a_ctrl, alu_port_b_ctrl, alu_flag_ctrl)
+|  |  -DeMux as demux_bus_c
+|  |   sigs=(input, ctrl, outputs)
+|  |  -DeMux as demux_bus_c_reg_wr_cmd
+|  |   sigs=(input, ctrl, outputs)
+|  |  -DeMux as demux_bus_c_reg_wr_data
+|  |   sigs=(input, ctrl, outputs)
+|  |  -Mux as mux_bus_a_nr_rf
+|  |   sigs=(output, ctrl, inputs)
+|  |  -Mux as mux_bus_a_registers_in
+|  |   sigs=(output, ctrl, inputs)
+|  |  -Mux as mux_bus_b_nr_rf
+|  |   sigs=(output, ctrl, inputs)
+|  |  -Mux as mux_bus_b_registers_in
+|  |   sigs=(output, ctrl, inputs)
+|  |  -RAMSyncSP as ram_mod
+|  |   sigs=(clk, wr, addr, in_data, out_data, memory)
+|  |  -Trig as reg_ar
+|  |   sigs=(d_in, d_out, clk)
+|  |  -Trig as reg_ps
+|  |   sigs=(d_in, d_out, clk)
+|  |  -RegReadDecoder as reg_r_dec
+|  |   sigs=(control_bus, mux_busa_nr_rf_ctrl, mux_busb_nr_rf_ctrl, mux_busa_in_ctrl, mux_busb_in_ctrl, regfile_out0_id, regfile_out1_id)
+|  |  -RegWriteDecoder as reg_w_dec
+|  |   sigs=(clk, control_bus, ram_a_wr, reg_ps_wr_drv, register_wr, register_demux_id, demux_bus_c_nr_rf, regfile_wr, regfile_in_id)
+|  |  -RegisterFile as rf
+|  |   sigs=(clk, write_enable, out_port0_reg, out_port1_reg, in_port_reg, out_port0_bus, out_port1_bus, in_port_bus, registers)
+====================

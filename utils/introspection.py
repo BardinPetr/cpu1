@@ -4,16 +4,17 @@ Following is an adaptation of myhdl/_misc.py to provide more powerful tree-style
 
 import inspect
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List, Iterable, Tuple
 
 import myhdl
-from myhdl import Cosimulation
+from myhdl import Cosimulation, delay
 from myhdl._Signal import _Signal
 from myhdl._block import _Block
 from myhdl._extractHierarchy import _MemInfo
-from myhdl._instance import _Instantiator
+from myhdl._instance import _Instantiator, instance
 
 from utils.colors import Colors
+from utils.hdl import hdl_block
 
 
 @dataclass
@@ -25,6 +26,23 @@ class BlockIntrospection:
     memories: Dict[str, _MemInfo] = field(default_factory=dict)
 
 
+# class IntrospectedValue:
+#     def __init__(self, sig: _Signal):
+#         super().__init__()
+#         self.sig = sig
+#
+#     def __call__(self, *args, **kwargs):
+#         return int(self.sig.val)
+
+
+class IntrospectedMemory:
+    def __init__(self, mem: _MemInfo):
+        self._cells = mem.mem
+
+    def __getitem__(self, item: int) -> _Signal:
+        return self._cells[item]
+
+
 @dataclass
 class IntrospectionTree(BlockIntrospection):
     def __post_init__(self):
@@ -34,7 +52,7 @@ class IntrospectionTree(BlockIntrospection):
         }
         self._symbols = {
             **self.signals,
-            **self.memories
+            **{k: IntrospectedMemory(s) for k, s in self.memories.items()},
         }
 
     def __getattr__(self, item: str):
@@ -81,6 +99,61 @@ class IntrospectionTree(BlockIntrospection):
 
         if level == 0:
             print(f"{'=' * 20}\n")
+
+
+class TraceData:
+
+    def __init__(self):
+        self._run = True
+        self._labels = []
+        self._history: List[List[int]] = []
+
+    def clear(self):
+        self._history = []
+        self._labels = []
+
+    def set_labels(self, labels: Iterable[str]):
+        self._labels = list(labels)
+
+    def as_list(self) -> List[List[int]]:
+        return self._history
+
+    def as_list_front(self, front_val: int) -> List[List[int]]:
+        return self._history[1 - front_val::2]
+
+    def as_list_joined(self) -> List[Tuple[List[int], List[int]]]:
+        return list(zip(self.as_list_front(1), self.as_list_front(0)))
+
+    def as_dict(self) -> List[Dict[str, int]]:
+        return [dict(zip(self._labels, i)) for i in self.as_list()]
+
+    def stop(self):
+        self._run = False
+
+    def add(self, x: List[int]):
+        if self._run:
+            self._history.append(x)
+
+
+@hdl_block
+def Trace(clk: _Signal, data: TraceData, watches: Dict[str, _Signal]):
+    data.clear()
+    data.set_labels(watches.keys())
+
+    def checkpoint():
+        data.add([int(tp) for tp in watches.values()])
+
+    @instance
+    def pull():
+        while True:
+            yield clk.posedge
+            yield delay(1)
+            checkpoint()
+            yield clk.negedge
+            yield delay(1)
+            checkpoint()
+
+    return pull
 
 
 def _is_hdl_runnable(obj: Any) -> bool:

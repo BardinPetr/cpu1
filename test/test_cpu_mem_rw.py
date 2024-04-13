@@ -4,7 +4,7 @@ from src.arch import *
 from src.components.ALU import ALUCtrl, ALUPortCtrl
 from src.cpu import CPU
 from src.mc.mc import MCInstruction, MCInstructionJump
-from utils.introspection import IntrospectionTree
+from utils.introspection import IntrospectionTree, Trace, TraceData
 from utils.log import get_logger
 from utils.testutils import myhdl_pytest
 
@@ -54,7 +54,7 @@ MC_ROM_COMPILED = [i.compile() for i in MC_ROM]
 
 
 @myhdl_pytest(gui=False, duration=None)
-def test_cpu_mem_read():
+def test_cpu_mem_rw():
     for src, comp in zip(MC_ROM, MC_ROM_COMPILED):
         L.info(f"MC{comp:064b}: {src}")
 
@@ -68,24 +68,37 @@ def test_cpu_mem_read():
     clk = intro.clk
     ram = intro.datapath.ram_mod.memory
 
+    trace_res = TraceData()
+    tracer = Trace(
+        intro.clk,
+        trace_res,
+        {
+            "CLK": intro.clk,
+            "MCR": intro.control_bus,
+            "A":   intro.datapath.bus_a,
+            "B":   intro.datapath.bus_b,
+            "C":   intro.datapath.bus_c
+        }
+    )
+
     @instance
     def stimulus():
         for i in range(len(MC_ROM_COMPILED) * LEN):
             yield clk.posedge
 
-        ram_real = ram.mem
-        ram_real = [int(i) for i in ram_real[:len(RAM_TARGET)]]
+        ram_real = [int(ram[i]) for i in range(len(RAM_TARGET))]
 
         # print("TARGET RAM:", RAM_TARGET)
         # print("REAL   RAM:", ram_real)
         assert RAM_TARGET == ram_real
 
+        trace_res.stop()
+        print()
+        print(trace_res.as_list())
+        print(trace_res.as_list_front(0))
+        print(trace_res.as_list_front(1))
+        print(trace_res.as_list_joined())
+        print(trace_res.as_dict())
         raise StopSimulation()
 
-    @instance
-    def pull():
-        while True:
-            yield clk.posedge
-            yield clk.negedge
-
-    return cpu, stimulus, pull
+    return cpu, stimulus, tracer
