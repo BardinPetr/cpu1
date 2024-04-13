@@ -3,7 +3,7 @@ Following is an adaptation of myhdl/_misc.py to provide more powerful tree-style
 """
 
 import inspect
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
 
 import myhdl
@@ -40,7 +40,7 @@ class IntrospectionTree(BlockIntrospection):
             return self._children.get(item)
         if item in self._symbols:
             return self._symbols.get(item)
-        raise AttributeError(f"Symbol {item} not found in block {self.name}")
+        raise AttributeError(f"Symbol {item} not found in block {self}")
 
     def __repr__(self):
         return (f"<{self.name}: "

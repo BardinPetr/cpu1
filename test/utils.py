@@ -1,15 +1,4 @@
-import re
-from dataclasses import dataclass, field
-from typing import Dict, Optional, Union
-
-from myhdl._Signal import _Signal
-from myhdl._block import _Block
-from myhdl._extractHierarchy import _MemInfo
-
 from src.config import DATA_BITS
-import inspect as ins
-
-import utils.hdl
 
 DIM = DATA_BITS
 
@@ -17,23 +6,6 @@ UINT_MIN = 0
 UINT_MAX = (1 << DIM) - 1
 SINT_MAX = (1 << (DIM - 1)) - 1
 SINT_MIN = -(1 << (DIM - 1))
-
-
-def get_subs(root):
-    return {i.name: i for i in root.subs}
-
-
-def get_first_sub(root, name_prefix):
-    subs = get_subs(root)
-    try:
-        name = next(filter(lambda x: x.startswith(name_prefix), subs.keys()))
-        return subs[name]
-    except:
-        raise Exception(f"No submodule {name_prefix}*")
-
-
-def get_signals(root):
-    return root.sigdict
 
 
 def trunc(x, n=DIM):

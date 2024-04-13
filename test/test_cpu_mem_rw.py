@@ -4,14 +4,9 @@ from src.arch import *
 from src.components.ALU import ALUCtrl, ALUPortCtrl
 from src.cpu import CPU
 from src.mc.mc import MCInstruction, MCInstructionJump
-from test.test_cpu_mcseq import get_signals
-from test.utils import get_first_sub
-from utils import introspection
 from utils.introspection import IntrospectionTree
 from utils.log import get_logger
 from utils.testutils import myhdl_pytest
-
-introspection.use()
 
 L = get_logger()
 
@@ -68,19 +63,17 @@ def test_cpu_mem_read():
     RAM_TARGET = [2 * i for i in RAM_SRC]
 
     cpu = CPU(MC_ROM_COMPILED, RAM_SRC)
+    intro = IntrospectionTree.build(cpu)
 
-    mc_signals = get_signals(get_first_sub(cpu, 'MCSequencer'))
-    dp = get_first_sub(cpu, 'DataPath')
-    ram = get_first_sub(dp, "RAMSyncSP")
-
-    clk = mc_signals['clk']
+    clk = intro.clk
+    ram = intro.datapath.ram_mod.memory
 
     @instance
     def stimulus():
         for i in range(len(MC_ROM_COMPILED) * LEN):
             yield clk.posedge
 
-        ram_real = ram.memdict['memory'].mem
+        ram_real = ram.mem
         ram_real = [int(i) for i in ram_real[:len(RAM_TARGET)]]
 
         # print("TARGET RAM:", RAM_TARGET)
@@ -88,8 +81,6 @@ def test_cpu_mem_read():
         assert RAM_TARGET == ram_real
 
         raise StopSimulation()
-
-    intro = IntrospectionTree.build(cpu)
 
     @instance
     def pull():

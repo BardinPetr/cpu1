@@ -4,9 +4,7 @@ from src.arch import *
 from src.components.ALU import ALUCtrl, ALUPortCtrl
 from src.cpu import CPU
 from src.mc.mc import MCInstruction, MCInstructionJump
-from test.test_cpu_mcseq import get_signals
-from test.utils import get_first_sub
-from utils.introspection import introspect
+from utils.introspection import introspect, IntrospectionTree
 from utils.log import get_logger
 from utils.testutils import myhdl_pytest
 
@@ -36,16 +34,10 @@ def test_cpu_regio():
 
     cpu = CPU(MC_ROM_COMPILED)
 
-    mc_signals = get_signals(get_first_sub(cpu, 'MCSequencer'))
-    dp_signals = get_signals(get_first_sub(cpu, 'DataPath'))
-
-    print(mc_signals)
-    print(dp_signals)
-
-    clk = mc_signals['clk']
-    bus_a, bus_b, bus_c = [dp_signals[f'bus_{i}'] for i in ['a', 'b', 'c']]
-    mc_pc = mc_signals['mc_pc']
-    mc_cr = mc_signals['mc_cr']
+    intro = IntrospectionTree.build(cpu)
+    clk = intro.clk
+    bus_a, bus_b, bus_c = intro.bus_a, intro.bus_b, intro.bus_c
+    mc_pc = intro.control.mc_pc
 
     seq_mc_pc = []
     seq_bus_c = []

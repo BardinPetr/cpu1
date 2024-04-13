@@ -5,7 +5,7 @@ from src.components.ALU import ALUCtrl
 from src.cpu import CPU
 from src.mc.mc import MCInstruction, MCInstructionJump
 from test.utils import *
-from utils.introspection import introspect
+from utils.introspection import introspect, IntrospectionTree
 from utils.log import get_logger
 from utils.testutils import myhdl_pytest
 
@@ -26,12 +26,10 @@ def test_cpu_aluflags():
 
     cpu = CPU(MC_ROM_COMPILED)
 
-    mc_signals = get_signals(get_first_sub(cpu, 'MCSequencer'))
-    dp_signals = get_signals(get_first_sub(cpu, 'DataPath'))
-
-    clk = mc_signals['clk']
-    bus_a, bus_b, bus_c = [dp_signals[f'bus_{i}'] for i in ['a', 'b', 'c']]
-    ps = dp_signals['reg_ps_out']
+    intro = IntrospectionTree.build(cpu)
+    clk = intro.clk
+    bus_a, bus_b, bus_c = intro.bus_a, intro.bus_b, intro.bus_c
+    ps = intro.datapath.reg_ps.d_out
 
     AB_IN = [
         (-1, 0),

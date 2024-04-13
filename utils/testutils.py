@@ -1,7 +1,3 @@
-from functools import wraps
-
-from myhdl import block
-
 from utils.hdl import hdl_block
 from utils.runutils import run_sim
 

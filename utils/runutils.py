@@ -2,7 +2,7 @@ import os
 from typing import Optional
 
 from myhdl import intbv, modbv
-from myhdl._block import _Block, block
+from myhdl._block import _Block
 from vcd.gtkw import GTKWSave, spawn_gtkwave_interactive
 
 
@@ -60,4 +60,3 @@ def run_sim(root: _Block, duration: Optional[int], gtk_wave: bool = False, build
 
     if gtk_wave:
         display(build_path, name, root)
-

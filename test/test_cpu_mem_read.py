@@ -4,8 +4,7 @@ from src.arch import *
 from src.components.ALU import ALUCtrl, ALUPortCtrl
 from src.cpu import CPU
 from src.mc.mc import MCInstruction, MCInstructionJump
-from test.test_cpu_mcseq import get_signals
-from test.utils import get_first_sub
+from utils.introspection import IntrospectionTree
 from utils.log import get_logger
 from utils.testutils import myhdl_pytest
 
@@ -58,13 +57,9 @@ def test_cpu_mem_read():
     RAM = [16 * i + 7 for i in range(LEN)]
     cpu = CPU(MC_ROM_COMPILED, RAM)
 
-    mc_signals = get_signals(get_first_sub(cpu, 'MCSequencer'))
-    dp = get_first_sub(cpu, 'DataPath')
-    dp_signals = get_signals(dp)
-    ram_signals = get_signals(get_first_sub(dp, "RAMSyncSP"))
-
-    clk = mc_signals['clk']
-    bus_a, bus_b, bus_c = [dp_signals[f'bus_{i}'] for i in ['a', 'b', 'c']]
+    intro = IntrospectionTree.build(cpu)
+    clk = intro.clk
+    bus_a, bus_b, bus_c = intro.bus_a, intro.bus_b, intro.bus_c
 
     seq_cr = []
 

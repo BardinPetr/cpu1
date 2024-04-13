@@ -4,8 +4,8 @@ from src.components.ROM import ROM
 from src.config import *
 from src.mc.mcisa import *
 from utils.hdl import Bus
-from utils.introspection import introspect
 from utils.hdl import hdl_block
+from utils.introspection import introspect
 from utils.log import get_logger
 
 L = get_logger()
