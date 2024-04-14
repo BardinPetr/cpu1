@@ -3,7 +3,7 @@ from random import randrange
 from myhdl import *
 
 from src.arch import PSFlags
-from src.components.ALU import ALU, ALUCtrl, ALUPortCtrl
+from src.components.ALU import ALU, ALUCtrl, ALUPortCtrl, ALUFlagCtrl
 from test.utils import *
 from utils.hdl import Bus
 from utils.introspection import introspect
@@ -23,7 +23,7 @@ def test_alu_flags():
     ctrl = Signal(ALUCtrl.ZERO)
     ctrla = Signal(APC.PASS)
     ctrlb = Signal(APC.PASS)
-    flag_ctrl = Bus(4, state=0b1111)
+    flag_ctrl = Bus(enum=ALUFlagCtrl, state=0b1111)
     flag_in = Bus(4)
     flag_out = Bus(4)
 

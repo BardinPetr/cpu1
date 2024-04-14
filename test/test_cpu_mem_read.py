@@ -4,7 +4,7 @@ from src.arch import *
 from src.components.ALU import ALUCtrl, ALUPortCtrl
 from src.cpu import CPU
 from src.mc.mc import MCInstruction, MCInstructionJump
-from utils.introspection import IntrospectionTree
+from utils.introspection import IntrospectionTree, TraceData, Trace, IntrospectedMemory
 from utils.log import get_logger
 from utils.testutils import myhdl_pytest
 
@@ -60,8 +60,22 @@ def test_cpu_mem_read():
     intro = IntrospectionTree.build(cpu)
     clk = intro.clk
     bus_a, bus_b, bus_c = intro.bus_a, intro.bus_b, intro.bus_c
+    mem: IntrospectedMemory = intro.datapath.ram_mod.memory
 
     seq_cr = []
+
+    trace_res = TraceData()
+    tracer = Trace(
+        intro.clk,
+        trace_res,
+        {
+            "CLK": intro.clk,
+            "MCR": intro.control_bus,
+            "A":   intro.datapath.bus_a,
+            "B":   intro.datapath.bus_b,
+            "C":   intro.datapath.bus_c,
+        }
+    )
 
     @instance
     def stimulus():
@@ -82,6 +96,7 @@ def test_cpu_mem_read():
         # print("REAL   CR:", seq_cr)
         assert seq_cr == RAM
 
+        # display_trace_vcd('dist', 'f', trace_res)
         raise StopSimulation()
 
-    return cpu, stimulus
+    return cpu, stimulus, tracer

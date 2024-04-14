@@ -29,10 +29,10 @@ class BlockIntrospection:
 
 class IntrospectedMemory:
     def __init__(self, mem: _MemInfo):
-        self._cells = mem.mem
+        self.cells = mem.mem
 
     def __getitem__(self, item: int) -> _Signal:
-        return self._cells[item]
+        return self.cells[item]
 
 
 @dataclass

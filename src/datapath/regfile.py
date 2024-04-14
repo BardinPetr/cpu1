@@ -1,6 +1,6 @@
 from src.config import *
 from src.mc.decoders import *
-from utils.hdl import hdl_block, dim
+from utils.hdl import hdl_block, dim, Bus
 from utils.introspection import introspect
 from utils.log import get_logger
 
@@ -16,7 +16,7 @@ def RegisterFile(clk, write_enable,
     assert count == (1 << dim(out_port1_reg))
     assert count == (1 << dim(in_port_reg))
 
-    registers = [Signal(intbv(0)[REG_SZ:]) for _ in range(count)]
+    registers = [Bus(bits=REG_SZ) for _ in range(count)]
 
     @always_comb
     def read():

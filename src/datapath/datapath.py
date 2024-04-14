@@ -1,3 +1,4 @@
+from src.arch import RegFileIdCtrl, RegFileOrNormalRegister
 from src.components.ALU import ALU
 from src.components.RAM import RAMSyncSP
 from src.components.base import Register
@@ -5,6 +6,7 @@ from src.components.mux import Mux, DeMux
 from src.config import *
 from src.datapath.regfile import RegisterFile
 from src.mc.decoders import *
+from utils.enums import EnumEncoding
 from utils.hdl import hdl_block, Bus, create_reg_signals, Bus1
 from utils.introspection import introspect
 from utils.log import get_logger
@@ -34,7 +36,7 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
 
     """REGISTER FILE SECTION"""
     regfile_wr = Bus1()
-    regfile_out0_id, regfile_out1_id, regfile_in_id = [Bus(REGFILE_CTRL_SZ) for _ in range(3)]
+    regfile_out0_id, regfile_out1_id, regfile_in_id = [Bus(enum=RegFileIdCtrl) for _ in range(3)]
     regfile_out0, regfile_out1, regfile_in = [Bus(REG_SZ) for _ in range(3)]
 
     rf = RegisterFile(
@@ -49,7 +51,7 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
 
     ram_a_wr = Bus1()
     ram_a_in, ram_a_out = Bus(DATA_BITS), Bus(DATA_BITS)
-    reg_dr_out = Bus()  # no need to make real register for DR, just using output bus from memory module
+    reg_dr_out = Bus(DATA_BITS)  # no need to make real register for DR, just using output bus from memory module
 
     ram_mod = RAMSyncSP(
         clk,
@@ -60,10 +62,11 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
 
     ########################################################################
     """BUS INPUT SECTION"""
-    mux_bus_a_reg_in_ctrl, mux_bus_b_reg_in_ctrl = Bus(2), Bus(2)
-    mux_bus_a_nr_rf_ctrl, mux_bus_b_nr_rf_ctrl = Bus(1), Bus(1)
+    mux_bus_a_reg_in_ctrl, mux_bus_b_reg_in_ctrl = Bus(enum=BusInCtrl), Bus(enum=BusInCtrl)
+    mux_bus_a_nr_rf_ctrl, mux_bus_b_nr_rf_ctrl = Bus(enum=RegFileOrNormalRegister), Bus(enum=RegFileOrNormalRegister)
     tmp_bus_a_sig, tmp_bus_b_sig = Bus(REG_SZ), Bus(REG_SZ)
 
+    # according to BusInCtrl
     _reg_inputs = [zerobus, reg_ps_out, reg_dr_out, zerobus]
     mux_bus_a_registers_in = Mux(
         _reg_inputs,
@@ -86,9 +89,9 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     ########################################################################
     """BUS OUTPUT SECTION"""
     demux_tmp_bus_c = Bus(REG_SZ)
-    demux_bus_c_reg_wr = Bus(1)
-    demux_bus_c_reg_id = Bus(2)
-    demux_bus_c_nr_rf = Bus(1)
+    demux_bus_c_reg_wr = Bus1()
+    demux_bus_c_reg_id = Bus(enum=BusOutCtrl)
+    demux_bus_c_nr_rf = Bus(enum=RegFileOrNormalRegister)
 
     # Order of demux out should be according to BusOutCtrl!
     # TODO add write from BusC to PS via reg_ps_in.driver()
@@ -112,9 +115,9 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     ########################################################################
     """ALU SECTION"""
     # ALU control signals
-    alu_ctrl = Bus(ALU_CTRL_BUS_SZ)
-    alu_flag_ctrl = Bus(ALU_CTRL_FLAG_BUS_SZ)
-    alu_ctrl_pa, alu_ctrl_pb = [Bus(ALU_CTRL_PORT_BUS_SZ) for _ in range(2)]
+    alu_ctrl = Bus(enum=ALUCtrl)
+    alu_flag_ctrl = Bus(enum=ALUFlagCtrl)
+    alu_ctrl_pa, alu_ctrl_pb = [Bus(enum=ALUPortCtrl) for _ in range(2)]
 
     # ALU module
     alu = ALU(

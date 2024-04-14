@@ -1,11 +1,13 @@
 import os
-from typing import Optional, Dict
+from typing import Optional, Dict, Type
 
 from myhdl import intbv, modbv, _Signal, Signal
 from myhdl._ShadowSignal import _TristateSignal
 from myhdl._block import _Block
 from vcd.gtkw import GTKWSave, spawn_gtkwave_interactive, GTKWColor
 
+from utils.enums import IntEnums
+from utils.gtkwave import gtkwave_generate_translation
 from utils.introspection import BlockIntrospection, TraceData
 
 
@@ -38,7 +40,7 @@ def gtkw_update_traces(gtkw: GTKWSave, base: str, example: Dict[str, _Signal]):
         trace_name = f"{base}.{name}"
         trace_fmt = 'hex'
         trace_color = GTKWColor.green
-        trace_translate = None
+        trace_translate_path = None
 
         if isinstance(sig, _TristateSignal):
             pass
@@ -54,7 +56,11 @@ def gtkw_update_traces(gtkw: GTKWSave, base: str, example: Dict[str, _Signal]):
         if 'ctrl' in trace_name:
             trace_color = GTKWColor.orange
 
-        gtkw.trace(trace_name, color=trace_color, datafmt=trace_fmt, translate_filter_file=trace_translate)
+        enc: Type[IntEnums] = getattr(sig, 'encoding', None)
+        if enc is not None:
+            trace_translate_path = gtkwave_generate_translation(enc)
+
+        gtkw.trace(trace_name, color=trace_color, datafmt=trace_fmt, translate_filter_file=trace_translate_path)
 
 
 def _insert_signal_block(gtkw: GTKWSave, root: _Block, base_name: str, is_root: bool = False):

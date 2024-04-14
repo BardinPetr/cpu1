@@ -1,8 +1,10 @@
 from enum import IntEnum
 from typing import Union
 
+from utils.enums import EnumEncoding, EnumMC, EnumSC
 
-class PSFlags(IntEnum):
+
+class PSFlags(EnumMC):
     Z = 0
     N = 1
     C = 2
@@ -23,18 +25,18 @@ class PSFlags(IntEnum):
         return ''.join((n if v else '-') for n, v in decoded)
 
 
-class RegFileIdCtrl(IntEnum):
+class RegFileIdCtrl(EnumSC):
     XX = 0
     IP = 1
     CR = 2
     YY = 3
 
 
-class RegisterIdCtrl(IntEnum):
+class RegisterIdCtrl(EnumSC):
     CR = 0
 
 
-class BusInCtrl(IntEnum):
+class BusInCtrl(EnumSC):
     """
     Format:
     0xx - xx is classic source
@@ -50,7 +52,7 @@ class BusInCtrl(IntEnum):
     RF_YY = 0b100 + RegFileIdCtrl.YY
 
 
-class BusOutCtrl(IntEnum):
+class BusOutCtrl(EnumSC):
     """
     Format:
     0xx - xx is classic source
@@ -66,6 +68,12 @@ class BusOutCtrl(IntEnum):
     RF_YY = 0b100 + RegFileIdCtrl.YY
 
 
-class MemCtrl(IntEnum):
+class RegFileOrNormalRegister(EnumSC):
+    NR = 0
+    RF = 1
+
+
+class MemCtrl(EnumSC):
     IGN = 0
     WR = 1
+

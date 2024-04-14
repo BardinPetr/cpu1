@@ -3,7 +3,7 @@ from typing import List, Optional
 from myhdl import *
 from myhdl import _Signal
 
-from utils.hdl import hdl_block
+from utils.hdl import hdl_block, Bus
 from utils.introspection import introspect
 from utils.log import get_logger
 
@@ -33,7 +33,7 @@ def RAMSyncSP(
     :param contents:
     """
 
-    memory = [Signal(intbv(0)[width:]) for _ in range(depth)]
+    memory = [Bus(bits=width) for _ in range(depth)]
 
     @instance
     def init():
@@ -76,7 +76,7 @@ def RAMSyncDP(
     Read on rising clk, write when rising clk and WR
     """
 
-    memory = [Signal(intbv(0)[width:]) for _ in range(depth)]
+    memory = [Bus(bits=width) for _ in range(depth)]
 
     if contents is not None:
         for i, v in enumerate(contents):
