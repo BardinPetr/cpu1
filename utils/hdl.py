@@ -14,6 +14,10 @@ def Bus(bits=DATA_BITS, state=0) -> _Signal:
     return Signal(intbv(state)[bits:])
 
 
+def Bus1(state=0) -> _Signal:
+    return Signal(intbv(state)[1:])
+
+
 def dim(sig: _Signal | intbv | modbv) -> int:
     """
     Get signal underlying type size in bits
@@ -26,4 +30,4 @@ def dim(sig: _Signal | intbv | modbv) -> int:
 
 
 def create_reg_signals(reg_size: int) -> tuple[_Signal, _Signal, _Signal]:
-    return Bus(reg_size), Bus(reg_size), Signal(False)
+    return Bus(reg_size), Bus(reg_size), Bus1(False)

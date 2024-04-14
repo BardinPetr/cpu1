@@ -6,14 +6,14 @@ from src.components.base import Clock
 from src.config import *
 from src.datapath.datapath import DataPath
 from src.mc.mcseq import MCSequencer
-from utils.hdl import hdl_block, Bus
+from utils.hdl import hdl_block, Bus, Bus1
 from utils.introspection import introspect
 
 
 @hdl_block
 def CPU(mc_rom: List[int], ram: Optional[List[int]] = None):
     # control module base clock
-    clk = Signal(False)
+    clk = Bus1()
     clg = Clock(clk, 10)
 
     # control buses

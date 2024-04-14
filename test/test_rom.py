@@ -3,6 +3,7 @@ from random import randrange
 from myhdl import *
 
 from src.components.ROM import ROM
+from utils.hdl import Bus1
 from utils.introspection import introspect
 from utils.testutils import myhdl_pytest
 
@@ -13,7 +14,7 @@ def test_rom():
     data_bits = 8
     size = 1 << addr_bits
 
-    clk = Signal(False)
+    clk = Bus1()
     addr = Signal(intbv(0)[addr_bits:])
     data = Signal(intbv(0)[data_bits:])
 

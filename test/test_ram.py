@@ -4,19 +4,20 @@ from myhdl import *
 
 from src.components.RAM import RAMSyncSP
 from src.components.base import Clock
+from utils.hdl import Bus1
 from utils.introspection import introspect
 from utils.testutils import myhdl_pytest
 
 
 @myhdl_pytest(gui=False)
 def test_sp_sync_ram():
-    clk = Signal(False)
+    clk = Bus1()
     clock = Clock(clk, 10)
 
     addr_bits = 4
     size = 1 << addr_bits
 
-    wr = Signal(False)
+    wr = Bus1()
     addr = Signal(intbv(0)[addr_bits:])
     in_data = Signal(intbv(0)[8:])
     out_data = Signal(intbv(0)[8:])

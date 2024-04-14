@@ -1,11 +1,12 @@
 import os
-from typing import Optional, Iterable
+from typing import Optional, Dict
 
-from myhdl import intbv, modbv
+from myhdl import intbv, modbv, _Signal, Signal
+from myhdl._ShadowSignal import _TristateSignal
 from myhdl._block import _Block
-from vcd.gtkw import GTKWSave, spawn_gtkwave_interactive
+from vcd.gtkw import GTKWSave, spawn_gtkwave_interactive, GTKWColor
 
-from utils.introspection import BlockIntrospection
+from utils.introspection import BlockIntrospection, TraceData
 
 
 def _insert_signal_block_classic(gtkw: GTKWSave, root: _Block, base_name: str = None):
@@ -28,27 +29,69 @@ def _insert_signal_block_classic(gtkw: GTKWSave, root: _Block, base_name: str = 
             _insert_signal_block_classic(gtkw, sub, base_name=name)
 
 
-def _insert_signal_block(gtkw: GTKWSave, root: _Block, base_name: str):
+def gtkw_update_traces(gtkw: GTKWSave, base: str, example: Dict[str, _Signal]):
+    for name, sig in example.items():
+        val = sig.val
+        sig_len = len(sig)
+        is_bool = sig_len == 1
+
+        trace_name = f"{base}.{name}"
+        trace_fmt = 'hex'
+        trace_color = GTKWColor.green
+        trace_translate = None
+
+        if isinstance(sig, _TristateSignal):
+            pass
+        elif isinstance(val, intbv | modbv):
+            pass
+
+        if is_bool:
+            trace_color = GTKWColor.red
+            trace_fmt = 'bin'
+        else:
+            trace_name += f"[{sig_len - 1}:0]"
+
+        if 'ctrl' in trace_name:
+            trace_color = GTKWColor.orange
+
+        gtkw.trace(trace_name, color=trace_color, datafmt=trace_fmt, translate_filter_file=trace_translate)
+
+
+def _insert_signal_block(gtkw: GTKWSave, root: _Block, base_name: str, is_root: bool = False):
     intro: BlockIntrospection = root.introspection
 
     presentation_name = intro.name if intro.name is not None else intro.type
     name = f"{base_name}.{root.name}"
 
     with gtkw.group(presentation_name):
-        for sig_name, sig in sorted(intro.signals.items(), key=lambda x: x[0]):
-            trace_name = f"{name}.{sig_name}"
-            if isinstance(sig.val, intbv | modbv):
-                trace_name += f"[{sig.val._nrbits - 1}:0]"
-            gtkw.trace(trace_name)
+        traces = dict(
+            sorted(
+                filter(
+                    lambda i: i[0] != 'clk' or is_root,
+                    intro.signals.items()
+                ),
+                key=lambda x: x[0]
+            )
+        )
+
+        gtkw_update_traces(gtkw, name, traces)
 
         for v in intro.modules.values():
             _insert_signal_block(gtkw, v, base_name=name)
 
 
-def display_vcd_update_traces_list(gtkw: GTKWSave, base: str, traces: Iterable[str]):
-    with gtkw.group(base):
-        for i in traces:
-            gtkw.trace(f"{base}.{i}")
+def display_trace_vcd(build_dir: str, name: str, data: TraceData):
+    data.as_vcd(f'{build_dir}/{name}.vcd')
+
+    def _update(gtkw: GTKWSave):
+        base = 'main'
+        with gtkw.group(base):
+            gtkw_update_traces(
+                gtkw, base,
+                {k: Signal(v) for k, v in data.as_dict()[0].items()}
+            )
+
+    display_vcd(build_dir, name, _update)
 
 
 def display_vcd(build_dir: str, name: str, update_func):
@@ -72,7 +115,7 @@ def display_sim_trace(build_dir: str, name: str, root_block: _Block):
     def _update(gtkw):
         for i in root_block.subs:
             if hasattr(i, "introspection"):
-                _insert_signal_block(gtkw, i, root_block.name)
+                _insert_signal_block(gtkw, i, root_block.name, is_root=True)
             else:
                 _insert_signal_block_classic(gtkw, i, root_block.name)
 

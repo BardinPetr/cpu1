@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional, List, Iterable, Tuple
 
 import myhdl
 import vcd
-from myhdl import Cosimulation, delay
+from myhdl import Cosimulation, delay, intbv
 from myhdl._Signal import _Signal
 from myhdl._block import _Block
 from myhdl._extractHierarchy import _MemInfo
@@ -99,7 +99,7 @@ class TraceData:
         self._run = True
         self._labels: List[str] = []
         self._dims: List[int] = []
-        self._history: List[List[int]] = []
+        self._history: List[List[intbv]] = []
         self._period = period_ns
         self._half_period = period_ns // 2
 
@@ -113,22 +113,22 @@ class TraceData:
     def set_types(self, example: Iterable[_Signal]):
         self._dims = [dim(i) for i in example]
 
-    def as_list(self) -> List[List[int]]:
+    def as_list(self) -> List[List[intbv]]:
         return self._history
 
-    def as_list_front(self, front_val: int) -> List[List[int]]:
+    def as_list_front(self, front_val: intbv) -> List[List[intbv]]:
         return self._history[1 - front_val::2]
 
-    def as_list_joined(self) -> List[Tuple[List[int], List[int]]]:
+    def as_list_joined(self) -> List[Tuple[List[intbv], List[intbv]]]:
         return list(zip(self.as_list_front(1), self.as_list_front(0)))
 
-    def as_dict(self) -> List[Dict[str, int]]:
+    def as_dict(self) -> List[Dict[str, intbv]]:
         return [dict(zip(self._labels, i)) for i in self.as_list()]
 
     def stop(self):
         self._run = False
 
-    def add(self, x: List[int]):
+    def add(self, x: List[intbv]):
         if self._run:
             self._history.append(x)
 
@@ -146,7 +146,7 @@ class TraceData:
                 ts = 0
                 for line in self._history:
                     for var, value in zip(vars, line):
-                        writer.change(var, ts, value)
+                        writer.change(var, ts, int(value))
                     ts += self._half_period
 
         return True
@@ -159,7 +159,7 @@ def Trace(clk: _Signal, data: TraceData, watches: Dict[str, _Signal]):
     data.set_types(watches.values())
 
     def checkpoint():
-        data.add([int(tp) for tp in watches.values()])
+        data.add([intbv(tp.val) for tp in watches.values()])
 
     @instance
     def pull():

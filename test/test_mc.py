@@ -6,7 +6,7 @@ from src.components.base import Clock
 from src.config import *
 from src.mc.mc import MCInstruction, MCInstructionJump
 from src.mc.mcseq import MCSequencer, L as MCS_LOG
-from utils.hdl import Bus
+from utils.hdl import Bus, Bus1
 from utils.introspection import introspect
 from utils.testutils import myhdl_pytest
 
@@ -15,7 +15,7 @@ MCS_LOG.setLevel(logging.DEBUG)
 
 @myhdl_pytest(gui=False, duration=None)
 def test_mc():
-    clk = Signal(False)
+    clk = Bus1()
     cld = Clock(clk, 10)
 
     CR = Bus(MC_INSTR_SZ)

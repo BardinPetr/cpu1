@@ -3,13 +3,14 @@ import random
 from myhdl import *
 
 from src.components.base import Clock, Trig, RTrig, Counter
+from utils.hdl import Bus1
 from utils.introspection import introspect
 from utils.testutils import myhdl_pytest
 
 
 @myhdl_pytest(gui=False)
 def test_base_trig():
-    clk = Signal(False)
+    clk = Bus1()
     cld = Clock(clk, 10)
 
     d_in, d_out1, d_out2 = [Signal(intbv(0)[:8]) for _ in range(3)]
@@ -45,7 +46,7 @@ def test_base_trig():
 
 @myhdl_pytest(gui=False)
 def test_base_counter():
-    clk = Signal(False)
+    clk = Bus1()
     cld = Clock(clk, 10)
 
     rst = ResetSignal(False, active=True, isasync=True)

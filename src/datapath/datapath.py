@@ -5,7 +5,7 @@ from src.components.mux import Mux, DeMux
 from src.config import *
 from src.datapath.regfile import RegisterFile
 from src.mc.decoders import *
-from utils.hdl import hdl_block, Bus, create_reg_signals
+from utils.hdl import hdl_block, Bus, create_reg_signals, Bus1
 from utils.introspection import introspect
 from utils.log import get_logger
 
@@ -24,7 +24,7 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     # classic registers
     # Program State register (see PSFlags)
     reg_ps_out = Bus(REG_PS_SZ)
-    reg_ps_wr = TristateSignal(intbv(False))
+    reg_ps_wr = TristateSignal(intbv(0)[1:])
     reg_ps_in = TristateSignal(intbv(0)[REG_PS_SZ:])
     reg_ps = Register(reg_ps_in, reg_ps_out, reg_ps_wr)
 
@@ -33,7 +33,7 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     reg_ar = Register(reg_ar_in, reg_ar_out, reg_ar_wr)
 
     """REGISTER FILE SECTION"""
-    regfile_wr = Signal(False)
+    regfile_wr = Bus1()
     regfile_out0_id, regfile_out1_id, regfile_in_id = [Bus(REGFILE_CTRL_SZ) for _ in range(3)]
     regfile_out0, regfile_out1, regfile_in = [Bus(REG_SZ) for _ in range(3)]
 
@@ -47,7 +47,7 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     ########################################################################
     """RAM SECTION"""
 
-    ram_a_wr = Signal(False)
+    ram_a_wr = Bus1()
     ram_a_in, ram_a_out = Bus(DATA_BITS), Bus(DATA_BITS)
     reg_dr_out = Bus()  # no need to make real register for DR, just using output bus from memory module
 

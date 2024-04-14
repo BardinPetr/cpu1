@@ -4,7 +4,7 @@ from myhdl import *
 
 from src.components.base import Clock
 from src.datapath.regfile import RegisterFile
-from utils.hdl import Bus
+from utils.hdl import Bus, Bus1
 from utils.introspection import introspect
 from utils.log import get_logger
 from utils.testutils import myhdl_pytest
@@ -14,13 +14,13 @@ L = get_logger()
 
 @myhdl_pytest(gui=False, duration=None)
 def test_regfile():
-    clk = Signal(False)
+    clk = Bus1()
     clg = Clock(clk, 10)
 
     sz = 8
     bits = 3
 
-    we = Signal(False)
+    we = Bus1()
     out0id, out1id, inid = [Bus(bits) for _ in range(3)]
     out0bus, out1bus, inbus = [Bus() for _ in range(3)]
 
