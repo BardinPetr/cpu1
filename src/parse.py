@@ -1,12 +1,12 @@
 from enum import IntEnum
 from functools import reduce
 from pprint import pprint
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from lark import Lark, Transformer, v_args, Token
 
 from machine import arch
-from machine.mc.mc import MCInstruction
+from machine.mc.mc import MCInstruction, MCInstructionJump
 from machine.utils.enums import CtrlEnum
 
 
@@ -16,12 +16,12 @@ def merge_dicts(x: List[Dict]) -> Dict:
 
 class Location:
 
-    def __init__(self, name: str = None, pos: int = -1):
+    def __init__(self, name: str = None, pos: Optional[int] = None):
         self.name = name
         self.pos = pos
 
     def __repr__(self):
-        return f"L<{self.name}@{self.pos}>"
+        return f"L<{self.name}@{self.pos if self.pos is not None else 'UNDEF'}>"
 
     def __str__(self):
         return self.__repr__()
@@ -73,7 +73,16 @@ class ControlInstructionTransformer(Transformer):
 
 
 class JumpInstructionTransformer(Transformer):
-    pass
+    instr_jump = lambda self, x: MCInstructionJump(**merge_dicts(x))
+
+    def jump_cmp(self, val: List[bool]):
+        return dict(jmp_cmp_val=val[0])
+
+    def jump_cmp_pos(self, val: List[int]):
+        return dict(jmp_cmp_bit=val[0])
+
+    def jump_target(self, val: List[Location]):
+        return dict(jmp_target=val[0].pos)
 
 
 class CodeTransformer(Transformer):
@@ -94,6 +103,11 @@ txt = """
 (RF_IP PASSA) -> PS set(Z,N,C,V) store;
 (PASSA) -> PS set(V);
 (PASSA) set(V);
+(ZERO);
+jump 0x3324;
+JmP 324;
+jump label;
+if (RF_IP PASSA)[10] == 0 jump label;
 """
 
 grammar = open("uasm.lark", "r").read()
@@ -102,13 +116,14 @@ ast = l.parse(txt)
 ast = TypeTransformer().transform(ast)
 ast = ControlInstructionTransformer().transform(ast)
 ast = JumpInstructionTransformer().transform(ast)
-code = CodeTransformer().transform(ast)
-out = BinaryTransformer().transform(code)
 
 try:
     print(ast.pretty())
-    print(code.pretty())
 except:
     pprint(ast)
 
+exit(0)
+code = CodeTransformer().transform(ast)
+out = BinaryTransformer().transform(code)
+print(code.pretty())
 print(out)

@@ -1,26 +1,18 @@
 start: line+
 
 
-line: label? (instr_exec) ";"
+line: label? (instr_exec | instr_jump) ";"
 
 // label
 label: ID ":"
-
-// jumps
-instr_jump: instr_jump_sub (_jump_uncond | _jump_cond)
-_jump_cond: "if"i REGISTER "[" NUMBER "]" "==" BINNUMBER _jump_uncond
-_jump_uncond: "JMP"i LOC
-
-instr_jump_sub: _instr_jump_flag*
-_instr_jump_flag: FLAG_JJ | FLAG_J
-FLAG_J: "j"
-FLAG_JJ: "jq"
 
 // normal instructions
 instr_exec: _exec+
 _exec: exec_alu | exec_alu_flags | exec_mem
 
-exec_alu: "(" alu_op_a? alu_ctrl alu_op_b? ")" ("->" alu_op_c)?
+exec_alu: _exec_alu_compute _exec_alu_store
+_exec_alu_compute: "(" alu_op_a? alu_ctrl alu_op_b? ")"
+_exec_alu_store: ("->" alu_op_c)?
 alu_op_a: alu_op
 alu_op_b: alu_op
 alu_op_c: BUSOUTCTRL
@@ -29,6 +21,18 @@ alu_ctrl: ALUCTRL
 
 exec_alu_flags: "set" "(" ALUFLAG+ ")"
 exec_mem: "store"
+
+
+// jumps
+instr_jump: _jump_cond? jump_target
+_jump_cond: "if"i _exec_alu_compute "[" jump_cmp_pos "]" "==" jump_cmp
+jump_cmp_pos: NUMBER
+jump_cmp: BINNUMBER
+jump_target: ("JMP"i | "JUMP"i) LOC
+
+
+
+
 
 // tokens
 LOC: NUMBER | HEXNUMBER | ID
