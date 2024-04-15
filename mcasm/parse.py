@@ -6,6 +6,8 @@ from lark import Lark, Transformer, v_args, Token, Tree
 from machine import arch
 from machine.mc.mc import MCInstruction, MCInstructionJump
 
+from mcasm.grammar import load_grammar
+
 
 def merge_dicts(x: List[Dict]) -> Dict:
     return reduce(lambda acc, i: {**acc, **i}, x, {})
@@ -129,10 +131,7 @@ class CodeTransformer(Transformer):
 class MCASMCompiler:
 
     def __init__(self):
-        with open("src/uasm.lark", "r") as f:
-            grammar = f.read()
-
-        self._lark = Lark(grammar)
+        self._lark = Lark(load_grammar())
         self._transform = (
                 TypeTransformer() *
                 LocationResolver() *
@@ -145,3 +144,8 @@ class MCASMCompiler:
         ast = self._lark.parse(text)
         ast = self._transform.transform(ast)
         return ast
+
+
+def mc_compile(text: str) -> CompiledMC:
+    comp = MCASMCompiler()
+    return comp.compile(text)

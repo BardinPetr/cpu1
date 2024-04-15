@@ -1,9 +1,8 @@
 [tool.poetry]
 name = "mcasm"
-version = "0.1.0"
+version = "0.2.1"
 description = ""
 authors = ["BardinPetr <bardin.petr@gmail.com>"]
-readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"

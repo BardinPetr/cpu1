@@ -1,4 +1,4 @@
-from src.parse import MCASMCompiler
+from mcasm.parse import MCASMCompiler
 
 txt = """
 label1:
