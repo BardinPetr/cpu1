@@ -1,7 +1,5 @@
 from typing import List, Optional
 
-from myhdl import *
-
 from src.components.base import Clock
 from src.config import *
 from src.datapath.datapath import DataPath

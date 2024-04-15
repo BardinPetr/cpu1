@@ -12,7 +12,7 @@ typ    target   cmp_val cmp_bit cmp_reg
 
 """
 
-from enum import IntEnum, Enum
+from enum import IntEnum
 from math import ceil, log2
 from typing import TypeVar, Optional, Sized
 
@@ -20,6 +20,7 @@ from myhdl import intbv
 
 from src.arch import BusInCtrl, BusOutCtrl, MemCtrl
 from src.components.ALU import ALUCtrl, ALUPortCtrl, ALUFlagCtrl
+from utils.enums import CtrlEnum, EnumEncodingType
 
 T = TypeVar('T', bound=IntEnum)
 
@@ -29,27 +30,27 @@ class MCType(IntEnum):
     MC_JMP = 0b1
 
 
-class MCSelectType(Enum):
-    SINGLE = 0
-    MULTIPLE = 1
-    AS_IS = MULTIPLE
-
-
 class MCLocator:
-    _cur_pos = 0
-
-    def __init__(self, select=MCSelectType.SINGLE, content: Optional[Sized] = None, bits: Optional[int] = None):
-        self.loc_start = 0
-        self.select = select
-
+    def __init__(self,
+                 content: Optional[Sized | CtrlEnum] = None,
+                 bits: Optional[int] = None,
+                 select=EnumEncodingType.AS_IS):
         if bits is None:
             assert content is not None, "No way to deduce partial locator size"
-            sz = len(content)
-            if select == MCSelectType.SINGLE:
-                bits = ceil(log2(max(2, sz)))
+
+            if issubclass(content, CtrlEnum):
+                select = content.encoding_type()
+                bits = content.encoded_len()
             else:
-                bits = max(1, sz)
+                sz = len(content)
+                if select == EnumEncodingType.SINGLE:
+                    bits = ceil(log2(max(2, sz)))
+                else:
+                    bits = max(1, sz)
+
         self.size = bits
+        self.select = select
+        self.loc_start = 0
 
     @property
     def loc_end(self):
@@ -69,30 +70,29 @@ class MCLocator:
         self.loc_start = prev.loc_end
         return self
 
-    @staticmethod
-    def single(content: Optional[Sized] = None, bits: Optional[int] = None):
-        return MCLocator(MCSelectType.SINGLE, content, bits)
 
-    @staticmethod
-    def multiple(content: Optional[Sized] = None, bits: Optional[int] = None):
-        return MCLocator(MCSelectType.MULTIPLE, content, bits)
+L = MCLocator
 
+# common
+MCLType = L(MCType).at(0)
+MCALUCtrl = L(ALUCtrl).after(MCLType)
+MCALUPortACtrl = L(ALUPortCtrl).after(MCALUCtrl)
+MCALUPortBCtrl = L(ALUPortCtrl).after(MCALUPortACtrl)
+MCBusACtrl = L(BusInCtrl).after(MCALUPortBCtrl)
+MCBusBCtrl = L(BusInCtrl).after(MCBusACtrl)
 
-LCSIN, LCMUL = MCLocator.single, MCLocator.multiple
+# ending for operational
+MCALUFlagCtrl = L(ALUFlagCtrl).after(MCBusBCtrl)
+MCBusCCtrl = L(BusOutCtrl).after(MCALUFlagCtrl)
+MCMemCtrl = L(MemCtrl).after(MCBusCCtrl)
 
-MCALUCtrl = LCSIN(ALUCtrl).at(0)
-MCALUPortACtrl = LCMUL(ALUPortCtrl).after(MCALUCtrl)
-MCALUPortBCtrl = LCMUL(ALUPortCtrl).after(MCALUPortACtrl)
-MCALUFlagCtrl = LCMUL(ALUFlagCtrl).after(MCALUPortBCtrl)
-MCBusACtrl = LCSIN(BusInCtrl).after(MCALUFlagCtrl)
-MCBusBCtrl = LCSIN(BusInCtrl).after(MCBusACtrl)
-MCBusCCtrl = LCSIN(BusOutCtrl).after(MCBusBCtrl)
-MCMemCtrl = LCMUL(MemCtrl).after(MCBusCCtrl)
+# ending for
+MCJmpCmpBit = L(bits=16).after(MCBusBCtrl)
+MCJmpCmpVal = L(bits=1).after(MCJmpCmpBit)
+MCJmpTarget = L(bits=11).after(MCJmpCmpVal)
 
-MCLJmpCmpBit = LCSIN(bits=16).after(MCBusCCtrl)
-MCLJmpCmpVal = MCLocator(MCSelectType.AS_IS, bits=1).after(MCLJmpCmpBit)
-MCLJmpTarget = MCLocator(MCSelectType.AS_IS, bits=11).after(MCLJmpCmpVal)
+MCHeadNormal = MCMemCtrl
+MCHeadJump = MCJmpTarget
 
-MCLType = LCSIN(MCType).after(MCLJmpTarget)
-
-print(f"MC LEN={MCLType.loc_end}")
+print(f"MCN LEN={MCHeadNormal.loc_end}")
+print(f"MCJ LEN={MCHeadJump.loc_end}")

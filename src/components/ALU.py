@@ -1,15 +1,15 @@
-from enum import IntEnum, auto
+from enum import auto
 
 from myhdl import *
 
 from src.arch import PSFlags
 from src.config import DATA_BITS, REG_PS_SZ
-from utils.enums import EnumEncoding, EnumSC, EnumMC
+from utils.enums import CEnumS, CEnumM
 from utils.hdl import hdl_block, dim
 from utils.introspection import introspect
 
 
-class ALUCtrl(EnumSC):
+class ALUCtrl(CEnumS):
     ZERO = 0
     PASSA = auto()
     PASSB = auto()
@@ -25,7 +25,7 @@ class ALUCtrl(EnumSC):
     ROR = auto()
 
 
-class ALUPortCtrl(EnumMC):
+class ALUPortCtrl(CEnumM):
     PASS = 0b0000
     NOT = 0b0001
     INC = 0b0010
@@ -33,7 +33,7 @@ class ALUPortCtrl(EnumMC):
     SXT16 = 0b1000
 
 
-class ALUFlagCtrl(EnumMC):
+class ALUFlagCtrl(CEnumM):
     SETZ = 1 << PSFlags.Z
     SETN = 1 << PSFlags.N
     SETV = 1 << PSFlags.V

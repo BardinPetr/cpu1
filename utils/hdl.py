@@ -4,14 +4,14 @@ from typing import Optional, Type
 from myhdl import block, intbv, modbv
 from myhdl._Signal import _Signal
 
-from utils.enums import IntEnums
+from utils.enums import CtrlEnum
 
 
 def hdl_block(func):
     return functools.wraps(func)(block(func))
 
 
-def Bus(bits: Optional[int] = None, state=0, enum: Optional[Type[IntEnums]] = None) -> _Signal:
+def Bus(bits: Optional[int] = None, state=0, enum: Optional[Type[CtrlEnum]] = None) -> _Signal:
     if enum is not None and bits is None:
         bits = enum.encoded_len()
     return _Signal(intbv(state)[bits:], encoding=enum)

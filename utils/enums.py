@@ -1,25 +1,37 @@
-from enum import IntEnum
+from enum import IntEnum, Enum
 from math import ceil, log2
-from typing import Union
 
 
-class EnumEncoding:
+class EnumEncodingType(Enum):
     SINGLE = 0
     MULTIPLE = 1
+    AS_IS = MULTIPLE
 
 
-class EnumSC(IntEnum):
+class CtrlEnum(IntEnum):
 
     @classmethod
-    def encoded_len(cls):
-        return ceil(log2(len(cls)))
-
-
-class EnumMC(IntEnum):
+    def encoding_type(cls) -> EnumEncodingType:
+        return EnumEncodingType.AS_IS
 
     @classmethod
     def encoded_len(cls):
         return len(cls)
 
 
-IntEnums = Union[EnumMC, EnumSC]
+class CEnumS(CtrlEnum):
+
+    @classmethod
+    def encoded_len(cls):
+        return ceil(log2(len(cls)))
+
+    @classmethod
+    def encoding_type(cls) -> EnumEncodingType:
+        return EnumEncodingType.SINGLE
+
+
+class CEnumM(CtrlEnum):
+
+    @classmethod
+    def encoding_type(cls) -> EnumEncodingType:
+        return EnumEncodingType.MULTIPLE

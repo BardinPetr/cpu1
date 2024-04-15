@@ -1,13 +1,13 @@
 import os.path
 from typing import Type, List
 
-from utils.enums import IntEnums, EnumSC, EnumMC
+from utils.enums import CtrlEnum, CEnumS, CEnumM
 
 
-def _translate_pairs(enum: Type[IntEnums]) -> List[str]:
-    if issubclass(enum, EnumSC):
+def _translate_pairs(enum: Type[CtrlEnum]) -> List[str]:
+    if issubclass(enum, CEnumS):
         return [f"{val:x} {enum(val).name}" for val in enum]
-    elif issubclass(enum, EnumMC):
+    elif issubclass(enum, CEnumM):
         def names(val) -> List[str]:
             all_names = [enum(i).name for i in list(enum)]
             res = [
@@ -24,7 +24,7 @@ def _translate_pairs(enum: Type[IntEnums]) -> List[str]:
     return []
 
 
-def gtkwave_generate_translation(enum: Type[IntEnums]):
+def gtkwave_generate_translation(enum: Type[CtrlEnum]):
     text = '\n'.join(_translate_pairs(enum))
 
     filename = f"gtkwave_translate_{enum.__name__.lower()}"

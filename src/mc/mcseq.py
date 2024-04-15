@@ -31,9 +31,9 @@ def MCSequencer(clk, mc_cr, cpu_bus_c, mc_rom_data):
                 mc_pc.next = mc_pc + 1
 
             case MCType.MC_JMP:
-                bit = MCLJmpCmpBit.get(mc_cr)
-                val = MCLJmpCmpVal.get(mc_cr)
-                jmp = MCLJmpTarget.get(mc_cr)
+                bit = MCJmpCmpBit.get(mc_cr)
+                val = MCJmpCmpVal.get(mc_cr)
+                jmp = MCJmpTarget.get(mc_cr)
 
                 skip = cpu_bus_c[bit] ^ val
                 if skip:

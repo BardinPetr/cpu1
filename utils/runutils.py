@@ -6,7 +6,7 @@ from myhdl._ShadowSignal import _TristateSignal
 from myhdl._block import _Block
 from vcd.gtkw import GTKWSave, spawn_gtkwave_interactive, GTKWColor
 
-from utils.enums import IntEnums
+from utils.enums import CtrlEnum
 from utils.gtkwave import gtkwave_generate_translation
 from utils.introspection import BlockIntrospection, TraceData
 
@@ -56,7 +56,7 @@ def gtkw_update_traces(gtkw: GTKWSave, base: str, example: Dict[str, _Signal]):
         if 'ctrl' in trace_name:
             trace_color = GTKWColor.orange
 
-        enc: Type[IntEnums] = getattr(sig, 'encoding', None)
+        enc: Type[CtrlEnum] = getattr(sig, 'encoding', None)
         if enc is not None:
             trace_translate_path = gtkwave_generate_translation(enc)
 

@@ -6,7 +6,6 @@ from src.components.mux import Mux, DeMux
 from src.config import *
 from src.datapath.regfile import RegisterFile
 from src.mc.decoders import *
-from utils.enums import EnumEncoding
 from utils.hdl import hdl_block, Bus, create_reg_signals, Bus1
 from utils.introspection import introspect
 from utils.log import get_logger

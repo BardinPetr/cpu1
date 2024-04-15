@@ -47,9 +47,9 @@ class MCInstructionJump(MCInstruction):
 
     def compile(self) -> int:
         res = intbv(super().compile())
-        MCLJmpCmpBit.put(res, self.jmp_cmp_bit)
-        MCLJmpCmpVal.put(res, self.jmp_cmp_val)
-        MCLJmpTarget.put(res, self.jmp_target)
+        MCJmpCmpBit.put(res, self.jmp_cmp_bit)
+        MCJmpCmpVal.put(res, self.jmp_cmp_val)
+        MCJmpTarget.put(res, self.jmp_target)
         return int(res)
 
 
