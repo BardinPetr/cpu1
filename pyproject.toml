@@ -1,15 +1,15 @@
 [tool.poetry]
 name = "machine"
-version = "0.1.0"
+version = "1.0.8"
 description = ""
 authors = ["BardinPetr <bardin.petr@gmail.com>"]
 license = "GPLv3"
-readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
 myhdl = "^0.11.45"
 pyvcd = "^0.4.0"
+mcasm = {path = "../mcasm", develop = true}
 
 
 [tool.poetry.group.test.dependencies]

@@ -1,5 +1,5 @@
-from utils.hdl import hdl_block
-from utils.runutils import run_sim
+from machine.utils.hdl import hdl_block
+from machine.utils.runutils import run_sim
 
 
 def myhdl_pytest(gui=False, duration=None):

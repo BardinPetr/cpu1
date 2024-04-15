@@ -1,7 +1,7 @@
 import os.path
 from typing import Type, List
 
-from utils.enums import CtrlEnum, CEnumS, CEnumM
+from machine.utils.enums import CtrlEnum, CEnumS, CEnumM
 
 
 def _translate_pairs(enum: Type[CtrlEnum]) -> List[str]:

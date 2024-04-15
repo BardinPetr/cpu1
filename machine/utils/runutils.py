@@ -6,9 +6,9 @@ from myhdl._ShadowSignal import _TristateSignal
 from myhdl._block import _Block
 from vcd.gtkw import GTKWSave, spawn_gtkwave_interactive, GTKWColor
 
-from utils.enums import CtrlEnum
-from utils.gtkwave import gtkwave_generate_translation
-from utils.introspection import BlockIntrospection, TraceData
+from machine.utils.enums import CtrlEnum
+from machine.utils.gtkwave import gtkwave_generate_translation
+from machine.utils.introspection import BlockIntrospection, TraceData
 
 
 def _insert_signal_block_classic(gtkw: GTKWSave, root: _Block, base_name: str = None):

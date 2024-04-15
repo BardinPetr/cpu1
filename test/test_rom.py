@@ -2,10 +2,10 @@ from random import randrange
 
 from myhdl import *
 
-from src.components.ROM import ROM
-from utils.hdl import Bus1
-from utils.introspection import introspect
-from utils.testutils import myhdl_pytest
+from machine.components.ROM import ROM
+from machine.utils.hdl import Bus1
+from machine.utils.introspection import introspect
+from machine.utils.testutils import myhdl_pytest
 
 
 @myhdl_pytest(gui=False)

@@ -1,43 +1,9 @@
-from enum import auto
-
 from myhdl import *
 
-from src.arch import PSFlags
-from src.config import DATA_BITS, REG_PS_SZ
-from utils.enums import CEnumS, CEnumM
-from utils.hdl import hdl_block, dim
-from utils.introspection import introspect
-
-
-class ALUCtrl(CEnumS):
-    ZERO = 0
-    PASSA = auto()
-    PASSB = auto()
-    AND = auto()
-    OR = auto()
-    ADD = auto()
-    ADC = auto()
-    SHL = auto()
-    SHR = auto()
-    ASL = auto()
-    ASR = auto()
-    ROL = auto()
-    ROR = auto()
-
-
-class ALUPortCtrl(CEnumM):
-    PASS = 0b0000
-    NOT = 0b0001
-    INC = 0b0010
-    SXT8 = 0b0100
-    SXT16 = 0b1000
-
-
-class ALUFlagCtrl(CEnumM):
-    SETZ = 1 << PSFlags.Z
-    SETN = 1 << PSFlags.N
-    SETV = 1 << PSFlags.V
-    SETC = 1 << PSFlags.C
+from machine.arch import PSFlags, ALUCtrl, ALUPortCtrl, ALUFlagCtrl
+from machine.config import DATA_BITS, REG_PS_SZ
+from machine.utils.hdl import hdl_block, dim
+from machine.utils.introspection import introspect
 
 
 def alu_apply_port(port_data: intbv, port_ctrl):

@@ -1,11 +1,11 @@
 from typing import List, Optional
 
-from src.components.base import Clock
-from src.config import *
-from src.datapath.datapath import DataPath
-from src.mc.mcseq import MCSequencer
-from utils.hdl import hdl_block, Bus, Bus1
-from utils.introspection import introspect
+from machine.components.base import Clock
+from machine.config import *
+from machine.datapath.datapath import DataPath
+from machine.mc.mcseq import MCSequencer
+from machine.utils.hdl import hdl_block, Bus, Bus1
+from machine.utils.introspection import introspect
 
 
 @hdl_block

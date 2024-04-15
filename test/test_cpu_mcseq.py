@@ -1,11 +1,11 @@
 from myhdl import *
 
-from src.components.ALU import ALUCtrl
-from src.cpu import CPU
-from src.mc.mc import MCInstruction, MCInstructionJump
-from utils.introspection import introspect, IntrospectionTree
-from utils.log import get_logger
-from utils.testutils import myhdl_pytest
+from machine.arch import ALUCtrl
+from machine.cpu import CPU
+from machine.mc.mc import MCInstruction, MCInstructionJump
+from machine.utils.introspection import introspect, IntrospectionTree
+from machine.utils.log import get_logger
+from machine.utils.testutils import myhdl_pytest
 
 L = get_logger()
 

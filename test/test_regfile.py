@@ -2,12 +2,12 @@ import random
 
 from myhdl import *
 
-from src.components.base import Clock
-from src.datapath.regfile import RegisterFile
-from utils.hdl import Bus, Bus1
-from utils.introspection import introspect
-from utils.log import get_logger
-from utils.testutils import myhdl_pytest
+from machine.components.base import Clock
+from machine.datapath.regfile import RegisterFile
+from machine.utils.hdl import Bus, Bus1
+from machine.utils.introspection import introspect
+from machine.utils.log import get_logger
+from machine.utils.testutils import myhdl_pytest
 
 L = get_logger()
 

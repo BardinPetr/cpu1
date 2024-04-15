@@ -14,8 +14,8 @@ from myhdl._block import _Block
 from myhdl._extractHierarchy import _MemInfo
 from myhdl._instance import _Instantiator, instance
 
-from utils.colors import Colors
-from utils.hdl import hdl_block, dim
+from machine.utils.colors import Colors
+from machine.utils.hdl import hdl_block, dim
 
 
 @dataclass

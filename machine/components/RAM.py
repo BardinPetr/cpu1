@@ -3,9 +3,9 @@ from typing import List, Optional
 from myhdl import *
 from myhdl import _Signal
 
-from utils.hdl import hdl_block, Bus
-from utils.introspection import introspect
-from utils.log import get_logger
+from machine.utils.hdl import hdl_block, Bus
+from machine.utils.introspection import introspect
+from machine.utils.log import get_logger
 
 L = get_logger()
 

@@ -1,8 +1,8 @@
 from myhdl import *
 from myhdl import _Signal
 
-from utils.hdl import hdl_block
-from utils.introspection import introspect
+from machine.utils.hdl import hdl_block
+from machine.utils.introspection import introspect
 
 
 @hdl_block

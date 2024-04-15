@@ -2,11 +2,11 @@ from random import randrange
 
 from myhdl import *
 
-from src.components.RAM import RAMSyncSP
-from src.components.base import Clock
-from utils.hdl import Bus1
-from utils.introspection import introspect
-from utils.testutils import myhdl_pytest
+from machine.components.RAM import RAMSyncSP
+from machine.components.base import Clock
+from machine.utils.hdl import Bus1
+from machine.utils.introspection import introspect
+from machine.utils.testutils import myhdl_pytest
 
 
 @myhdl_pytest(gui=False)

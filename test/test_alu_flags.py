@@ -2,13 +2,12 @@ from random import randrange
 
 from myhdl import *
 
-from src.arch import PSFlags
-from src.components.ALU import ALU, ALUCtrl, ALUPortCtrl, ALUFlagCtrl
-from test.utils import *
-from utils.hdl import Bus
-from utils.introspection import introspect
-from utils.log import get_logger
-from utils.testutils import myhdl_pytest
+from machine.arch import PSFlags, ALUCtrl, ALUPortCtrl, ALUFlagCtrl
+from machine.components.ALU import ALU
+from machine.utils.hdl import *
+from machine.utils.introspection import introspect
+from machine.utils.log import get_logger
+from machine.utils.testutils import myhdl_pytest
 
 L = get_logger()
 

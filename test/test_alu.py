@@ -2,12 +2,12 @@ import random
 
 from myhdl import *
 
-from src.arch import PSFlags
-from src.components.ALU import ALU, ALUCtrl, ALUPortCtrl
-from src.config import DATA_BITS
-from utils.hdl import Bus
-from utils.introspection import introspect
-from utils.testutils import myhdl_pytest
+from machine.arch import PSFlags, ALUCtrl, ALUPortCtrl
+from machine.components.ALU import ALU
+from machine.config import DATA_BITS
+from machine.utils.hdl import Bus
+from machine.utils.introspection import introspect
+from machine.utils.testutils import myhdl_pytest
 
 DIM = DATA_BITS
 UMAX = (1 << DIM) - 1

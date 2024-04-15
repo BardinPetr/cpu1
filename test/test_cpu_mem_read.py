@@ -1,12 +1,12 @@
 from myhdl import *
 
-from src.arch import *
-from src.components.ALU import ALUCtrl, ALUPortCtrl
-from src.cpu import CPU
-from src.mc.mc import MCInstruction, MCInstructionJump
-from utils.introspection import IntrospectionTree, TraceData, Trace, IntrospectedMemory
-from utils.log import get_logger
-from utils.testutils import myhdl_pytest
+from machine.arch import *
+from machine.arch import ALUCtrl, ALUPortCtrl
+from machine.cpu import CPU
+from machine.mc.mc import MCInstruction, MCInstructionJump
+from machine.utils.introspection import IntrospectionTree, TraceData, Trace, IntrospectedMemory
+from machine.utils.log import get_logger
+from machine.utils.testutils import myhdl_pytest
 
 L = get_logger()
 

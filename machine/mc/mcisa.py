@@ -1,26 +1,11 @@
-"""
-CMD
-[16:12] =4  OR  alu_flag_ctrl
-[12:8]  =4  OR  alu_port_ctrl_b
-[8:4]   =4  OR  alu_port_ctrl_a
-[4:0]   =4  BIN alu_ctrl
-
-
-JMP
-24:23  23:11    11:10   10:2    2:0
-typ    target   cmp_val cmp_bit cmp_reg
-
-"""
-
 from enum import IntEnum
 from math import ceil, log2
-from typing import TypeVar, Optional, Sized
+from typing import TypeVar, Optional, Sized, Union
 
 from myhdl import intbv
 
-from src.arch import BusInCtrl, BusOutCtrl, MemCtrl
-from src.components.ALU import ALUCtrl, ALUPortCtrl, ALUFlagCtrl
-from utils.enums import CtrlEnum, EnumEncodingType
+from machine.arch import BusInCtrl, BusOutCtrl, MemCtrl, ALUCtrl, ALUPortCtrl, ALUFlagCtrl
+from machine.utils.enums import CtrlEnum, EnumEncodingType, EncodedEnum
 
 T = TypeVar('T', bound=IntEnum)
 
@@ -56,7 +41,9 @@ class MCLocator:
     def loc_end(self):
         return self.loc_start + self.size
 
-    def put(self, target: intbv, source):
+    def put(self, target: intbv, source: Union[int, intbv, EncodedEnum]):
+        if isinstance(source, EncodedEnum):
+            source = source.value
         target[self.loc_end:self.loc_start] = source
 
     def get(self, source: intbv) -> intbv:
@@ -94,5 +81,6 @@ MCJmpTarget = L(bits=11).after(MCJmpCmpVal)
 MCHeadNormal = MCMemCtrl
 MCHeadJump = MCJmpTarget
 
-print(f"MCN LEN={MCHeadNormal.loc_end}")
-print(f"MCJ LEN={MCHeadJump.loc_end}")
+if __name__ == "__main__":
+    print(f"MCN LEN={MCHeadNormal.loc_end}")
+    print(f"MCJ LEN={MCHeadJump.loc_end}")

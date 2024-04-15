@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from src.config import MC_INSTR_SZ
-from src.mc.mcisa import *
+from machine.config import MC_INSTR_SZ
+from machine.mc.mcisa import *
 
 
 @dataclass

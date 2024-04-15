@@ -1,6 +1,9 @@
-from typing import Union
+import enum
+import inspect
+from enum import auto
+from typing import Union, Dict
 
-from utils.enums import CEnumM, CEnumS
+from machine.utils.enums import CEnumM, CEnumS, CtrlEnum
 
 
 class PSFlags(CEnumM):
@@ -75,3 +78,44 @@ class RegFileOrNormalRegister(CEnumS):
 class MemCtrl(CEnumS):
     IGN = 0
     WR = 1
+
+
+class ALUCtrl(CEnumS):
+    ZERO = 0
+    PASSA = auto()
+    PASSB = auto()
+    AND = auto()
+    OR = auto()
+    ADD = auto()
+    ADC = auto()
+    SHL = auto()
+    SHR = auto()
+    ASL = auto()
+    ASR = auto()
+    ROL = auto()
+    ROR = auto()
+
+
+class ALUPortCtrl(CEnumM):
+    PASS = 0b0000
+    NOT = 0b0001
+    INC = 0b0010
+    SXT8 = 0b0100
+    SXT16 = 0b1000
+
+
+class ALUFlagCtrl(CEnumM):
+    SETZ = 1 << PSFlags.Z
+    SETN = 1 << PSFlags.N
+    SETV = 1 << PSFlags.V
+    SETC = 1 << PSFlags.C
+
+
+def extract_enums() -> Dict[str, Dict[str, int]]:
+    external_frame = inspect.getouterframes(inspect.currentframe())[1]
+    f_locals = external_frame.frame.f_locals
+    return {
+        k: {e(e_k).name: e_k.value for e_k in e}
+        for k, e in f_locals.items()
+        if type(e) == enum.EnumType and issubclass(e, CtrlEnum) and len(e) > 0
+    }

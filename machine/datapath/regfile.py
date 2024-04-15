@@ -1,8 +1,8 @@
-from src.config import *
-from src.mc.decoders import *
-from utils.hdl import hdl_block, dim, Bus
-from utils.introspection import introspect
-from utils.log import get_logger
+from machine.config import *
+from machine.mc.decoders import *
+from machine.utils.hdl import hdl_block, dim, Bus
+from machine.utils.introspection import introspect
+from machine.utils.log import get_logger
 
 L = get_logger()
 
