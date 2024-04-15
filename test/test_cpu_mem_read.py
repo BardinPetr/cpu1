@@ -1,3 +1,4 @@
+from mcasm.parse import mc_compile
 from myhdl import *
 
 from machine.arch import *
@@ -21,41 +22,23 @@ Each cycle:
 Test is to output to CR whole RAM segment from 0 to LEN.
 """
 
-MC_ROM = [
-    MCInstruction(
-        bus_a_in_ctrl=BusInCtrl.RF_IP,
-        alu_ctrl=ALUCtrl.PASSA,
-        bus_c_out_ctrl=BusOutCtrl.AR
-    ),
-    MCInstruction(
-        bus_a_in_ctrl=BusInCtrl.DRR,
-        alu_ctrl=ALUCtrl.PASSA,
-        bus_c_out_ctrl=BusOutCtrl.RF_CR
-    ),
-    MCInstruction(
-        bus_a_in_ctrl=BusInCtrl.RF_IP,
-        alu_port_a_ctrl=ALUPortCtrl.INC,
-        alu_ctrl=ALUCtrl.PASSA,
-        bus_c_out_ctrl=BusOutCtrl.RF_IP
-    ),
-    MCInstruction(
-        bus_a_in_ctrl=BusInCtrl.RF_CR,
-        alu_ctrl=ALUCtrl.PASSA,
-    ),
-    MCInstructionJump(jmp_target=0, jmp_cmp_bit=0, jmp_cmp_val=False),
-]
-
-MC_ROM_COMPILED = [i.compile() for i in MC_ROM]
+MC_ROM = mc_compile("""
+(RF_IP PASSA) -> AR;
+(DRR PASSA) -> RF_CR;
+(RF_IP(INC) PASSA) -> RF_IP;
+(RF_CR PASSA);
+jump 0;
+""").compiled
 
 
 @myhdl_pytest(gui=False, duration=None)
 def test_cpu_mem_read():
-    for src, comp in zip(MC_ROM, MC_ROM_COMPILED):
+    for src, comp in zip(MC_ROM, MC_ROM):
         L.info(f"MC{comp:064b}: {src}")
 
     LEN = 10
     RAM = [16 * i + 7 for i in range(LEN)]
-    cpu = CPU(MC_ROM_COMPILED, RAM)
+    cpu = CPU(MC_ROM, RAM)
 
     intro = IntrospectionTree.build(cpu)
     clk = intro.clk
@@ -79,7 +62,7 @@ def test_cpu_mem_read():
 
     @instance
     def stimulus():
-        for i in range(len(MC_ROM_COMPILED) * LEN):
+        for i in range(len(MC_ROM) * LEN):
             yield clk.posedge
             yield delay(1)
 
@@ -88,7 +71,7 @@ def test_cpu_mem_read():
             yield clk.negedge
             yield delay(1)
 
-            if (i % len(MC_ROM_COMPILED)) == 3:
+            if (i % len(MC_ROM)) == 3:
                 # 4-th command is just copy CR into BusC
                 seq_cr.append(c_val)
 

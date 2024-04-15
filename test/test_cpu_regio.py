@@ -1,38 +1,24 @@
+from mcasm.parse import mc_compile
 from myhdl import *
 
-from machine.arch import *
-from machine.arch import ALUCtrl, ALUPortCtrl
 from machine.cpu import CPU
-from machine.mc.mc import MCInstruction, MCInstructionJump
 from machine.utils.introspection import introspect, IntrospectionTree
 from machine.utils.log import get_logger
 from machine.utils.testutils import myhdl_pytest
 
 L = get_logger()
 
-MC_ROM = [
-    MCInstruction(
-        alu_ctrl=ALUCtrl.ADD,
-        alu_port_b_ctrl=ALUPortCtrl.INC,
-        bus_a_in_ctrl=BusInCtrl.RF_IP,
-        bus_c_out_ctrl=BusOutCtrl.RF_IP
-    ),
-    MCInstruction(
-        alu_ctrl=ALUCtrl.PASSA,
-        bus_a_in_ctrl=BusInCtrl.RF_IP
-    ),
-    MCInstructionJump(jmp_target=0, jmp_cmp_bit=0, jmp_cmp_val=False),
-]
-
-MC_ROM_COMPILED = [i.compile() for i in MC_ROM]
+MC_ROM = mc_compile("""
+start:
+(RF_IP ADD IGNORE(INC)) -> RF_IP;
+(RF_IP PASSA);
+jump start;
+""").compiled
 
 
 @myhdl_pytest(gui=False, duration=None)
 def test_cpu_regio():
-    for src, comp in zip(MC_ROM, MC_ROM_COMPILED):
-        L.info(f"MC{comp:064b}: {src}")
-
-    cpu = CPU(MC_ROM_COMPILED)
+    cpu = CPU(MC_ROM)
 
     intro = IntrospectionTree.build(cpu)
     clk = intro.clk

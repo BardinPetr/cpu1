@@ -1,30 +1,25 @@
+from mcasm.parse import mc_compile
 from myhdl import *
 
-from machine.arch import ALUCtrl
 from machine.cpu import CPU
-from machine.mc.mc import MCInstruction, MCInstructionJump
 from machine.utils.introspection import introspect, IntrospectionTree
 from machine.utils.log import get_logger
 from machine.utils.testutils import myhdl_pytest
 
 L = get_logger()
 
-MC_ROM = [
-    MCInstruction(alu_ctrl=ALUCtrl.PASSA),
-    MCInstructionJump(alu_ctrl=ALUCtrl.PASSA, jmp_target=10, jmp_cmp_bit=5, jmp_cmp_val=True),
-    MCInstruction(alu_ctrl=ALUCtrl.ADD),
-    MCInstructionJump(jmp_target=0, jmp_cmp_bit=0, jmp_cmp_val=False),
-]
-
-MC_ROM_COMPILED = [i.compile() for i in MC_ROM]
+MC_ROM = mc_compile("""
+start:
+(PASSA);
+if (PASSA)[5] == 1 jump 10;
+(ADD); 
+jump start;
+""").compiled
 
 
 @myhdl_pytest(gui=False, duration=None)
 def test_cpu_mcseq():
-    for src, comp in zip(MC_ROM, MC_ROM_COMPILED):
-        L.info(f"MC{comp:064b}: {src}")
-
-    cpu = CPU(MC_ROM_COMPILED)
+    cpu = CPU(MC_ROM)
 
     intro = IntrospectionTree.build(cpu)
     clk = intro.clk
