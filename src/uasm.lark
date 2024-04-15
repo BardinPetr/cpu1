@@ -1,35 +1,54 @@
 start: line+
 
 
-line: label? instruction
-
-?instruction: _instr_exec
-           | _instr_jump -> jump
-           | _instr_cond -> cond
-
+line: label? (instr_exec) ";"
 
 // label
-?label: ID ":"
+label: ID ":"
 
 // jumps
-_instr_jump: _INSTR_JUMP LOC
+instr_jump: instr_jump_sub (_jump_uncond | _jump_cond)
+_jump_cond: "if"i REGISTER "[" NUMBER "]" "==" BINNUMBER _jump_uncond
+_jump_uncond: "JMP"i LOC
 
-_instr_cond: _MOD_IF _jump_condition _instr_jump
-_jump_condition: REGISTER "[" NUMBER "]" "==" BINNUMBER
+instr_jump_sub: _instr_jump_flag*
+_instr_jump_flag: FLAG_JJ | FLAG_J
+FLAG_J: "j"
+FLAG_JJ: "jq"
 
-_INSTR_JUMP: "JMP"i
-_MOD_IF: "IF"i
+// normal instructions
+instr_exec: _exec+
+_exec: exec_alu | exec_alu_flags | exec_mem
 
+exec_alu: "(" alu_op_a? alu_ctrl alu_op_b? ")" ("->" alu_op_c)?
+alu_op_a: alu_op
+alu_op_b: alu_op
+alu_op_c: BUSOUTCTRL
+alu_op: BUSINCTRL ("(" ALUPORTCTRL+ ")")?
+alu_ctrl: ALUCTRL
+
+exec_alu_flags: "set" "(" ALUFLAG+ ")"
+exec_mem: "store"
+
+// tokens
 LOC: NUMBER | HEXNUMBER | ID
-
-// other instructions
-_instr_exec: INSTR_EXEC
-INSTR_EXEC: "ADD"i | "ADC"i
 
 
 // hardware
 REGISTER: "PS" | "CR" | "PC"
+ALUFLAG: "Z" | "C" | "N" | "V"
 
+ALUCTRL: "ZERO" | "PASSA" | "PASSB" | "AND" | "OR" | "ADD" | "ADC" | "SHL" | "SHR" | "ASL" | "ASR" | "ROL" | "ROR"
+BUSINCTRL: "IGNORE" | "PS" | "DRR" | "SRC_3" | "RF_XX" | "RF_IP" | "RF_CR" | "RF_YY"
+BUSOUTCTRL: "IGNORE" | "PS" | "DRW" | "AR" | "RF_XX" | "RF_IP" | "RF_CR" | "RF_YY"
+ALUPORTCTRL: "PASS" | "NOT" | "INC" | "SXT8" | "SXT16"
+
+PSFLAGS: "Z" | "N" | "C" | "V" | "RUN" | "INT" | "IEN"
+REGFILEIDCTRL: "XX" | "IP" | "CR" | "YY"
+REGISTERIDCTRL: "CR"
+REGFILEORNORMALREGISTER: "NR" | "RF"
+MEMCTRL: "IGN" | "WR"
+ALUFLAGCTRL: "SETZ" | "SETN" | "SETV" | "SETC"
 
 // misc
 HEXNUMBER: "0x"i HEXDIGIT+
@@ -42,5 +61,6 @@ BINNUMBER: "0" | "1"
 %import common.WS
 %import common.SH_COMMENT
 
+%ignore ","
 %ignore WS
 %ignore SH_COMMENT

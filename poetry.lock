@@ -17,7 +17,62 @@ interegular = ["interegular (>=0.3.1,<0.4.0)"]
 nearley = ["js2py"]
 regex = ["regex"]
 
+[[package]]
+name = "machine"
+version = "1.0.8"
+description = ""
+optional = false
+python-versions = "^3.11"
+files = []
+develop = false
+
+[package.dependencies]
+myhdl = "^0.11.45"
+pyvcd = "^0.4.0"
+
+[package.source]
+type = "directory"
+url = "../machine"
+
+[[package]]
+name = "myhdl"
+version = "0.11.45"
+description = "Python as a Hardware Description Language"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "myhdl-0.11.45-py3-none-any.whl", hash = "sha256:cd91ba7cdd6c148119e55d96ccb3c51894d7674f32c73bc24af6c0e0996a0ea3"},
+    {file = "myhdl-0.11.45.tar.gz", hash = "sha256:bf5f112ee2dd855214945532b2019b9092108200169b97a11f3edd637fe9a009"},
+]
+
+[[package]]
+name = "pyvcd"
+version = "0.4.0"
+description = "Python VCD file support"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pyvcd-0.4.0-py2.py3-none-any.whl", hash = "sha256:a21b10e5018b7940c8f2c20ef83d97496e86f15e215afed134ee115166035e17"},
+    {file = "pyvcd-0.4.0.tar.gz", hash = "sha256:31be3f501441a9b8c5dc72660ff7b9cfef9b43b2121a23d96f586d2863270290"},
+]
+
+[[package]]
+name = "setuptools"
+version = "69.5.1"
+description = "Easily download, build, install, upgrade, and uninstall Python packages"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "setuptools-69.5.1-py3-none-any.whl", hash = "sha256:c636ac361bc47580504644275c9ad802c50415c7522212252c033bd15f301f32"},
+    {file = "setuptools-69.5.1.tar.gz", hash = "sha256:6c1fccdac05a97e598fb0ae3bbed5904ccb317337a51139dcd51453611bbb987"},
+]
+
+[package.extras]
+docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-inline-tabs", "sphinx-lint", "sphinx-notfound-page (>=1,<2)", "sphinx-reredirects", "sphinxcontrib-towncrier"]
+testing = ["build[virtualenv]", "filelock (>=3.4.0)", "importlib-metadata", "ini2toml[lite] (>=0.9)", "jaraco.develop (>=7.21)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "mypy (==1.9)", "packaging (>=23.2)", "pip (>=19.1)", "pytest (>=6,!=8.1.1)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-home (>=0.5)", "pytest-mypy", "pytest-perf", "pytest-ruff (>=0.2.1)", "pytest-timeout", "pytest-xdist (>=3)", "tomli", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
+testing-integration = ["build[virtualenv] (>=1.0.3)", "filelock (>=3.4.0)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "packaging (>=23.2)", "pytest", "pytest-enabler", "pytest-xdist", "tomli", "virtualenv (>=13.0.0)", "wheel"]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "b2f8491a3d02538d2b5ca4fb18c65dc866c18b0f41a7402022d18adbfd76a819"
+content-hash = "dfc784fd2f1e51788c480d8d0fda56aadf9515be81d48d08bbf3cf88ca82ccc0"
