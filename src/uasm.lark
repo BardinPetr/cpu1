@@ -5,6 +5,7 @@ line: label? (instr_exec | instr_jump) ";"
 
 // label
 label: ID ":"
+label_use:
 
 // normal instructions
 instr_exec: _exec+
@@ -24,15 +25,11 @@ exec_mem: "store"
 
 
 // jumps
-instr_jump: _jump_cond? jump_target
+instr_jump: _jump_cond? ("JMP"i | "JUMP"i) jump_target
 _jump_cond: "if"i _exec_alu_compute "[" jump_cmp_pos "]" "==" jump_cmp
 jump_cmp_pos: NUMBER
 jump_cmp: BINNUMBER
-jump_target: ("JMP"i | "JUMP"i) LOC
-
-
-
-
+jump_target: LOC
 
 // tokens
 LOC: NUMBER | HEXNUMBER | ID
@@ -47,12 +44,6 @@ BUSINCTRL: "IGNORE" | "PS" | "DRR" | "SRC_3" | "RF_XX" | "RF_IP" | "RF_CR" | "RF
 BUSOUTCTRL: "IGNORE" | "PS" | "DRW" | "AR" | "RF_XX" | "RF_IP" | "RF_CR" | "RF_YY"
 ALUPORTCTRL: "PASS" | "NOT" | "INC" | "SXT8" | "SXT16"
 
-PSFLAGS: "Z" | "N" | "C" | "V" | "RUN" | "INT" | "IEN"
-REGFILEIDCTRL: "XX" | "IP" | "CR" | "YY"
-REGISTERIDCTRL: "CR"
-REGFILEORNORMALREGISTER: "NR" | "RF"
-MEMCTRL: "IGN" | "WR"
-ALUFLAGCTRL: "SETZ" | "SETN" | "SETV" | "SETC"
 
 // misc
 HEXNUMBER: "0x"i HEXDIGIT+

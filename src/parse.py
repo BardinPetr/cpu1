@@ -1,13 +1,10 @@
-from enum import IntEnum
+from dataclasses import dataclass
 from functools import reduce
-from pprint import pprint
 from typing import List, Dict, Optional
 
-from lark import Lark, Transformer, v_args, Token
-
+from lark import Lark, Transformer, v_args, Token, Tree
 from machine import arch
 from machine.mc.mc import MCInstruction, MCInstructionJump
-from machine.utils.enums import CtrlEnum
 
 
 def merge_dicts(x: List[Dict]) -> Dict:
@@ -43,6 +40,29 @@ class TypeTransformer(Transformer):
     HEXNUMBER = lambda self, x: int(x, 16)
     BINNUMBER = bool
     NUMBER = int
+
+
+class LocationResolver(Transformer):
+
+    @v_args(tree=True)
+    def start(self, lines: Tree):
+        labels = dict()
+        for pos, line in enumerate(lines.children):
+            label = next(line.find_data('label'), None)
+            if label is not None:
+                loc: Location = label.children[0]
+                labels[loc.name] = pos
+                loc.pos = pos
+
+        for i in lines.find_data("jump_target"):
+            loc: Location = i.children[0]
+            if loc.pos is not None: continue
+            if loc.name not in labels:
+                raise RuntimeError(f"Unable to resolve location {loc}")
+
+            loc.pos = labels[loc.name]
+
+        return lines
 
 
 """Here we are translating asm each line into arguments of MCInstruction """
@@ -85,45 +105,43 @@ class JumpInstructionTransformer(Transformer):
         return dict(jmp_target=val[0].pos)
 
 
+@dataclass
+class CompiledMC:
+    commands: List[MCInstruction]
+    labels: Dict[str, int]
+
+    def __post_init__(self):
+        self.compiled = [i.compile() for i in self.commands]
+
+
 class CodeTransformer(Transformer):
 
-    def line(self, line: Token):
-        return line[0]
+    def line(self, line: List[Token]):
+        return line[-1]
+
+    def start(self, lines):
+        return CompiledMC(
+            lines,
+            {}
+        )
 
 
-class BinaryTransformer(Transformer):
+class MCASMCompiler:
 
-    def start(self, lines: List[MCInstruction]):
-        return [i.compile() for i in lines]
+    def __init__(self):
+        with open("src/uasm.lark", "r") as f:
+            grammar = f.read()
 
+        self._lark = Lark(grammar)
+        self._transform = (
+                TypeTransformer() *
+                LocationResolver() *
+                ControlInstructionTransformer() *
+                JumpInstructionTransformer() *
+                CodeTransformer()
+        )
 
-txt = """
-(RF_IP(NOT) PASSA IGNORE(INC)) -> PS, set(Z N C V) store;
-(RF_IP PASSA IGNORE(INC NOT)) -> PS, set(Z N C V) store;
-(RF_IP PASSA) -> PS set(Z,N,C,V) store;
-(PASSA) -> PS set(V);
-(PASSA) set(V);
-(ZERO);
-jump 0x3324;
-JmP 324;
-jump label;
-if (RF_IP PASSA)[10] == 0 jump label;
-"""
-
-grammar = open("uasm.lark", "r").read()
-l = Lark(grammar)
-ast = l.parse(txt)
-ast = TypeTransformer().transform(ast)
-ast = ControlInstructionTransformer().transform(ast)
-ast = JumpInstructionTransformer().transform(ast)
-
-try:
-    print(ast.pretty())
-except:
-    pprint(ast)
-
-exit(0)
-code = CodeTransformer().transform(ast)
-out = BinaryTransformer().transform(code)
-print(code.pretty())
-print(out)
+    def compile(self, text: str) -> CompiledMC:
+        ast = self._lark.parse(text)
+        ast = self._transform.transform(ast)
+        return ast
