@@ -171,3 +171,5 @@ pyrightconfig.json
 dist/
 
 *.v
+*.vcd
+*.gtkw

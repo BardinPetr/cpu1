@@ -28,46 +28,52 @@ class PSFlags(CEnumM):
 
 
 class RegFileIdCtrl(CEnumS):
-    XX = 0
+    R0 = 0
     IP = 1
     CR = 2
-    YY = 3
-
-
-class RegisterIdCtrl(CEnumS):
-    CR = 0
+    R1 = 3
+    R2 = 4
 
 
 class BusInCtrl(CEnumS):
     """
     Format:
-    0xx - xx is classic source
-    1xx - xx is regfile ID
+    0xxx - xx is classic source
+    1xxx - xx is regfile ID
+
+    Currently free:
+    0011
+    011x
+    11xx
     """
-    IGNORE = 0b000
-    PS = 0b001
-    DRR = 0b010
-    SRC_3 = 0b011
-    RF_XX = 0b100 + RegFileIdCtrl.XX
-    RF_IP = 0b100 + RegFileIdCtrl.IP
-    RF_CR = 0b100 + RegFileIdCtrl.CR
-    RF_YY = 0b100 + RegFileIdCtrl.YY
+    IGNORE = 0
+    PS = 0b0001
+    DRR = 0b0010
+    D_TOS = 0b0100
+    R_TOS = 0b0101
+    RF_XX = 0b1000 + RegFileIdCtrl.R0
+    RF_IP = 0b1000 + RegFileIdCtrl.IP
+    RF_CR = 0b1000 + RegFileIdCtrl.CR
+    RF_YY = 0b1000 + RegFileIdCtrl.R1
 
 
 class BusOutCtrl(CEnumS):
     """
     Format:
-    0xx - xx is classic source
-    1xx - xx is regfile ID
+    00xx - xx is classic source
+    10xx - xx is regfile ID
     """
-    IGNORE = 0b000
-    PS = 0b001
-    DRW = 0b010
-    AR = 0b011
-    RF_XX = 0b100 + RegFileIdCtrl.XX
-    RF_IP = 0b100 + RegFileIdCtrl.IP
-    RF_CR = 0b100 + RegFileIdCtrl.CR
-    RF_YY = 0b100 + RegFileIdCtrl.YY
+    IGNORE = 0b0000
+    PS = 0b0001
+    DRW = 0b0010
+    AR = 0b0011
+    D_TOS = 0b0100
+    R_TOS = 0b0101
+    RF_R0 = 0b1000 + RegFileIdCtrl.R0
+    RF_IP = 0b1000 + RegFileIdCtrl.IP
+    RF_CR = 0b1000 + RegFileIdCtrl.CR
+    RF_R1 = 0b1000 + RegFileIdCtrl.R1
+    RF_R2 = 0b1000 + RegFileIdCtrl.R2
 
 
 class RegFileOrNormalRegister(CEnumS):

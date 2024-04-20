@@ -21,6 +21,12 @@ class CtrlEnum(IntEnum):
     def encoded_len(cls):
         return len(cls)
 
+    # TODO Fix counting of values
+    # @classmethod
+    # def __len__(cls):
+    #     zeroes = len([i for i in cls if i.value == 0])
+    #     return len(cls) - zeroes
+
     @classmethod
     def decode_names(cls, names: List[str]) -> List['CtrlEnum']:
         return [cls[i] for i in names]

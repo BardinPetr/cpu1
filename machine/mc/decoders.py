@@ -42,13 +42,13 @@ def RegReadDecoder(
         rd_a = MCBusACtrl.get(control_bus)
         rd_b = MCBusBCtrl.get(control_bus)
 
-        # if rd_X[2] == 1 then  rd_X[2:] is regfile register, else register source
-        mux_busa_nr_rf_ctrl.next = rd_a[2]
-        mux_busb_nr_rf_ctrl.next = rd_b[2]
-        mux_busa_in_ctrl.next = rd_a[2:]
-        mux_busb_in_ctrl.next = rd_b[2:]
-        regfile_out0_id.next = rd_a[2:]
-        regfile_out1_id.next = rd_b[2:]
+        # if rd_X[3] == 1 then  rd_X[3:] is regfile register, else register source
+        mux_busa_nr_rf_ctrl.next = rd_a[3]
+        mux_busb_nr_rf_ctrl.next = rd_b[3]
+        mux_busa_in_ctrl.next = rd_a[3:]
+        mux_busb_in_ctrl.next = rd_b[3:]
+        regfile_out0_id.next = rd_a[3:]
+        regfile_out1_id.next = rd_b[3:]
 
     return introspect()
 
@@ -68,21 +68,21 @@ def RegWriteDecoder(
         ram_a_wr.next = mem_ctrl[0]
 
         wr_ctrl = MCBusCCtrl.get(control_bus)
-        regfile_in_id.next = wr_ctrl[2:]
-        register_demux_id.next = wr_ctrl[2:]
-        demux_bus_c_nr_rf.next = wr_ctrl[2]
+        regfile_in_id.next = wr_ctrl[3:]
+        register_demux_id.next = wr_ctrl[3:]
+        demux_bus_c_nr_rf.next = wr_ctrl[3]
 
         enable = wr_ctrl != 0
 
         # if wr_ctrl[2] == 1 then  wr_ctrl[2:] is regfile register, else register source
         # regfile write occurring on neg edge of clk!
-        regfile_wr.next = enable and wr_ctrl[2]
+        regfile_wr.next = enable and wr_ctrl[3]
 
     @always(clk.negedge)
     def run():
         wr_ctrl = MCBusCCtrl.get(control_bus)
 
-        register_wr.next = (wr_ctrl != 0) and (not wr_ctrl[2])
+        register_wr.next = (wr_ctrl != 0) and (not wr_ctrl[3])
 
         # if alu has any flag outputs, then set write to PS register directly
         alu_flag_ctrl = MCALUFlagCtrl.get(control_bus)

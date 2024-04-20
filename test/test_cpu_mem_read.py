@@ -7,6 +7,7 @@ from machine.cpu import CPU
 from machine.mc.mc import MCInstruction, MCInstructionJump
 from machine.utils.introspection import IntrospectionTree, TraceData, Trace, IntrospectedMemory
 from machine.utils.log import get_logger
+from machine.utils.runutils import display_trace_vcd
 from machine.utils.testutils import myhdl_pytest
 
 L = get_logger()
@@ -57,6 +58,9 @@ def test_cpu_mem_read():
             "A":   intro.datapath.bus_a,
             "B":   intro.datapath.bus_b,
             "C":   intro.datapath.bus_c,
+            "AR":  intro.datapath.reg_ar_out,
+            "IP":  intro.datapath.rf.registers[RegFileIdCtrl.IP],
+            "CR":  intro.datapath.rf.registers[RegFileIdCtrl.CR],
         }
     )
 
@@ -75,11 +79,11 @@ def test_cpu_mem_read():
                 # 4-th command is just copy CR into BusC
                 seq_cr.append(c_val)
 
+        # display_trace_vcd('dist', 'f', trace_res)
         # print("TARGET CR:", RAM)
         # print("REAL   CR:", seq_cr)
         assert seq_cr == RAM
 
-        # display_trace_vcd('dist', 'f', trace_res)
         raise StopSimulation()
 
     return cpu, stimulus, tracer

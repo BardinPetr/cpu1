@@ -1,6 +1,7 @@
-from machine.arch import RegFileIdCtrl, RegFileOrNormalRegister
+from machine.arch import RegFileIdCtrl, RegFileOrNormalRegister, StackCtrl
 from machine.components.ALU import ALU
 from machine.components.RAM import RAMSyncSP
+from machine.components.Stack import Stack
 from machine.components.base import Register
 from machine.components.mux import Mux, DeMux
 from machine.components.regfile import RegisterFile
@@ -60,19 +61,40 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     )
 
     ########################################################################
+    """STACK SECTION"""
+    d_stack_full, r_stack_full, d_stack_empty, r_stack_empty = Bus1(0), Bus1(0), Bus1(1), Bus1(1)
+    d_stack_ctrl, r_stack_ctrl = [Bus(enum=StackCtrl) for _ in range(2)]
+    d_stack_tos0, d_stack_tos1, r_stack_tos0, r_stack_tos1 = [Bus(DATA_BITS) for _ in range(4)]
+    d_stack_in, r_stack_in = [Bus(DATA_BITS) for _ in range(2)]
+
+    d_stack = Stack(
+        clk,
+        d_stack_ctrl, d_stack_in,
+        d_stack_tos0, d_stack_tos1,
+        d_stack_empty, d_stack_full,
+        depth=STACK_D_DEPTH, width=DATA_BITS
+    )
+    r_stack = Stack(
+        clk,
+        r_stack_ctrl, r_stack_in,
+        r_stack_tos0, r_stack_tos1,
+        r_stack_empty, r_stack_full,
+        depth=STACK_D_DEPTH, width=DATA_BITS
+    )
+
+    ########################################################################
     """BUS INPUT SECTION"""
     mux_bus_a_reg_in_ctrl, mux_bus_b_reg_in_ctrl = Bus(enum=BusInCtrl), Bus(enum=BusInCtrl)
     mux_bus_a_nr_rf_ctrl, mux_bus_b_nr_rf_ctrl = Bus(enum=RegFileOrNormalRegister), Bus(enum=RegFileOrNormalRegister)
     tmp_bus_a_sig, tmp_bus_b_sig = Bus(REG_SZ), Bus(REG_SZ)
 
     # according to BusInCtrl
-    _reg_inputs = [zerobus, reg_ps_out, reg_dr_out, zerobus]
     mux_bus_a_registers_in = Mux(
-        _reg_inputs,
+        [zerobus, reg_ps_out, reg_dr_out, d_stack_tos0, r_stack_tos0, zerobus, zerobus, zerobus],
         tmp_bus_a_sig, mux_bus_a_reg_in_ctrl
     )
     mux_bus_b_registers_in = Mux(
-        _reg_inputs,
+        [zerobus, reg_ps_out, reg_dr_out, d_stack_tos1, r_stack_tos1, zerobus, zerobus, zerobus],
         tmp_bus_b_sig, mux_bus_b_reg_in_ctrl
     )
 
@@ -97,12 +119,12 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
 
     demux_bus_c_reg_wr_cmd = DeMux(
         demux_bus_c_reg_wr,
-        [zerobus, reg_ps_wr.driver(), ram_a_wr, reg_ar_wr],
+        [zerobus, reg_ps_wr.driver(), ram_a_wr, reg_ar_wr, zerobus, zerobus, zerobus, zerobus],
         demux_bus_c_reg_id
     )
     demux_bus_c_reg_wr_data = DeMux(
         demux_tmp_bus_c,
-        [zerobus, zerobus, ram_a_in, reg_ar_in],
+        [zerobus, zerobus, ram_a_in, reg_ar_in, zerobus, zerobus, zerobus, zerobus],
         demux_bus_c_reg_id
     )
     demux_bus_c = DeMux(
