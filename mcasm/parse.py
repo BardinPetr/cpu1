@@ -90,6 +90,14 @@ class ControlInstructionTransformer(Transformer):
         )
         return dict(alu_flag_ctrl=enum)
 
+    def exec_stack(self, vals: List[Token]):
+        stack_name = vals[1]
+        stack_cmd = arch.StackCtrl.encode_from_names([vals[0].upper()])
+        return {
+            f"stack_{stack_name.lower()}_ctrl": stack_cmd,
+            "bus_c_out_ctrl":                   arch.BusOutCtrl.encode_from_names([f"{stack_name.upper()}_TOS"])
+        }
+
     """IO control"""
     exec_mem = lambda self, x: dict(mem_ctrl=arch.MemCtrl.WR)
 

@@ -10,3 +10,5 @@ jump 0x3;
 JmP 3;
 jump label1;
 if (RF_IP PASSA)[10] == 0 jump label3;
+(ZERO), push(R), pop(R);
+(ZERO), push(D);
