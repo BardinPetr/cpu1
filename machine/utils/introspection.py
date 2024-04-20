@@ -31,8 +31,11 @@ class IntrospectedMemory:
     def __init__(self, mem: _MemInfo):
         self.cells = mem.mem
 
-    def __getitem__(self, item: int) -> _Signal:
+    def __getitem__(self, item) -> _Signal:
         return self.cells[item]
+
+    def __str__(self):
+        return f"MEM[{','.join(map(str, self.cells))}]"
 
 
 @dataclass
