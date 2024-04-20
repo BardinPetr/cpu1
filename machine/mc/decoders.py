@@ -92,3 +92,17 @@ def RegWriteDecoder(
             reg_ps_wr_drv.next = None
 
     return introspect()
+
+
+@hdl_block
+def StackDecoder(
+        clk,
+        control_bus,
+        d_stack_ctrl, r_stack_ctrl
+):
+    @always_comb
+    def run():
+        d_stack_ctrl.next = MCStackDCtrl.get(control_bus)
+        r_stack_ctrl.next = MCStackRCtrl.get(control_bus)
+
+    return introspect()

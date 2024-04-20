@@ -90,12 +90,12 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
 
     # according to BusInCtrl
     mux_bus_a_registers_in = Mux(
-        [zerobus, reg_ps_out, reg_dr_out, d_stack_tos0, r_stack_tos0, zerobus, zerobus, zerobus],
-        tmp_bus_a_sig, mux_bus_a_reg_in_ctrl
+        [zerobus, reg_ps_out, reg_dr_out, zerobus, d_stack_tos0, r_stack_tos0, zerobus, zerobus, zerobus],
+        output=tmp_bus_a_sig, ctrl=mux_bus_a_reg_in_ctrl
     )
     mux_bus_b_registers_in = Mux(
-        [zerobus, reg_ps_out, reg_dr_out, d_stack_tos1, r_stack_tos1, zerobus, zerobus, zerobus],
-        tmp_bus_b_sig, mux_bus_b_reg_in_ctrl
+        [zerobus, reg_ps_out, reg_dr_out, zerobus, d_stack_tos1, r_stack_tos1, zerobus, zerobus, zerobus],
+        output=tmp_bus_b_sig, ctrl=mux_bus_b_reg_in_ctrl
     )
 
     mux_bus_a_nr_rf = Mux(
@@ -117,14 +117,22 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     # Order of demux out should be according to BusOutCtrl!
     # TODO add write from BusC to PS via reg_ps_in.driver()
 
+    # forward write signals
     demux_bus_c_reg_wr_cmd = DeMux(
         demux_bus_c_reg_wr,
-        [zerobus, reg_ps_wr.driver(), ram_a_wr, reg_ar_wr, zerobus, zerobus, zerobus, zerobus],
+        [
+            zerobus, reg_ps_wr.driver(), ram_a_wr, reg_ar_wr,
+            zerobus, zerobus, zerobus, zerobus
+        ],
         demux_bus_c_reg_id
     )
+    # forward data
     demux_bus_c_reg_wr_data = DeMux(
         demux_tmp_bus_c,
-        [zerobus, zerobus, ram_a_in, reg_ar_in, zerobus, zerobus, zerobus, zerobus],
+        [
+            zerobus, zerobus, ram_a_in, reg_ar_in,
+            d_stack_in, r_stack_in, zerobus, zerobus
+        ],
         demux_bus_c_reg_id
     )
     demux_bus_c = DeMux(
@@ -171,6 +179,12 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
         reg_ps_wr.driver(),
         demux_bus_c_reg_wr, demux_bus_c_reg_id, demux_bus_c_nr_rf,
         regfile_wr, regfile_in_id
+    )
+
+    stack_dec = StackDecoder(
+        clk,
+        control_bus,
+        d_stack_ctrl, r_stack_ctrl
     )
 
     return introspect()

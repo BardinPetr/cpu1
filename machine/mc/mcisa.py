@@ -4,7 +4,7 @@ from typing import TypeVar, Optional, Sized, Union
 
 from myhdl import intbv
 
-from machine.arch import BusInCtrl, BusOutCtrl, MemCtrl, ALUCtrl, ALUPortCtrl, ALUFlagCtrl
+from machine.arch import BusInCtrl, BusOutCtrl, MemCtrl, ALUCtrl, ALUPortCtrl, ALUFlagCtrl, StackCtrl
 from machine.utils.enums import CtrlEnum, EnumEncodingType, EncodedEnum
 
 T = TypeVar('T', bound=IntEnum)
@@ -72,13 +72,15 @@ MCBusBCtrl = L(BusInCtrl).after(MCBusACtrl)
 MCALUFlagCtrl = L(ALUFlagCtrl).after(MCBusBCtrl)
 MCBusCCtrl = L(BusOutCtrl).after(MCALUFlagCtrl)
 MCMemCtrl = L(MemCtrl).after(MCBusCCtrl)
+MCStackDCtrl = L(StackCtrl).after(MCMemCtrl)
+MCStackRCtrl = L(StackCtrl).after(MCStackDCtrl)
 
 # ending for
 MCJmpCmpBit = L(bits=16).after(MCBusBCtrl)
 MCJmpCmpVal = L(bits=1).after(MCJmpCmpBit)
 MCJmpTarget = L(bits=11).after(MCJmpCmpVal)
 
-MCHeadNormal = MCMemCtrl
+MCHeadNormal = MCStackRCtrl
 MCHeadJump = MCJmpTarget
 
 if __name__ == "__main__":

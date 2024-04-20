@@ -41,7 +41,7 @@ regex = ["regex"]
 
 [[package]]
 name = "mcasm"
-version = "0.2.6"
+version = "0.2.8"
 description = ""
 optional = false
 python-versions = "^3.11"

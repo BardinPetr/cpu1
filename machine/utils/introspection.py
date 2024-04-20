@@ -110,6 +110,14 @@ class TraceData:
         self._history = []
         self._labels = []
 
+    def peek(self, front: Optional[int] = None, names: List[str] = []):
+        return [
+            {name: i[name] for name in names}
+            for i in self.as_dict()
+            if (front is None) or
+               (front is not None and i['CLK'] == front)
+        ]
+
     def set_labels(self, labels: Iterable[str]):
         self._labels = list(labels)
 
@@ -120,6 +128,10 @@ class TraceData:
         return self._history
 
     def as_list_front(self, front_val: intbv) -> List[List[intbv]]:
+        """
+        :param front_val: 0 - falling, 1 - rising
+        :return:
+        """
         return self._history[1 - front_val::2]
 
     def as_list_joined(self) -> List[Tuple[List[intbv], List[intbv]]]:

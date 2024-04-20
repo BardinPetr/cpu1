@@ -15,6 +15,8 @@ class MCInstruction:
     bus_b_in_ctrl: BusInCtrl = 0
     bus_c_out_ctrl: BusOutCtrl = 0
     mem_ctrl: MemCtrl = MemCtrl.IGN
+    stack_d_ctrl: StackCtrl = StackCtrl.NONE
+    stack_r_ctrl: StackCtrl = StackCtrl.NONE
 
     def compile(self) -> int:
         res = intbv(0)[MC_INSTR_SZ:]
@@ -27,6 +29,8 @@ class MCInstruction:
         MCBusBCtrl.put(res, self.bus_b_in_ctrl)
         MCBusCCtrl.put(res, self.bus_c_out_ctrl)
         MCMemCtrl.put(res, self.mem_ctrl)
+        MCStackDCtrl.put(res, self.stack_d_ctrl)
+        MCStackRCtrl.put(res, self.stack_r_ctrl)
         return int(res)
 
     @staticmethod
