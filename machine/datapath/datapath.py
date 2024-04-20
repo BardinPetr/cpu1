@@ -3,8 +3,8 @@ from machine.components.ALU import ALU
 from machine.components.RAM import RAMSyncSP
 from machine.components.base import Register
 from machine.components.mux import Mux, DeMux
+from machine.components.regfile import RegisterFile
 from machine.config import *
-from machine.datapath.regfile import RegisterFile
 from machine.mc.decoders import *
 from machine.utils.hdl import hdl_block, Bus, create_reg_signals, Bus1
 from machine.utils.introspection import introspect

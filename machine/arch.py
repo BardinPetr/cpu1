@@ -111,6 +111,12 @@ class ALUFlagCtrl(CEnumM):
     SETC = 1 << PSFlags.C
 
 
+class StackCtrl(CEnumS):
+    NONE = 0
+    PUSH = 1
+    POP = 2
+
+
 def extract_enums() -> Dict[str, Dict[str, int]]:
     external_frame = inspect.getouterframes(inspect.currentframe())[1]
     f_locals = external_frame.frame.f_locals

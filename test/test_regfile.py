@@ -3,7 +3,7 @@ import random
 from myhdl import *
 
 from machine.components.base import Clock
-from machine.datapath.regfile import RegisterFile
+from machine.components.regfile import RegisterFile
 from machine.utils.hdl import Bus, Bus1
 from machine.utils.introspection import introspect
 from machine.utils.log import get_logger
