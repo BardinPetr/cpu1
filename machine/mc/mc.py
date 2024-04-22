@@ -2,60 +2,92 @@ from dataclasses import dataclass
 
 from machine.config import MC_INSTR_SZ
 from machine.mc.mcisa import *
+from typing import Annotated, List, Tuple, get_type_hints
 
 
 @dataclass
 class MCInstruction:
-    instr_type: MCType = MCType.MC_RUN
-    alu_ctrl: ALUCtrl = ALUCtrl.ZERO
-    alu_flag_ctrl: ALUFlagCtrl = 0
-    alu_port_a_ctrl: ALUPortCtrl = ALUPortCtrl.PASS
-    alu_port_b_ctrl: ALUPortCtrl = ALUPortCtrl.PASS
-    bus_a_in_ctrl: BusInCtrl = 0
-    bus_b_in_ctrl: BusInCtrl = 0
-    bus_c_out_ctrl: BusOutCtrl = 0
-    mem_ctrl: MemCtrl = MemCtrl.IGN
-    stack_d_ctrl: StackCtrl = StackCtrl.NONE
-    stack_r_ctrl: StackCtrl = StackCtrl.NONE
+    instr_type: Annotated[MCType, MCLType] = MCType.MC_RUN
+    alu_ctrl: Annotated[ALUCtrl, MCALUCtrl] = ALUCtrl.ZERO
+    alu_port_a_ctrl: Annotated[ALUPortCtrl, MCALUPortACtrl] = ALUPortCtrl.PASS
+    alu_port_b_ctrl: Annotated[ALUPortCtrl, MCALUPortBCtrl] = ALUPortCtrl.PASS
+    bus_a_in_ctrl: Annotated[BusInCtrl, MCBusACtrl] = 0
+    bus_b_in_ctrl: Annotated[BusInCtrl, MCBusBCtrl] = 0
+
+    def __post_init__(self):
+        self._init_locators()
+        self.fields = self._inspect_fields()
 
     def compile(self) -> int:
         res = intbv(0)[MC_INSTR_SZ:]
-        MCALUCtrl.put(res, self.alu_ctrl)
-        MCALUPortACtrl.put(res, self.alu_port_a_ctrl)
-        MCALUPortBCtrl.put(res, self.alu_port_b_ctrl)
-        MCALUFlagCtrl.put(res, self.alu_flag_ctrl)
-        MCLType.put(res, self.instr_type)
-        MCBusACtrl.put(res, self.bus_a_in_ctrl)
-        MCBusBCtrl.put(res, self.bus_b_in_ctrl)
-        MCBusCCtrl.put(res, self.bus_c_out_ctrl)
-        MCMemCtrl.put(res, self.mem_ctrl)
-        MCStackDCtrl.put(res, self.stack_d_ctrl)
-        MCStackRCtrl.put(res, self.stack_r_ctrl)
+
+        fields = self._inspect_fields()
+        for param_name, _, locator in fields:
+            try:
+                locator.put(res, self.__getattribute__(param_name))
+            except AttributeError:
+                print(f"Failed to process field {param_name}")
+
         return int(res)
 
     @staticmethod
     def decompile(data: intbv | bytes) -> 'MCInstruction':
         if isinstance(data, bytes):
             data = intbv(int.from_bytes(data, byteorder='little'))
-        return MCInstruction()
+        return MCInstructionExec()
+
+    @classmethod
+    def _init_locators(cls):
+        fields = cls._inspect_fields()
+        for i, (name, annot, locator) in enumerate(fields):
+            if i == 0:
+                locator.at(0)
+            if locator.loc_start is None:
+                locator.after(fields[i - 1][2])
+
+    @classmethod
+    def _inspect_fields(cls) -> List[Tuple[str, Annotated, MCLocator]]:
+        return [
+            (name, annot, annot.__metadata__[0])
+            for name, annot in get_type_hints(cls, include_extras=True).items()
+        ]
+
+    @classmethod
+    def describe(cls):
+        cls._init_locators()
+        name = cls.__name__.replace("MCInstruction", "")
+        fields = cls._inspect_fields()
+        fields = [
+            (f"[{loc.loc_start:2d}:{loc.loc_end:2d}) "
+             f"{loc.size:2d}b   "
+             f"{annot.__args__[0].__name__:12s}"
+             f"as {name}")
+            for name, annot, loc in fields
+        ]
+        sep = '\n  '
+        return f"{name} [{sep}{sep.join(fields)}\n]"
 
 
 @dataclass
 class MCInstructionJump(MCInstruction):
-    jmp_cmp_bit: int = 0
-    jmp_cmp_val: bool = False
-    jmp_target: int = 0
+    jmp_cmp_bit: Annotated[int, MCJmpCmpBit] = 0
+    jmp_cmp_val: Annotated[bool, MCJmpCmpVal] = False
+    jmp_target: Annotated[int, MCJmpTarget] = 0
 
     def __post_init__(self):
         self.instr_type = MCType.MC_JMP
-
-    def compile(self) -> int:
-        res = intbv(super().compile())
-        MCJmpCmpBit.put(res, self.jmp_cmp_bit)
-        MCJmpCmpVal.put(res, self.jmp_cmp_val)
-        MCJmpTarget.put(res, self.jmp_target)
-        return int(res)
+        super().__post_init__()
 
 
+@dataclass
 class MCInstructionExec(MCInstruction):
-    pass
+    alu_flag_ctrl: Annotated[ALUFlagCtrl, MCALUFlagCtrl] = 0
+    bus_c_out_ctrl: Annotated[BusOutCtrl, MCBusCCtrl] = 0
+    mem_ctrl: Annotated[MemCtrl, MCMemCtrl] = MemCtrl.IGN
+    stack_d_ctrl: Annotated[StackCtrl, MCStackDCtrl] = StackCtrl.NONE
+    stack_r_ctrl: Annotated[StackCtrl, MCStackRCtrl] = StackCtrl.NONE
+
+
+if __name__ == "__main__":
+    print(MCInstructionJump.describe())
+    print(MCInstructionExec.describe())

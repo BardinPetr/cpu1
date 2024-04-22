@@ -35,7 +35,7 @@ class MCLocator:
 
         self.size = bits
         self.select = select
-        self.loc_start = 0
+        self.loc_start: Optional[int] = None
 
     @property
     def loc_end(self):
@@ -57,28 +57,31 @@ class MCLocator:
         self.loc_start = prev.loc_end
         return self
 
+    def __str__(self):
+        return f"LOC[{self.loc_start}:{self.loc_end})={self.size}b"
+
 
 L = MCLocator
 
 # common
-MCLType = L(MCType).at(0)
-MCALUCtrl = L(ALUCtrl).after(MCLType)
-MCALUPortACtrl = L(ALUPortCtrl).after(MCALUCtrl)
-MCALUPortBCtrl = L(ALUPortCtrl).after(MCALUPortACtrl)
-MCBusACtrl = L(BusInCtrl).after(MCALUPortBCtrl)
-MCBusBCtrl = L(BusInCtrl).after(MCBusACtrl)
+MCLType = L(MCType)
+MCALUCtrl = L(ALUCtrl)
+MCALUPortACtrl = L(ALUPortCtrl)
+MCALUPortBCtrl = L(ALUPortCtrl)
+MCBusACtrl = L(BusInCtrl)
+MCBusBCtrl = L(BusInCtrl)
 
 # ending for operational
-MCALUFlagCtrl = L(ALUFlagCtrl).after(MCBusBCtrl)
-MCBusCCtrl = L(BusOutCtrl).after(MCALUFlagCtrl)
-MCMemCtrl = L(MemCtrl).after(MCBusCCtrl)
-MCStackDCtrl = L(StackCtrl).after(MCMemCtrl)
-MCStackRCtrl = L(StackCtrl).after(MCStackDCtrl)
+MCALUFlagCtrl = L(ALUFlagCtrl)
+MCBusCCtrl = L(BusOutCtrl)
+MCMemCtrl = L(MemCtrl)
+MCStackDCtrl = L(StackCtrl)
+MCStackRCtrl = L(StackCtrl)
 
 # ending for
-MCJmpCmpBit = L(bits=16).after(MCBusBCtrl)
-MCJmpCmpVal = L(bits=1).after(MCJmpCmpBit)
-MCJmpTarget = L(bits=11).after(MCJmpCmpVal)
+MCJmpCmpBit = L(bits=16)
+MCJmpCmpVal = L(bits=1)
+MCJmpTarget = L(bits=11)
 
 MCHeadNormal = MCStackRCtrl
 MCHeadJump = MCJmpTarget

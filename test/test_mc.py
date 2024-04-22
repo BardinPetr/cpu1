@@ -4,7 +4,7 @@ from myhdl import *
 
 from machine.components.base import Clock
 from machine.config import *
-from machine.mc.mc import MCInstruction, MCInstructionJump
+from machine.mc.mc import MCInstruction, MCInstructionJump, MCInstructionExec
 from machine.mc.mcseq import MCSequencer, L as MCS_LOG
 from machine.utils.hdl import Bus, Bus1
 from machine.utils.introspection import introspect
@@ -24,11 +24,11 @@ def test_mc():
     mc_cr = Bus(MC_INSTR_SZ)
 
     MC_ROM = [
-        MCInstruction(),
-        MCInstruction(),
+        MCInstructionExec(),
+        MCInstructionExec(),
         MCInstructionJump(jmp_target=100, jmp_cmp_bit=1, jmp_cmp_val=False),
-        MCInstruction(),
-        MCInstruction(),
+        MCInstructionExec(),
+        MCInstructionExec(),
         MCInstructionJump(jmp_target=1, jmp_cmp_bit=1, jmp_cmp_val=True),
     ]
     MC_ROM = [i.compile() for i in MC_ROM]
