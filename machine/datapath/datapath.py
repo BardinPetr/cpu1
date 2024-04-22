@@ -1,8 +1,7 @@
-from machine.arch import RegFileIdCtrl, RegFileOrNormalRegister, StackCtrl
+from machine.arch import RegFileIdCtrl, RegFileOrNormalRegister
 from machine.components.ALU import ALU
 from machine.components.ExtendedStack import ExtendedStack
 from machine.components.RAM import RAMSyncSP
-from machine.components.Stack import Stack
 from machine.components.base import Register
 from machine.components.mux import Mux, DeMux
 from machine.components.regfile import RegisterFile

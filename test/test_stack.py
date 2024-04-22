@@ -4,7 +4,7 @@ from myhdl import *
 
 from machine.arch import StackCtrl
 from machine.components.Stack import Stack
-from machine.components.base import Clock, Trig, RTrig, Counter
+from machine.components.base import Clock
 from machine.config import DATA_BITS
 from machine.utils.hdl import Bus1, Bus
 from machine.utils.introspection import introspect, IntrospectionTree

@@ -2,12 +2,9 @@ from mcasm.parse import mc_compile
 from myhdl import *
 
 from machine.arch import *
-from machine.arch import ALUCtrl, ALUPortCtrl
 from machine.cpu import CPU
-from machine.mc.mc import MCInstruction, MCInstructionJump
 from machine.utils.introspection import IntrospectionTree, TraceData, Trace, IntrospectedMemory
 from machine.utils.log import get_logger
-from machine.utils.runutils import display_trace_vcd
 from machine.utils.testutils import myhdl_pytest
 
 L = get_logger()

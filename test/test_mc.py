@@ -4,7 +4,7 @@ from myhdl import *
 
 from machine.components.base import Clock
 from machine.config import *
-from machine.mc.mc import MCInstruction, MCInstructionJump, MCInstructionExec
+from machine.mc.mc import MCInstructionJump, MCInstructionExec
 from machine.mc.mcseq import MCSequencer, L as MCS_LOG
 from machine.utils.hdl import Bus, Bus1
 from machine.utils.introspection import introspect
