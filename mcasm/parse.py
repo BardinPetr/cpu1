@@ -95,7 +95,7 @@ class ControlInstructionTransformer(Transformer):
         stack_cmd = arch.StackCtrl.encode_from_names([vals[0].upper()])
         return {
             f"stack_{stack_name.lower()}_ctrl": stack_cmd,
-            "bus_c_out_ctrl":                   arch.BusOutCtrl.encode_from_names([f"{stack_name.upper()}_TOS"])
+            "bus_c_out_ctrl":                   arch.BusOutCtrl.encode_from_names([f"{stack_name.upper()}S"])
         }
 
     """IO control"""

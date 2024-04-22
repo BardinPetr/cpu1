@@ -26,7 +26,7 @@ exec_mem: "store"
 // stacks
 exec_stack: STACK_OP "(" STACK_TYPE ")"
 STACK_TYPE: "D"i | "R"i
-STACK_OP: "push" | "pop"
+STACK_OP: "push" | "pop" | "rep" | "poprep"
 
 // jumps
 instr_jump: _jump_cond? ("JMP"i | "JUMP"i) jump_target
@@ -44,8 +44,8 @@ REGISTER: "PS" | "CR" | "PC"
 ALUFLAG: "Z" | "C" | "N" | "V"
 
 ALUCTRL: "ZERO" | "PASSA" | "PASSB" | "AND" | "OR" | "ADD" | "ADC" | "SHL" | "SHR" | "ASL" | "ASR" | "ROL" | "ROR"
-BUSINCTRL: "IGNORE" | "PS" | "DRR" | "D_TOS" | "R_TOS" | "RF_XX" | "RF_IP" | "RF_CR" | "RF_YY"
-BUSOUTCTRL: "IGNORE" | "PS" | "DRW" | "AR" | "D_TOS" | "R_TOS" | "RF_IP" | "RF_CR"
+BUSINCTRL: "IGNORE" | "PS" | "DRR" | "DS" | "RS" | "RF_XX" | "RF_IP" | "RF_CR" | "RF_YY"
+BUSOUTCTRL: "IGNORE" | "PS" | "DRW" | "AR" | "DS" | "RS" | "RF_IP" | "RF_CR"
 ALUPORTCTRL: "PASS" | "NOT" | "INC" | "SXT8" | "SXT16"
 
 // misc
