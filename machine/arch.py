@@ -118,9 +118,11 @@ class ALUFlagCtrl(CEnumM):
 
 
 class StackCtrl(CEnumS):
-    NONE = 0
-    PUSH = 1
-    POP = 2
+    NONE = 0b000
+    PUSH = 0b101
+    POP = 0b011
+    REP_TOS = 0b100
+    POP_REP = 0b111
 
 
 def extract_enums() -> Dict[str, Dict[str, int]]:

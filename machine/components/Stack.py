@@ -19,6 +19,7 @@ def Stack(
 ):
     """
     LIFO stack. Grows up from 0 to depth-1.
+    DEPRECATED
     :param clk:
     :param in_ctrl:
     :param in_data:

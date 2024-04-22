@@ -1,5 +1,6 @@
 from machine.arch import RegFileIdCtrl, RegFileOrNormalRegister, StackCtrl
 from machine.components.ALU import ALU
+from machine.components.ExtendedStack import ExtendedStack
 from machine.components.RAM import RAMSyncSP
 from machine.components.Stack import Stack
 from machine.components.base import Register
@@ -63,20 +64,23 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     ########################################################################
     """STACK SECTION"""
     d_stack_full, r_stack_full, d_stack_empty, r_stack_empty = Bus1(0), Bus1(0), Bus1(1), Bus1(1)
-    d_stack_ctrl, r_stack_ctrl = [Bus(enum=StackCtrl) for _ in range(2)]
+    d_stack_shift, r_stack_shift = [Bus(min=-1, max=2) for _ in range(2)]
+    d_stack_wr, r_stack_wr = [Bus1(0) for _ in range(2)]
     d_stack_tos0, d_stack_tos1, r_stack_tos0, r_stack_tos1 = [Bus(DATA_BITS) for _ in range(4)]
     d_stack_in, r_stack_in = [Bus(DATA_BITS) for _ in range(2)]
 
-    d_stack = Stack(
+    d_stack = ExtendedStack(
         clk,
-        d_stack_ctrl, d_stack_in,
+        d_stack_shift, d_stack_wr,
+        d_stack_in,
         d_stack_tos0, d_stack_tos1,
         d_stack_empty, d_stack_full,
         depth=STACK_D_DEPTH, width=DATA_BITS
     )
-    r_stack = Stack(
+    r_stack = ExtendedStack(
         clk,
-        r_stack_ctrl, r_stack_in,
+        r_stack_shift, r_stack_wr,
+        r_stack_in,
         r_stack_tos0, r_stack_tos1,
         r_stack_empty, r_stack_full,
         depth=STACK_D_DEPTH, width=DATA_BITS
@@ -184,7 +188,8 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     stack_dec = StackDecoder(
         clk,
         control_bus,
-        d_stack_ctrl, r_stack_ctrl
+        d_stack_shift, d_stack_wr,
+        r_stack_shift, r_stack_wr
     )
 
     return introspect()

@@ -98,11 +98,16 @@ def RegWriteDecoder(
 def StackDecoder(
         clk,
         control_bus,
-        d_stack_ctrl, r_stack_ctrl
+        d_stack_shift, d_stack_wr,
+        r_stack_shift, r_stack_wr
 ):
     @always_comb
     def run():
-        d_stack_ctrl.next = MCStackDCtrl.get(control_bus)
-        r_stack_ctrl.next = MCStackRCtrl.get(control_bus)
+        ctrl_d = MCStackDCtrl.get(control_bus)
+        ctrl_r = MCStackRCtrl.get(control_bus)
+        d_stack_wr.next = ctrl_d[2]
+        r_stack_wr.next = ctrl_r[2]
+        d_stack_shift.next = ctrl_d[2:].signed()
+        r_stack_shift.next = ctrl_r[2:].signed()
 
     return introspect()

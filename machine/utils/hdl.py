@@ -13,15 +13,13 @@ def hdl_block(func):
 
 
 def Bus(bits: Optional[int] = None, state=0, min=None, max=None, enum: Optional[Type[CtrlEnum]] = None) -> _Signal:
-    if enum is not None and bits is None:
-        bits = enum.encoded_len()
-        content = intbv(state)[bits:]
-    elif bits is not None:
-        content = intbv(state)[bits:]
-    elif min is not None or max is not None:
+    if min is not None or max is not None:
         content = intbv(state, min=min, max=max)
     else:
-        raise ValueError("Failed to configure bus")
+        if enum is not None and bits is None:
+            bits = enum.encoded_len()
+        content = intbv(state)[bits:]
+
     return _Signal(content, encoding=enum)
 
 
