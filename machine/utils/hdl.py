@@ -12,10 +12,17 @@ def hdl_block(func):
     return functools.wraps(func)(block(func))
 
 
-def Bus(bits: Optional[int] = None, state=0, enum: Optional[Type[CtrlEnum]] = None) -> _Signal:
+def Bus(bits: Optional[int] = None, state=0, min=None, max=None, enum: Optional[Type[CtrlEnum]] = None) -> _Signal:
     if enum is not None and bits is None:
         bits = enum.encoded_len()
-    return _Signal(intbv(state)[bits:], encoding=enum)
+        content = intbv(state)[bits:]
+    elif bits is not None:
+        content = intbv(state)[bits:]
+    elif min is not None or max is not None:
+        content = intbv(state, min=min, max=max)
+    else:
+        raise ValueError("Failed to configure bus")
+    return _Signal(content, encoding=enum)
 
 
 def Bus1(state=0) -> _Signal:
