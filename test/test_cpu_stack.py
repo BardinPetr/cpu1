@@ -5,39 +5,32 @@ from machine.arch import RegFileIdCtrl
 from machine.cpu import CPU
 from machine.utils.introspection import IntrospectionTree, Trace, TraceData
 from machine.utils.log import get_logger
-from machine.utils.runutils import display_trace_vcd
 from machine.utils.testutils import myhdl_pytest
 
 L = get_logger()
 
-"""
-implemented function is equivalent to:
-while True:
-    PUSH(1)
-    PUSH(1)
-    A = POP()
-    B = POP()
-    C = A + B
-    PUSH(C)
-    PUSH(TOP + 1)
-"""
-
-MC_ROM = mc_compile("""
-(IGNORE(INC) PASSA), push(D);
-(IGNORE(INC) PASSA), push(D);
-loop:
-(D_TOS ADD D_TOS), push(R);
-pop(D); 
-pop(D); 
-(R_TOS PASSA), push(D);
-pop(R);
-(D_TOS(INC) PASSA), push(D);
-jmp loop;
-""").compiled
-
 
 @myhdl_pytest(gui=False, duration=None)
 def test_cpu_stack():
+    """
+    implemented function is equivalent to:
+    while True:
+    TODO
+    """
+
+    MC_ROM = mc_compile("""
+        (IGNORE(INC) PASSA), push(D);
+        (IGNORE(INC) PASSA), push(D);
+        loop:
+        (DS ADD DS), push(R);
+        pop(D); 
+        pop(D); 
+        (RS PASSA), push(D);
+        pop(R);
+        (DS(INC) PASSA), push(D);
+        jmp loop;
+    """).compiled
+
     for src, comp in zip(MC_ROM, MC_ROM):
         L.info(f"MC{comp:064b}: {src}")
 
@@ -101,6 +94,59 @@ def test_cpu_stack():
         # print(stack_real)
         # print(stack_target)
         assert stack_real == stack_target
+
+        # display_trace_vcd('dist', 'f', trace_res)
+        raise StopSimulation()
+
+    return cpu, stimulus, tracer
+
+
+@myhdl_pytest(gui=False, duration=None)
+def test_cpu_stack_rep():
+    MC_ROM = mc_compile("""
+        (IGNORE(INC) PASSA) push(D);
+        (IGNORE(INC) ADD IGNORE(INC)) push(D);
+        (DS ADD DS) rep(D); 
+        (DS SHL DS) poprep(D); 
+        pop(D);
+    """).compiled
+
+    for src, comp in zip(MC_ROM, MC_ROM):
+        L.info(f"MC{comp:064b}: {src}")
+
+    cpu = CPU(MC_ROM)
+
+    intro = IntrospectionTree.build(cpu)
+    dp = intro.datapath
+    clk = intro.clk
+
+    trace_res = TraceData()
+    tracer = Trace(
+        intro.clk,
+        trace_res,
+        {
+            "CLK":    clk,
+            "IP":     dp.rf.registers[RegFileIdCtrl.IP],
+            "DS_TOP": dp.d_stack_tos0,
+            "DS_PRV": dp.d_stack_tos1,
+            "DS_SP":  dp.d_stack.sp,
+        }
+    )
+
+    @instance
+    def stimulus():
+        for i in range(len(MC_ROM) + 1):
+            yield clk.negedge
+            yield clk.posedge
+
+        a = 2
+        b = 1
+        target = [b, a, b + a, (b + a) << b, 0]
+
+        res = trace_res.peek(0, ['DS_TOP'])
+        res = [i['DS_TOP'] for i in res]
+
+        assert res[:len(target)] == target
 
         # display_trace_vcd('dist', 'f', trace_res)
         raise StopSimulation()

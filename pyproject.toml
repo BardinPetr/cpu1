@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "machine"
-version = "1.1.7"
+version = "1.1.9"
 description = ""
 authors = ["BardinPetr <bardin.petr@gmail.com>"]
 license = "GPLv3"

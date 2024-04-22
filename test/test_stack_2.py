@@ -10,7 +10,7 @@ from machine.utils.introspection import introspect, IntrospectionTree
 from machine.utils.testutils import myhdl_pytest
 
 
-@myhdl_pytest(gui=True)
+@myhdl_pytest(gui=False)
 def test_stack_2():
     clk = Bus1()
     cld = Clock(clk, 10)

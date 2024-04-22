@@ -49,8 +49,8 @@ class BusInCtrl(CEnumS):
     IGNORE = 0
     PS = 0b0001
     DRR = 0b0010
-    D_TOS = 0b0100
-    R_TOS = 0b0101
+    DS = 0b0100
+    RS = 0b0101
     RF_XX = 0b1000 + RegFileIdCtrl.R0
     RF_IP = 0b1000 + RegFileIdCtrl.IP
     RF_CR = 0b1000 + RegFileIdCtrl.CR
@@ -67,8 +67,8 @@ class BusOutCtrl(CEnumS):
     PS = 0b0001
     DRW = 0b0010
     AR = 0b0011
-    D_TOS = 0b0100
-    R_TOS = 0b0101
+    DS = 0b0100
+    RS = 0b0101
     RF_R0 = 0b1000 + RegFileIdCtrl.R0
     RF_IP = 0b1000 + RegFileIdCtrl.IP
     RF_CR = 0b1000 + RegFileIdCtrl.CR
@@ -121,8 +121,8 @@ class StackCtrl(CEnumS):
     NONE = 0b000
     PUSH = 0b101
     POP = 0b011
-    REP_TOS = 0b100
-    POP_REP = 0b111
+    REP = 0b100
+    POPREP = 0b111
 
 
 def extract_enums() -> Dict[str, Dict[str, int]]:
