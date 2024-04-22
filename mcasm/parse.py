@@ -4,7 +4,7 @@ from typing import List, Dict, Optional
 
 from lark import Lark, Transformer, v_args, Token, Tree
 from machine import arch
-from machine.mc.mc import MCInstruction, MCInstructionJump
+from machine.mc.mc import MCInstructionExec, MCInstructionJump, MCInstruction
 
 from mcasm.grammar import load_grammar
 
@@ -71,7 +71,7 @@ class LocationResolver(Transformer):
 
 
 class ControlInstructionTransformer(Transformer):
-    instr_exec = lambda self, x: MCInstruction(**merge_dicts(x))
+    instr_exec = lambda self, x: MCInstructionExec(**merge_dicts(x))
 
     """ALU control section"""
     exec_alu = lambda self, x: merge_dicts(x)
