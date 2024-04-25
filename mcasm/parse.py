@@ -1,29 +1,13 @@
 from dataclasses import dataclass
 from functools import reduce
-from typing import List, Dict, Optional
+from typing import List, Dict
 
 from lark import Lark, Transformer, v_args, Token, Tree
 from machine import arch
 from machine.mc.mc import MCInstructionExec, MCInstructionJump, MCInstruction
 
 from mcasm.grammar import load_grammar
-
-
-def merge_dicts(x: List[Dict]) -> Dict:
-    return reduce(lambda acc, i: {**acc, **i}, x, {})
-
-
-class Location:
-
-    def __init__(self, name: str = None, pos: Optional[int] = None):
-        self.name = name
-        self.pos = pos
-
-    def __repr__(self):
-        return f"L<{self.name}@{self.pos if self.pos is not None else 'UNDEF'}>"
-
-    def __str__(self):
-        return self.__repr__()
+from mcasm.utils import gen_jump, Location, merge_dicts, gen_line, gen_tree
 
 
 class TypeTransformer(Transformer):
@@ -39,41 +23,54 @@ class TypeTransformer(Transformer):
     def ID(self, val):
         return Location(name=str(val))
 
+    def block(self, val: List[Token]):
+        return val
+
+    BINARY = lambda self, x: int(x, 2)
     HEXNUMBER = lambda self, x: int(x, 16)
-    BINNUMBER = bool
+    BINNUMBER = lambda self, x: int(x, 2)
     NUMBER = int
 
 
 class LocationResolver(Transformer):
 
+    def __init__(self):
+        super().__init__()
+        self.labels: Dict[str, int] = {}
+
     @v_args(tree=True)
     def start(self, lines: Tree):
-        labels = dict()
-        for pos, line in enumerate(lines.children):
+        pos = 0
+
+        lines.children = lines.children[0]  # remove top block_content
+
+        for line in lines.children:
             label = next(line.find_data('label'), None)
             if label is not None:
                 loc: Location = label.children[0]
-                labels[loc.name] = pos
+                self.labels[loc.name] = pos
                 loc.pos = pos
+            else:
+                pos += 1
 
         for i in lines.find_data("jump_target"):
             loc: Location = i.children[0]
             if loc.pos is not None: continue
-            if loc.name not in labels:
+            if loc.name not in self.labels:
                 raise RuntimeError(f"Unable to resolve location {loc}")
 
-            loc.pos = labels[loc.name]
+            loc.pos = self.labels[loc.name]
 
+        lines.children = [i for i in lines.children if i.children[0].data != 'label']
         return lines
 
 
-"""Here we are translating asm each line into arguments of MCInstruction """
-
-
 class ControlInstructionTransformer(Transformer):
+    """Here we are translating asm each line into arguments of MCInstruction """
     instr_exec = lambda self, x: MCInstructionExec(**merge_dicts(x))
 
     """ALU control section"""
+    exec_alu_compute = lambda self, x: merge_dicts(x)
     exec_alu = lambda self, x: merge_dicts(x)
     alu_ctrl = lambda self, x: dict(alu_ctrl=arch.ALUCtrl.encode_from_names(x))
     alu_op_a = lambda self, x: dict(bus_a_in_ctrl=x[0][0], alu_port_a_ctrl=x[0][1])
@@ -115,6 +112,54 @@ class JumpInstructionTransformer(Transformer):
         return dict(jmp_target=val[0].pos)
 
 
+class LangTransformer(Transformer):
+    def __init__(self):
+        super().__init__()
+        self._if_id = 0
+
+    def block_content(self, tree: List[Tree]):
+        return reduce(
+            lambda acc, cur: acc + (line.children if (line := cur.children[0]).data == 'block' else [cur]),
+            tree, []
+        )
+
+    @v_args(inline=True)
+    def if_check(self, alu, pos, cmp):
+        return dict(alu=alu, cmp_pos=pos, cmp_val=cmp)
+
+    @v_args(inline=True)
+    def instr_if(self, check: Dict, true_branch_block, false_branch_block):
+        base_label = f"__if_{self._if_id}"
+        true_label = Location(name=f"{base_label}_on_true")
+        end_loc = Location(name=f"{base_label}_end")
+        self._if_id += 1
+
+        jump_instr = gen_jump(
+            **check,
+            target=true_label  # jump if TRUE!
+        )
+        false_exit_instr = gen_jump(
+            target=end_loc
+        )
+        return gen_tree(
+            "block",
+            [
+                gen_line(jump_instr),
+                *false_branch_block,
+                gen_line(false_exit_instr),
+                gen_line(label=true_label),
+                *true_branch_block,
+                gen_line(label=end_loc)
+            ]
+        )
+
+
+class SwitchTransformer(Transformer):
+    def __init__(self):
+        super().__init__()
+        self._switch_id = 0
+
+
 @dataclass
 class CompiledMC:
     commands: List[MCInstruction]
@@ -130,19 +175,19 @@ class CodeTransformer(Transformer):
         return line[-1]
 
     def start(self, lines):
-        return CompiledMC(
-            lines,
-            {}
-        )
+        return CompiledMC(lines, {})
 
 
 class MCASMCompiler:
 
     def __init__(self):
         self._lark = Lark(load_grammar())
+        self._location_resolver = LocationResolver()
         self._transform = (
                 TypeTransformer() *
-                LocationResolver() *
+                LangTransformer() *
+                # SwitchTransformer() *
+                self._location_resolver *
                 ControlInstructionTransformer() *
                 JumpInstructionTransformer() *
                 CodeTransformer()
@@ -150,8 +195,9 @@ class MCASMCompiler:
 
     def compile(self, text: str) -> CompiledMC:
         ast = self._lark.parse(text)
-        ast = self._transform.transform(ast)
-        return ast
+        info: CompiledMC = self._transform.transform(ast)
+        info.labels = self._location_resolver.labels
+        return info
 
 
 def mc_compile(text: str) -> CompiledMC:

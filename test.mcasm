@@ -1,14 +1,56 @@
-label1:
-(RF_IP(NOT) PASSA IGNORE(INC)) -> PS, set(Z N C V) store;
-(RF_IP PASSA IGNORE(INC NOT)) -> PS, set(Z N C V) store;
-label3:  (RF_IP PASSA) -> PS set(Z,N,C,V) store;
-(PASSA) -> PS set(V);
-(PASSA) set(V);
-(ZERO);
-label5:
-jump 0x3;
-JmP 3;
-jump label1;
-if (RF_IP PASSA)[10] == 0 jump label3;
-(ZERO), push(R), pop(R);
-(ZERO), push(D);
+start:
+if (CR PASSA CR)[20] == 1 {
+    jump 3;
+    jump 3;
+} else {
+    (PASSB);
+    (PASSB);
+};
+
+#label1:
+#(IP(NOT) PASSA IGNORE(INC)) -> PS, set(Z N C V) store;
+#(IP PASSA IGNORE(INC NOT)) -> PS, set(Z N C V) store;
+#label3:  (IP PASSA) -> PS set(Z,N,C,V) store;
+#(PASSA) -> PS set(V);
+#(PASSA) set(V);
+#(ZERO);
+#label5:
+#jump 0x3;
+#JmP 3;
+#jump label1;
+#if (IP PASSA)[10] == 0 jump 1;
+#(ZERO), push(R), pop(R);
+#(ZERO), push(D);
+
+
+
+#switch (CR PASSA CR)[30:28] exit switch_exit {
+#    case 0b0110 {
+#        jump 6;
+#    }
+#    case 0b0111 {
+#        jump 7;
+#    }
+#    case 0b0011 {
+#        jump 3;
+#    }
+#    case 0b0100 {
+#        jump 4;
+#    }
+#    case 0b0101 {
+#        jump 5;
+#    }
+#    case 0b0000 {
+#        jump 0;
+#    }
+#    case 0b0001 {
+#        jump 1;
+#    }
+#    case 0b0010 {
+#        jump 2;
+#    }
+#};
+#
+#switch_exit:
+#(ZERO);
+#
