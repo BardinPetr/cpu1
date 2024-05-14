@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 from typing import Dict, List
 
-from forth.main import parseAST
-from lplib.lexer.tstream import CharStream
+from lplib.lexer.tokens import Token
 from lplib.parser.transformer import Transformer
+
+from compiler.isa import ImmInstr, Opcode, Instruction
+from compiler.mapper import map_to_opcode
 
 
 @dataclass
@@ -28,7 +30,7 @@ class ForthFunction:
         self.size_slots = len(self.code) * 1
 
 
-class ForthTransformer(Transformer):
+class ForthLangTransformer(Transformer):
     SLOT_SIZE = 1
 
     def __init__(self):
@@ -62,3 +64,24 @@ class ForthTransformer(Transformer):
 
     def program(self, *lines):
         return lines
+
+
+class ForthISATransformer(Transformer):
+
+    def cmd_push(self, value: int):
+        return ImmInstr(Opcode.IPUSH, value)
+
+    def cmd_calc(self, value: Token):
+        return Instruction(map_to_opcode(value.type_id))
+
+    def cmd_compare(self, value):
+        return Instruction(map_to_opcode(value.type_id))
+
+    def cmd_mem(self, value):
+        pass
+
+    def cmd_io(self, value):
+        pass
+
+    def cmd_call(self, value):
+        pass

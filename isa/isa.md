@@ -63,10 +63,15 @@ fetch(SRC) eq ram.read(IMMA)
 
 Semantics: DST <- stacks[SID].pop()
 
-
-
 ## JCP CMODE REL
 
 if DTOS CMODE DSOS then jump (IP+REL)
 
+    FOR
+    WHILE
 
+    IO_IN = "key"
+    IO_OUT_STR = ".\""
+    IO_OUT_INT = "."
+    IO_OUT_CHAR = "emit"
+    IO_OUT_CR = "cr"

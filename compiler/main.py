@@ -3,11 +3,11 @@ from pprint import pprint
 from forth.main import parseAST
 from lplib.lexer.tstream import CharStream
 
-from compiler.transformer import ForthTransformer
+from compiler.transformer import ForthISATransformer, ForthLangTransformer
 
 if __name__ == "__main__":
     text = """
-        : fizz?  3 mod 0 = dup if ." Fizz" then ;
+        : fizz?  3 mod 0 = dup if ." Fizz" + then ;
         : buzz?  5 mod 0 = dup if ." Buzz" then ;
         : fizz-buzz?  dup fizz? swap buzz? or invert ;
         : do-fizz-buzz  25 1 do cr i fizz-buzz? if i . then loop ;
@@ -31,9 +31,7 @@ if __name__ == "__main__":
     stream = CharStream(text)
     ast = parseAST(stream)
 
-    code = ForthTransformer()(ast)
+    ast = ForthISATransformer()(ast)
+    # ast = ForthLangTransformer()(ast)
 
-    # pprint(ast)
-    # print(ast.print())
-
-    pprint(code)
+    pprint(ast)
