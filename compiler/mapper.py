@@ -30,4 +30,4 @@ from isa import Opcode, Instruction
     #     raise ValueError(f"No translation for token {token}")
     # return Instruction(opcode)
 
-# TODO implement:  type, i,
+# TODO implement:  type, i, over, drop, dup, swap

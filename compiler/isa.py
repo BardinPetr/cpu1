@@ -1,5 +1,5 @@
 # class Instruction:
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import StrEnum, auto
 from typing import Optional
 
@@ -7,12 +7,16 @@ from typing import Optional
 @dataclass
 class Instruction:
     opcode: 'Opcode'
+    stack: Optional[int] = 0
 
     def __repr__(self):
         return str(self)
 
+    def str_stack(self):
+        return '@R' if self.stack != 0 else ""
+
     def __str__(self):
-        return f"<{self.opcode}>"
+        return f"<{self.opcode}{self.str_stack()}>"
 
 
 Instr = Instruction
@@ -20,13 +24,13 @@ Instr = Instruction
 
 @dataclass
 class ImmInstr(Instruction):
-    imm: int
+    imm: int = 0
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        return f"<{self.opcode}>(I|{self.imm})"
+        return f"{super().__str__()}(I|{self.imm})"
 
 
 @dataclass
@@ -40,7 +44,7 @@ class IPRelInstr(Instruction):
     def __str__(self):
         r = self.rel if self.rel else "?"
         a = f"->{self.abs}" if self.abs else ""
-        return f"<{self.opcode}>(I|R{r}{a})"
+        return f"{super().__str__()}(I|R{r}{a})"
 
 
 class Opcode(StrEnum):
@@ -53,6 +57,8 @@ class Opcode(StrEnum):
     AND = auto()
     OR = auto()
     INV = auto()
+    INC = auto()
+    DEC = auto()
 
     # comparison
     CEQ = auto()
@@ -61,6 +67,10 @@ class Opcode(StrEnum):
 
     # stack
     IPUSH = auto()
+    XCHG = auto()
+    STKMV = auto()
+    STKPOP = auto()
+    STKOVR = auto()
 
     # memory
     FETCH = auto()

@@ -6,7 +6,7 @@ from typing import Dict, List, Optional, Tuple
 from lplib.lexer.tokens import Token
 from lplib.parser.transformer import Transformer
 
-from compiler.isa import ImmInstr, Opcode, Instruction, IPRelInstr
+from compiler.isa import ImmInstr, Opcode, Instruction, IPRelInstr, Instr
 
 
 @dataclass
@@ -65,7 +65,7 @@ class ForthTransformer(Transformer):
         return var
 
     def cmd_push(self, value: int):
-        return ImmInstr(Opcode.IPUSH, value)
+        return ImmInstr(Opcode.IPUSH, imm=value)
 
     """ Strings """
 
@@ -84,8 +84,8 @@ class ForthTransformer(Transformer):
     def cmd_io_str(self, token: Token) -> List[Instruction]:
         """For inplace print string"""
         return [
-            *self.cmd_str(token),
-            # TODO synthetic "type"
+            self.cmd_str(token),
+            self.cmd_call("type")
         ]
 
     """ Definitions """
@@ -102,10 +102,15 @@ class ForthTransformer(Transformer):
         self.__create_variable(name, count + 1)
 
     def function(self, name, lines):
+        """
+        Functions are stored in dictionary, and on creation assigned with their memory location.
+        Function is just code segment with ret added to it in the end
+        """
+
         if name in self.__functions:
             raise Exception(f"Function {name} redefined")
 
-        lines.append(Instruction(Opcode.RET))
+        lines.append(Instr(Opcode.RET))
 
         func = ForthFunction(name, self.__func_mem_pos, lines)
         self.__functions[name] = func
@@ -114,6 +119,10 @@ class ForthTransformer(Transformer):
     """ Control structures """
 
     def if_expr(self, *branches):
+        """
+        IF and IF-ELSE structures.
+        Uses inverted conditional jump to minify code
+        """
         if len(branches) == 1:
             # if-then
             br_true = branches[0]
@@ -160,7 +169,31 @@ class ForthTransformer(Transformer):
         ]
 
     def for_expr(self, body):
-        pass  # TODO
+        """
+        For loop.
+        Uses R-stack to store current index and end index [end, cur TOP].
+        `i` word is just peek from R-stack to D-stack.
+        On init copies range to R-stack is same order.
+        After body increases R TOP, and compares with end. If not equal, jump to body beginning.
+        Else, on exit clear R-stack.
+        """
+        post = [
+            Instr(Opcode.INC, stack=1),
+            Instr(Opcode.STKOVR, stack=1),
+            Instr(Opcode.STKOVR, stack=1),
+            Instr(Opcode.CEQ, stack=1),
+        ]
+        to_body = len(body) + len(post) + 1
+        return [
+            Instr(Opcode.STKMV),
+            Instr(Opcode.STKMV),
+            Instr(Opcode.XCHG, stack=1),
+            *body,
+            *post,
+            IPRelInstr(Opcode.IJMPF, stack=1, rel=-to_body),
+            Instr(Opcode.STKPOP, stack=1),
+            Instr(Opcode.STKPOP, stack=1)
+        ]
 
     """ Word execution """
 

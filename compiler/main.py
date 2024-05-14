@@ -36,6 +36,7 @@ if __name__ == "__main__":
         ." dsads"
         : print-keycode begin key 33 = invert while key emit repeat ;
         : print-keycode-do  begin key dup . 32 = until ;
+        : loop-test  10 0 do i . loop ;
     """
 
     stream = CharStream(text)
