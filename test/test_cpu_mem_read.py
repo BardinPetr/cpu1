@@ -21,10 +21,10 @@ Test is to output to CR whole RAM segment from 0 to LEN.
 """
 
 MC_ROM = mc_compile("""
-(RF_IP PASSA) -> AR;
-(DRR PASSA) -> RF_CR;
-(RF_IP(INC) PASSA) -> RF_IP;
-(RF_CR PASSA);
+(IP PASSA) -> AR;
+(DRR PASSA) -> CR;
+(IP(INC) PASSA) -> IP;
+(CR PASSA);
 jump 0;
 """).compiled
 

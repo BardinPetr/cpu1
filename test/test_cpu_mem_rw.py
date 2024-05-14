@@ -20,10 +20,10 @@ Each cycle:
 """
 
 MC_ROM = mc_compile("""
-(RF_IP PASSA) -> AR;
-(DRR PASSA) -> RF_CR;
-(RF_IP(INC) PASSA) -> RF_IP;
-(RF_CR SHL IGNORE(INC)) -> DRW;
+(IP PASSA) -> AR;
+(DRR PASSA) -> CR;
+(IP(INC) PASSA) -> IP;
+(CR SHL IGNORE(INC)) -> DRW;
 store;
 jump 0;
 """).compiled

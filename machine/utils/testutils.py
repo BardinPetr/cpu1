@@ -1,3 +1,5 @@
+from myhdl._Signal import _Signal
+
 from machine.utils.hdl import hdl_block
 from machine.utils.runutils import run_sim
 
@@ -12,3 +14,9 @@ def myhdl_pytest(gui=False, duration=None):
         return wrapper
 
     return _myhdl_pytest
+
+
+def skip_clk(clk: _Signal, cnt: int):
+    for _ in range(cnt + 1):
+        yield clk.posedge
+        yield clk.negedge
