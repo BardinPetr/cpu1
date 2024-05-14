@@ -1,0 +1,21 @@
+start:
+(IP PASSA) -> AR;
+(DRR PASSA) -> CR;
+(IP(INC) PASSA) -> IP;
+
+if (CR PASSA)[31] == 1 jump stack_ops;
+# CMD=0b0XXX instruction with 1 operand
+
+jmp start;
+
+
+stack_ops:
+# CMD=0b0XXX instruction with stack operands
+
+
+#if (CR PASSA)[30] == 1 jump ;
+# CMD=0b0
+
+
+
+jmp start;

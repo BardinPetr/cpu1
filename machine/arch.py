@@ -51,10 +51,10 @@ class BusInCtrl(CEnumS):
     DRR = 0b0010
     DS = 0b0100
     RS = 0b0101
-    RF_XX = 0b1000 + RegFileIdCtrl.R0
-    RF_IP = 0b1000 + RegFileIdCtrl.IP
-    RF_CR = 0b1000 + RegFileIdCtrl.CR
-    RF_YY = 0b1000 + RegFileIdCtrl.R1
+    XX = 0b1000 + RegFileIdCtrl.R0
+    IP = 0b1000 + RegFileIdCtrl.IP
+    CR = 0b1000 + RegFileIdCtrl.CR
+    YY = 0b1000 + RegFileIdCtrl.R1
 
 
 class BusOutCtrl(CEnumS):
@@ -69,11 +69,11 @@ class BusOutCtrl(CEnumS):
     AR = 0b0011
     DS = 0b0100
     RS = 0b0101
-    RF_R0 = 0b1000 + RegFileIdCtrl.R0
-    RF_IP = 0b1000 + RegFileIdCtrl.IP
-    RF_CR = 0b1000 + RegFileIdCtrl.CR
-    RF_R1 = 0b1000 + RegFileIdCtrl.R1
-    RF_R2 = 0b1000 + RegFileIdCtrl.R2
+    R0 = 0b1000 + RegFileIdCtrl.R0
+    IP = 0b1000 + RegFileIdCtrl.IP
+    CR = 0b1000 + RegFileIdCtrl.CR
+    R1 = 0b1000 + RegFileIdCtrl.R1
+    R2 = 0b1000 + RegFileIdCtrl.R2
 
 
 class RegFileOrNormalRegister(CEnumS):
