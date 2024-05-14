@@ -1,6 +1,7 @@
 # class Instruction:
 from dataclasses import dataclass
 from enum import StrEnum, auto
+from typing import Optional
 
 
 @dataclass
@@ -25,7 +26,21 @@ class ImmInstr(Instruction):
         return str(self)
 
     def __str__(self):
-        return f"<{self.opcode}>(I{self.imm})"
+        return f"<{self.opcode}>(I|{self.imm})"
+
+
+@dataclass
+class IPRelInstr(Instruction):
+    abs: Optional[int] = None
+    rel: Optional[int] = None
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        r = self.rel if self.rel else "?"
+        a = f"->{self.abs}" if self.abs else ""
+        return f"<{self.opcode}>(I|R{r}{a})"
 
 
 class Opcode(StrEnum):
@@ -55,7 +70,8 @@ class Opcode(StrEnum):
     # jumps
     JMP = auto()  # absolute on stack
     IJMP = auto()  # relative immediate
-    CJMP = auto()  # relative immediate jump if stack is true
+    IJMPF = auto()  # relative immediate jump if stack is false
+    IJMPT = auto()  # relative immediate jump if stack is true
 
     # functions
     CALL = auto()  # absolute on stack
@@ -66,7 +82,8 @@ class Opcode(StrEnum):
     # TODO
 
     # IO
-    # TODO
+    IN = auto()
+    OUT = auto()
 
     # control
     NOP = auto()

@@ -41,7 +41,7 @@ regex = ["regex"]
 
 [[package]]
 name = "lplib"
-version = "1.1.2"
+version = "1.4.2"
 description = ""
 optional = false
 python-versions = "^3.11"
