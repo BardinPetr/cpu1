@@ -10,6 +10,7 @@ python = "^3.11"
 myhdl = "^0.11.45"
 pyvcd = "^0.4.0"
 mcasm = {path = "../mcasm"}
+lplib = {path = "/home/petr/Desktop/cpu1_forth"}
 
 
 [tool.poetry.group.test.dependencies]
