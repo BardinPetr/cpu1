@@ -1,42 +1,12 @@
-from dataclasses import dataclass, field
-from hashlib import sha1
 from pprint import pprint
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 from lplib.lexer.tokens import Token
 from lplib.parser.transformer import Transformer
 
-from compiler.isa import ImmInstr, Opcode, Instruction, IPRelInstr, Instr
-
-
-@dataclass
-class ForthVariable:
-    name: str
-    loc: int
-    size_slots: int
-    init_value: Optional[List[int]] = None
-
-    def __post_init__(self):
-        assert not self.init_value or len(self.init_value) == self.size_slots
-
-
-@dataclass
-class Command:
-    pass
-
-
-@dataclass
-class ForthFunction:
-    name: str
-    loc: int
-    code: List[Command]
-
-    def __post_init__(self):
-        self.size_slots = len(self.code) * 1
-
-
-def const_string_var_name(string: str) -> str:
-    return "cstr_sha1_" + sha1(string.encode()).digest().hex()
+from compiler.isa import ImmInstr, Opcode, IPRelInstr, Instr
+from compiler.models import ForthVariable, ForthFunction, ForthCode, Instructions
+from compiler.utils import Synthetic, const_string_var_name, unwrap_code, Syn
 
 
 class ForthTransformer(Transformer):
@@ -64,29 +34,29 @@ class ForthTransformer(Transformer):
         self.__storage_mem_pos += slots
         return var
 
-    def cmd_push(self, value: int):
-        return ImmInstr(Opcode.IPUSH, imm=value)
+    def cmd_push(self, value: int) -> Synthetic:
+        return Syn.one(ImmInstr(Opcode.IPUSH, imm=value))
 
     """ Strings """
 
-    def cmd_str(self, token: Token) -> List[Instruction]:
+    def cmd_str(self, token: Token) -> Synthetic:
         """For defining const string and returning its (add, len)"""
         text = token.value
         data = text.encode('ascii')
         name = const_string_var_name(text)
         if not (var := self.__variables.get(name, None)):
             var = self.__create_variable(name, init_value=data)
-        return [
+        return Syn.many(
             self.cmd_push(var.loc),
             self.cmd_push(var.size_slots)
-        ]
+        )
 
-    def cmd_io_str(self, token: Token) -> List[Instruction]:
+    def cmd_io_str(self, token: Token) -> Synthetic:
         """For inplace print string"""
-        return [
+        return Syn.many(
             self.cmd_str(token),
             self.cmd_call("type")
-        ]
+        )
 
     """ Definitions """
 
@@ -101,24 +71,35 @@ class ForthTransformer(Transformer):
     def def_arr(self, name, count):
         self.__create_variable(name, count + 1)
 
-    def function(self, name, lines):
+    """ Word execution """
+
+    def cmd_call(self, word: str) -> Synthetic:
         """
-        Functions are stored in dictionary, and on creation assigned with their memory location.
-        Function is just code segment with ret added to it in the end
+        Parse function calls, internal word calls, synthetic word calls, constant and variables evaluation
+        Internal word calls translates directly to opcodes, and synthetic to
         """
+        if const := self.__constants.get(word, None):
+            return self.cmd_push(const)
 
-        if name in self.__functions:
-            raise Exception(f"Function {name} redefined")
+        if var := self.__variables.get(word, None):
+            return self.cmd_push(var.loc)
 
-        lines.append(Instr(Opcode.RET))
+        if func := self.__functions.get(word, None):
+            # relative address would be substituted in second pass
+            return Syn.one(
+                IPRelInstr(Opcode.ICALL, abs=func.loc)
+            )
 
-        func = ForthFunction(name, self.__func_mem_pos, lines)
-        self.__functions[name] = func
-        self.__func_mem_pos += func.size_slots
+        # if internal := self.__
+        # raise ValueError(f"Word {word} has no meaning")
+        # TODO
+        return Syn.one(word)
+
+    """HERE BEGINS LANGUAGE STRUCTURES PART"""
 
     """ Control structures """
 
-    def if_expr(self, *branches):
+    def if_expr(self, *branches: Instructions) -> Synthetic:
         """
         IF and IF-ELSE structures.
         Uses inverted conditional jump to minify code
@@ -126,49 +107,49 @@ class ForthTransformer(Transformer):
         if len(branches) == 1:
             # if-then
             br_true = branches[0]
-            return [
+            return Syn.many(
                 IPRelInstr(Opcode.IJMPF, rel=len(br_true)),
                 *br_true
-            ]
+            )
 
         # if-else-then
         br_true, br_false = branches
         rel_jump_to_false = len(br_true) + 1
         rel_jump_to_end = len(br_false)
-        return [
+        return Syn.many(
             IPRelInstr(Opcode.IJMPF, rel=rel_jump_to_false),  # if `FALSE` jump to `label_false`
             *br_true,
             IPRelInstr(Opcode.IJMP, rel=rel_jump_to_end),  # jump to `label_end`
             # label_false
             *br_false
             # label_end
-        ]
+        )
 
-    def do_while_expr(self, body):
+    def do_while_expr(self, body: Instructions) -> Synthetic:
         """
         Run body, then jump to body start if stack top is false
         """
         to_beginning = len(body) + 1
-        return [
+        return Syn.many(
             *body,
             IPRelInstr(Opcode.IJMPF, rel=-to_beginning),
-        ]
+        )
 
-    def while_expr(self, check, body):
+    def while_expr(self, check, body: Instructions) -> Synthetic:
         """
         Run check, if stack top is true continue to body, then jump to check beginning
                    else jump after body
         """
         to_beginning = len(body) + len(check) + 2
         to_outside = len(body) + 1
-        return [
+        return Syn.many(
             *check,
             IPRelInstr(Opcode.IJMPF, rel=to_outside),
             *body,
             IPRelInstr(Opcode.IJMP, rel=-to_beginning),
-        ]
+        )
 
-    def for_expr(self, body):
+    def for_expr(self, body: Instructions) -> Synthetic:
         """
         For loop.
         Uses R-stack to store current index and end index [end, cur TOP].
@@ -184,7 +165,7 @@ class ForthTransformer(Transformer):
             Instr(Opcode.CEQ, stack=1),
         ]
         to_body = len(body) + len(post) + 1
-        return [
+        return Syn.many(
             Instr(Opcode.STKMV),
             Instr(Opcode.STKMV),
             Instr(Opcode.XCHG, stack=1),
@@ -193,34 +174,41 @@ class ForthTransformer(Transformer):
             IPRelInstr(Opcode.IJMPF, stack=1, rel=-to_body),
             Instr(Opcode.STKPOP, stack=1),
             Instr(Opcode.STKPOP, stack=1)
-        ]
+        )
 
-    """ Word execution """
+    """Functions"""
 
-    def cmd_call(self, word: str):
+    def function(self, name, lines: Instructions):
         """
-        Parse function calls, internal word calls, synthetic word calls, constant and variables evaluation
-        Internal word calls translates directly to opcodes, and synthetic to
+        Functions are stored in dictionary, and on creation assigned with their memory location.
+        Function is just code segment with ret added to it in the end
         """
-        if const := self.__constants.get(word, None):
-            return self.cmd_push(const)
 
-        if var := self.__variables.get(word, None):
-            return self.cmd_push(var.loc)
+        if name in self.__functions:
+            raise Exception(f"Function {name} redefined")
 
-        if func := self.__functions.get(word, None):
-            # relative address would be substituted in second pass
-            return IPRelInstr(Opcode.ICALL, abs=func.loc)
+        lines.append(Instr(Opcode.RET))
 
-        # if internal := self.__
-        # raise ValueError(f"Word {word} has no meaning")
-        # TODO
-        return word
+        func = ForthFunction(name, self.__func_mem_pos, lines)
+        self.__functions[name] = func
+        self.__func_mem_pos += func.size_slots
 
     """ Code blocks """
 
-    # TODO unwind code
+    def func_body(self, *lines) -> Instructions:
+        """
+        Before passing code block
+        to some control structure (which consumes func_body)
+        unwind nested synthetic commands to list
+        """
+        return unwrap_code(lines)
 
-    def program(self, *lines):
-        pprint(self.__functions)
-        return lines  # TODO
+    def program(self, *lines) -> ForthCode:
+        lines = unwrap_code(lines)
+        return ForthCode(
+            lines,
+            self.__variables,
+            self.__functions
+        )
+
+    # TODO add checks
