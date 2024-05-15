@@ -4,6 +4,7 @@ from typing import Dict, List, Optional
 from lplib.lexer.tokens import Token
 from lplib.parser.transformer import Transformer
 
+from compiler.funclib import FunctionLibrary
 from compiler.isa import ImmInstr, Opcode, IPRelInstr, Instr
 from compiler.models import ForthVariable, ForthFunction, ForthCode, Instructions
 from compiler.utils import Synthetic, const_string_var_name, unwrap_code, Syn
@@ -12,13 +13,16 @@ from compiler.utils import Synthetic, const_string_var_name, unwrap_code, Syn
 class ForthTransformer(Transformer):
     SLOT_SIZE = 1
 
-    def __init__(self):
+    def __init__(self, funclib: Optional[FunctionLibrary] = None):
         super().__init__()
+
+        self.__functions: FunctionLibrary = FunctionLibrary()
+        if funclib:
+            self.__functions += funclib
+
+        self.__storage_mem_pos = 0
         self.__constants: Dict[str, int] = {}
         self.__variables: Dict[str, ForthVariable] = {}
-        self.__functions: Dict[str, ForthFunction] = {}
-        self.__storage_mem_pos = 0
-        self.__func_mem_pos = 0
 
     def __create_variable(self, name, slots=1, init_value: Optional[List[int]] = None) -> ForthVariable:
         """
@@ -84,16 +88,15 @@ class ForthTransformer(Transformer):
         if var := self.__variables.get(word, None):
             return self.cmd_push(var.loc)
 
-        if func := self.__functions.get(word, None):
-            # relative address would be substituted in second pass
-            return Syn.one(
-                IPRelInstr(Opcode.ICALL, abs=func.loc)
-            )
+        if func := self.__functions[word]:
+            if func.is_inline:
+                return Syn.many(*func.code)
 
-        # if internal := self.__
+            # relative address would be substituted in second pass
+            return Syn.one(IPRelInstr(Opcode.ICALL, abs=func.loc))
+
+        print(f"Word {word} has no meaning")
         # raise ValueError(f"Word {word} has no meaning")
-        # TODO
-        return Syn.one(word)
 
     """HERE BEGINS LANGUAGE STRUCTURES PART"""
 
@@ -183,15 +186,8 @@ class ForthTransformer(Transformer):
         Functions are stored in dictionary, and on creation assigned with their memory location.
         Function is just code segment with ret added to it in the end
         """
-
-        if name in self.__functions:
-            raise Exception(f"Function {name} redefined")
-
         lines.append(Instr(Opcode.RET))
-
-        func = ForthFunction(name, self.__func_mem_pos, lines)
-        self.__functions[name] = func
-        self.__func_mem_pos += func.size_slots
+        self.__functions.add_ext(name, lines)
 
     """ Code blocks """
 
@@ -208,7 +204,7 @@ class ForthTransformer(Transformer):
         return ForthCode(
             lines,
             self.__variables,
-            self.__functions
+            self.__functions.to_memory()
         )
 
     # TODO add checks

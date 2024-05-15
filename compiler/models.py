@@ -18,18 +18,30 @@ class ForthVariable:
 @dataclass
 class ForthFunction:
     name: str
-    loc: int
     code: List[Instruction]
+    loc: Optional[int] = None
+    is_inline: bool = False
 
     def __post_init__(self):
         self.size_slots = len(self.code) * 1
+
+    @staticmethod
+    def inline(name: str, code: List[Instruction]) -> 'ForthFunction':
+        return ForthFunction(name, code, is_inline=True)
+
+    @staticmethod
+    def external(name: str, loc: int, code: List[Instruction]) -> 'ForthFunction':
+        return ForthFunction(name, code, loc=loc, is_inline=False)
+
+
+Func = ForthFunction
 
 
 @dataclass
 class ForthCode:
     code: List[Instruction]
     variables: Dict[str, ForthVariable]
-    functions: Dict[str, ForthFunction]
+    functions: List[ForthFunction]
 
 
 Instructions = List[Instruction]

@@ -3,6 +3,7 @@ from pprint import pprint
 from forth.main import parseAST
 from lplib.lexer.tstream import CharStream
 
+from compiler.stdlib import stdlib
 from compiler.transformer import ForthTransformer
 
 if __name__ == "__main__":
@@ -41,11 +42,7 @@ if __name__ == "__main__":
 
     stream = CharStream(text)
     ast = parseAST(stream)
-
-    # print(ast.print())
-
-    ast = ForthTransformer()(ast)
-    # ast = ForthLangTransformer()(ast)
+    ast = ForthTransformer(funclib=stdlib)(ast)
 
     pprint(ast)
     # TODO cells in lexer&parser
