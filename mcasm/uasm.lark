@@ -1,0 +1,76 @@
+start: block_content
+
+line: label | ((instr_if | instr_exec | instr_jump) ";")
+block_content: (line | block_content)*
+
+// label
+label: ID ":"
+
+// normal instructions
+instr_exec: _exec+
+_exec: exec_alu | exec_alu_flags | exec_mem | exec_stack
+
+exec_alu: exec_alu_compute _exec_alu_store
+exec_alu_compute: "(" alu_op_a? alu_ctrl alu_op_b? ")"
+_exec_alu_store: ("->" alu_op_c)?
+alu_op_a: alu_op
+alu_op_b: alu_op
+alu_op_c: BUSOUTCTRL
+alu_op: BUSINCTRL ("(" ALUPORTCTRL+ ")")?
+alu_ctrl: ALUCTRL
+
+exec_alu_flags: "set" "(" ALUFLAG+ ")"
+exec_mem: "store"
+
+// stacks
+exec_stack: STACK_OP "(" STACK_TYPE ")"
+STACK_TYPE: "D"i | "R"i
+STACK_OP: "push" | "pop" | "rep" | "poprep"
+
+// jumps
+instr_jump: _jump_cond? ("JMP"i | "JUMP"i) jump_target
+_jump_cond: "if"i exec_alu_compute "[" jump_cmp_pos "]" "==" jump_cmp
+jump_cmp_pos: NUMBER
+jump_cmp: BINARY
+jump_target: LOC
+
+// switches
+// instr_switch: "switch"i exec_alu_compute "[" NUMBER ":" NUMBER "]" "exit"i ID "{" switch_body "}"
+// switch_body: case_def+
+// default_def: "default"i "{" case_body "}"
+// case_def: "case"i case_val "{" case_body "}"
+// case_body: line+
+// case_val: "0b"i BINARY+
+
+// if
+instr_if: "if"i if_check "{" block_content "}" "else"i "{" block_content "}"
+if_check: exec_alu_compute "[" NUMBER "]" "==" BINARY
+
+// tokens
+LOC: NUMBER | HEXNUMBER | ID
+
+
+// hardware
+REGISTER: "PS" | "CR" | "PC"
+ALUFLAG: "Z" | "C" | "N" | "V"
+
+ALUCTRL: "ZERO" | "PASSA" | "PASSB" | "AND" | "OR" | "ADD" | "ADC" | "SHL" | "SHR" | "ASL" | "ASR" | "ROL" | "ROR"
+BUSINCTRL: "IGNORE" | "PS" | "DRR" | "DS" | "RS" | "XX" | "IP" | "CR" | "YY"
+BUSOUTCTRL: "IGNORE" | "PS" | "DRW" | "AR" | "DS" | "RS" | "IP" | "CR"
+ALUPORTCTRL: "PASS" | "NOT" | "INC" | "SXT8" | "SXT16"
+
+// misc
+HEXNUMBER: "0x"i HEXDIGIT+
+BINNUMBER: "0b"i BINARY+
+BINARY: "0" | "1"
+
+// imports
+%import common.CNAME -> ID
+%import common.INT -> NUMBER
+%import common.HEXDIGIT
+%import common.WS
+%import common.SH_COMMENT
+
+%ignore ","
+%ignore WS
+%ignore SH_COMMENT
