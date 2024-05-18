@@ -1,12 +1,12 @@
-from mcasm.parse import mc_compile
 from myhdl import *
 
+from machine import CPU
+from machine import get_logger
 from machine.arch import PSFlags
-from machine.cpu import CPU
 from machine.utils.hdl import *
 from machine.utils.introspection import introspect, IntrospectionTree
-from machine.utils.log import get_logger
 from machine.utils.testutils import myhdl_pytest
+from src.mcasm.parse import mc_compile
 
 L = get_logger()
 

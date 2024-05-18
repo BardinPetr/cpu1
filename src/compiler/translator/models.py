@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, List, Dict
 
-from isa.model.instructions import Instruction
+from src.isa.model.instructions import Instruction
 
 
 @dataclass

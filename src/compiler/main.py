@@ -1,6 +1,6 @@
 from pprint import pprint
 
-from compiler.forth.main import translate_forth
+from src.compiler.translator.main import translate_forth
 
 if __name__ == "__main__":
     text = """

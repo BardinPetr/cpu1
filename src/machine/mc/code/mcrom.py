@@ -1,7 +1,7 @@
 import pathlib
 from typing import List
 
-from mcasm.parse import mc_compile, CompiledMC
+from src.mcasm.parse import mc_compile, CompiledMC
 
 
 def _load():

@@ -2,13 +2,13 @@ import random
 
 from myhdl import *
 
-from machine.arch import StackCtrl
-from machine.components.Stack import Stack
-from machine.components.base import Clock
-from machine.config import DATA_BITS
-from machine.utils.hdl import Bus1, Bus
-from machine.utils.introspection import introspect, IntrospectionTree
-from machine.utils.testutils import myhdl_pytest
+from src.machine import StackCtrl
+from src.machine.components.Stack import Stack
+from src.machine.components import Clock
+from src.machine import DATA_BITS
+from src.machine import Bus1, Bus
+from src.machine.utils.introspection import introspect, IntrospectionTree
+from src.machine.utils.testutils import myhdl_pytest
 
 
 @myhdl_pytest(gui=False)

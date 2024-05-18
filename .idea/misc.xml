@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="Poetry (mcasm)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Poetry (mcasm)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Poetry (machine)" project-jdk-type="Python SDK" />
 </project>

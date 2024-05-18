@@ -1,4 +1,4 @@
-from machine.arch import *
+from src.machine.arch import *
 
 enums = extract_enums()
 

@@ -1,9 +1,9 @@
 from forth.main import parseAST
 from lplib.lexer.tstream import CharStream
 
-from compiler.forth.models import ForthCode
-from compiler.forth.stdlib import stdlib
-from compiler.forth.transformer import ForthTransformer
+from src.compiler.translator.models import ForthCode
+from src.compiler.translator.stdlib import stdlib
+from src.compiler.translator.transformer import ForthTransformer
 
 
 def translate_forth(forth_code: str) -> ForthCode:

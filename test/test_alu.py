@@ -2,7 +2,7 @@ import random
 
 from myhdl import *
 
-from machine.arch import PSFlags, ALUCtrl, ALUPortCtrl
+from machine.arch import ALUPortCtrl, ALUCtrl, PSFlags
 from machine.components.ALU import ALU
 from machine.config import DATA_BITS
 from machine.utils.hdl import Bus

@@ -3,7 +3,7 @@ from functools import reduce
 from hashlib import sha1
 from typing import List, Union, Tuple, Iterable
 
-from isa.model.instructions import Instruction
+from src.isa.model.instructions import Instruction
 
 
 @dataclass

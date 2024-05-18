@@ -2,10 +2,10 @@ import random
 
 from myhdl import *
 
-from machine.components.base import Clock, Trig, RTrig, Counter
-from machine.utils.hdl import Bus1
-from machine.utils.introspection import introspect
-from machine.utils.testutils import myhdl_pytest
+from src.machine.components import Clock, Trig, RTrig, Counter
+from src.machine import Bus1
+from src.machine import introspect
+from src.machine.utils.testutils import myhdl_pytest
 
 
 @myhdl_pytest(gui=False)

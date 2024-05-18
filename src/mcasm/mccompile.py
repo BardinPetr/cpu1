@@ -2,7 +2,7 @@
 import json
 from argparse import ArgumentParser
 
-from mcasm.parse import mc_compile
+from src.mcasm.parse import mc_compile
 
 if __name__ == "__main__":
     parser = ArgumentParser(description='Microcode ASM parser & compiler')

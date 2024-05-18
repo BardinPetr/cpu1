@@ -2,13 +2,13 @@ import logging
 
 from myhdl import *
 
-from machine.components.base import Clock
-from machine.config import *
-from machine.mc.mc import MCInstructionJump, MCInstructionExec
-from machine.mc.mcseq import MCSequencer, L as MCS_LOG
-from machine.utils.hdl import Bus, Bus1
-from machine.utils.introspection import introspect
-from machine.utils.testutils import myhdl_pytest
+from machine.config import MC_INSTR_SZ
+from src.machine.components import Clock
+from src.machine.mc import MCInstructionJump, MCInstructionExec
+from src.machine.mc import MCSequencer
+from src.machine.mc.mcseq import L as MCS_LOG
+from src.machine import introspect, Bus, Bus1
+from src.machine.utils.testutils import myhdl_pytest
 
 MCS_LOG.setLevel(logging.DEBUG)
 

@@ -4,14 +4,19 @@ version = "1.1.10"
 description = ""
 authors = ["BardinPetr <bardin.petr@gmail.com>"]
 license = "GPLv3"
+packages = [
+    { include = "machine", from = "src" },
+    { include = "mcasm", from = "src" },
+    { include = "isa", from = "src" },
+    { include = "compiler", from = "src" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.11"
 myhdl = "^0.11.45"
 pyvcd = "^0.4.0"
-mcasm = {path = "../mcasm"}
-lplib = {path = "/home/petr/Desktop/cpu1_forth"}
-
+lark = "^1.1.9"
+lplib = { git = "https://github.com/BardinPetr/lexer-parser.git" }
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.0.2"

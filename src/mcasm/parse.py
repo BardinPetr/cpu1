@@ -3,11 +3,11 @@ from functools import reduce
 from typing import List, Dict
 
 from lark import Lark, Transformer, v_args, Token, Tree
-from machine import arch
-from machine.mc.mc import MCInstructionExec, MCInstructionJump, MCInstruction
 
-from mcasm.grammar import load_grammar
-from mcasm.utils import gen_jump, Location, merge_dicts, gen_line, gen_tree
+from src.machine import arch
+from src.machine.mc.mc import MCInstructionExec, MCInstructionJump, MCInstruction
+from src.mcasm.grammar import load_grammar
+from src.mcasm.utils import gen_jump, Location, merge_dicts, gen_line, gen_tree
 
 
 class TypeTransformer(Transformer):

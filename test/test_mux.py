@@ -2,9 +2,9 @@ from random import randrange
 
 from myhdl import *
 
-from machine.components.mux import Mux, DeMux
-from machine.utils.introspection import introspect
-from machine.utils.testutils import myhdl_pytest
+from src.machine.components import Mux, DeMux
+from src.machine import introspect
+from src.machine.utils.testutils import myhdl_pytest
 
 
 @myhdl_pytest(gui=False)

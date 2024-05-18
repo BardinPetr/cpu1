@@ -1,11 +1,11 @@
-from mcasm.parse import mc_compile
+from machine.arch import RegFileIdCtrl
+from src.mcasm.parse import mc_compile
 from myhdl import *
 
-from machine.arch import *
-from machine.cpu import CPU
-from machine.utils.introspection import IntrospectionTree, TraceData, Trace, IntrospectedMemory
-from machine.utils.log import get_logger
-from machine.utils.testutils import myhdl_pytest
+from src.machine import CPU
+from src.machine.utils.introspection import IntrospectionTree, TraceData, Trace, IntrospectedMemory
+from src.machine import get_logger
+from src.machine.utils.testutils import myhdl_pytest
 
 L = get_logger()
 

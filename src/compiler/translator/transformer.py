@@ -3,11 +3,11 @@ from typing import Dict, List, Optional
 from lplib.lexer.tokens import Token
 from lplib.parser.transformer import Transformer
 
-from compiler.forth.funclib import FunctionLibrary
-from compiler.forth.models import ForthVariable, ForthCode, Instructions
-from compiler.forth.utils import Synthetic, const_string_var_name, unwrap_code, Syn
-from isa.model.instructions import Instr, ImmInstr, IPRelInstr
-from isa.isa import Opcode
+from isa.main import Opcode
+from src.compiler.translator.funclib import FunctionLibrary
+from src.compiler.translator.models import ForthVariable, ForthCode, Instructions
+from src.compiler.translator.utils import Synthetic, const_string_var_name, unwrap_code, Syn
+from src.isa.model.instructions import Instr, ImmInstr, IPRelInstr
 
 
 class ForthTransformer(Transformer):

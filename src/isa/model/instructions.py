@@ -3,13 +3,13 @@ from typing import Optional
 
 from myhdl import intbv
 
-from isa.isa import Opcode
-from machine.config import INSTR_BITS
+from isa.main import Opcode
+from src.machine.config import INSTR_BITS
 
 
 @dataclass
 class Instruction:
-    opcode: 'Opcode'
+    opcode: Opcode
     stack: Optional[int] = None
     ctrl: Optional[int] = None
     imm: int = 0

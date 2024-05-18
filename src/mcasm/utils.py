@@ -1,7 +1,7 @@
 from functools import reduce
 from typing import Optional, List, Dict
 
-from lark import Lark, Transformer, v_args, Token, Tree
+from lark import Token, Tree
 
 
 def merge_dicts(x: List[Dict]) -> Dict:

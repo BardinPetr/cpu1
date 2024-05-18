@@ -1,6 +1,6 @@
 from enum import auto
 
-from isa.model.opcodes import OpcodeEnum, OpcodeGroupEnum
+from src.isa.model.opcodes import OpcodeEnum, OpcodeGroupEnum
 
 
 class OpcodeGroup(OpcodeGroupEnum):

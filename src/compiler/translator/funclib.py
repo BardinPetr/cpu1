@@ -1,6 +1,6 @@
 from typing import Dict, Optional, List, Set, Union
 
-from compiler.forth.models import ForthFunction, Instructions
+from src.compiler.translator.models import ForthFunction, Instructions
 
 
 class FunctionLibrary:

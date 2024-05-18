@@ -1,12 +1,12 @@
 from myhdl import *
 
-from machine.arch import RegFileIdCtrl
-from machine.cpu import CPU
-from machine.mc.code import mcrom
-from machine.utils.introspection import IntrospectionTree, Trace, TraceData
-from machine.utils.log import get_logger
-from machine.utils.runutils import display_trace_vcd
-from machine.utils.testutils import myhdl_pytest, skip_clk
+from src.machine import RegFileIdCtrl
+from src.machine import CPU
+from src.machine.mc.code import mcrom
+from src.machine.utils.introspection import IntrospectionTree, Trace, TraceData
+from src.machine import get_logger
+from src.machine.utils.runutils import display_trace_vcd
+from src.machine.utils.testutils import skip_clk
 
 L = get_logger()
 
