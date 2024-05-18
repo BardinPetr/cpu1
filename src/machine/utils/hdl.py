@@ -4,8 +4,8 @@ from typing import Optional, Type
 from myhdl import block, intbv, modbv
 from myhdl._Signal import _Signal
 
-from machine.config import DATA_BITS
-from machine.utils.enums import CtrlEnum
+from src.machine.config import DATA_BITS
+from src.machine.utils.enums import CtrlEnum
 
 
 def hdl_block(func):

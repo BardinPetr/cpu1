@@ -3,8 +3,8 @@ from typing import List
 from myhdl import *
 from myhdl import _Signal, _ShadowSignal
 
-from machine.utils.hdl import hdl_block
-from machine.utils.introspection import introspect
+from src.machine.utils.hdl import hdl_block
+from src.machine.utils.introspection import introspect
 
 
 @hdl_block

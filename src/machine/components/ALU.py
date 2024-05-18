@@ -1,9 +1,9 @@
 from myhdl import *
 
-from machine.arch import PSFlags, ALUCtrl, ALUPortCtrl, ALUFlagCtrl
-from machine.config import DATA_BITS, REG_PS_SZ
-from machine.utils.hdl import hdl_block, dim
-from machine.utils.introspection import introspect
+from src.machine.arch import PSFlags, ALUCtrl, ALUPortCtrl, ALUFlagCtrl
+from src.machine.config import DATA_BITS, REG_PS_SZ
+from src.machine.utils.hdl import hdl_block, dim
+from src.machine.utils.introspection import introspect
 
 
 def alu_apply_port(port_data: intbv, port_ctrl):

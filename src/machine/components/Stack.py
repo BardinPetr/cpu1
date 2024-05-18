@@ -2,9 +2,9 @@ from math import log2, ceil
 
 from myhdl import *
 
-from machine.arch import StackCtrl
-from machine.utils.hdl import *
-from machine.utils.introspection import introspect
+from src.machine.arch import StackCtrl
+from src.machine.utils.hdl import *
+from src.machine.utils.introspection import introspect
 
 
 @hdl_block

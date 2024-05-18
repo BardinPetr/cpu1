@@ -1,7 +1,7 @@
 from myhdl._Signal import _Signal
 
-from machine.utils.hdl import hdl_block
-from machine.utils.runutils import run_sim
+from src.machine.utils.hdl import hdl_block
+from src.machine.utils.runutils import run_sim
 
 
 def myhdl_pytest(gui=False, duration=None):

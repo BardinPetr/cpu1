@@ -1,17 +1,16 @@
 from myhdl import *
 
-from src.machine import RegFileIdCtrl
 from src.machine import CPU
+from src.machine import RegFileIdCtrl
+from src.machine import get_logger
 from src.machine.mc.code import mcrom
 from src.machine.utils.introspection import IntrospectionTree, Trace, TraceData
-from src.machine import get_logger
-from src.machine.utils.runutils import display_trace_vcd
-from src.machine.utils.testutils import skip_clk
+from src.machine.utils.testutils import skip_clk, myhdl_pytest
 
 L = get_logger()
 
 
-# @myhdl_pytest(gui=False, duration=None)
+@myhdl_pytest(gui=False, duration=None)
 def test_cpu_wmc_infetch():
     cpu = CPU(mcrom.ROM)
 
@@ -43,8 +42,7 @@ def test_cpu_wmc_infetch():
     @instance
     def stimulus():
         yield skip_clk(clk, 10)
-
-        display_trace_vcd('dist', 'f', trace_res)
+        # display_trace_vcd('dist', 'f', trace_res)
         raise StopSimulation()
 
     return cpu, stimulus, tracer

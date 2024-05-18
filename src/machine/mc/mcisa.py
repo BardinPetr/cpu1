@@ -4,8 +4,8 @@ from typing import TypeVar, Optional, Sized, Union
 
 from myhdl import intbv
 
-from machine.arch import BusInCtrl, BusOutCtrl, MemCtrl, ALUCtrl, ALUPortCtrl, ALUFlagCtrl, StackCtrl
-from machine.utils.enums import CtrlEnum, EnumEncodingType, EncodedEnum
+from src.machine.arch import BusInCtrl, BusOutCtrl, MemCtrl, ALUCtrl, ALUPortCtrl, ALUFlagCtrl, StackCtrl
+from src.machine.utils.enums import CtrlEnum, EnumEncodingType, EncodedEnum
 
 T = TypeVar('T', bound=IntEnum)
 

@@ -2,11 +2,11 @@ import random
 
 from myhdl import *
 
+from src.machine import Bus, Bus1
+from src.machine import get_logger
+from src.machine import introspect
 from src.machine.components import Clock
 from src.machine.components import RegisterFile
-from src.machine import Bus, Bus1
-from src.machine import introspect
-from src.machine import get_logger
 from src.machine.utils.testutils import myhdl_pytest
 
 L = get_logger()

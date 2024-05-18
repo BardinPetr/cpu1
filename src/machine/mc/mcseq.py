@@ -1,12 +1,12 @@
 from myhdl import *
 
-from machine.components.ROM import ROM
-from machine.config import *
-from machine.mc.mcisa import *
-from machine.utils.hdl import Bus
-from machine.utils.hdl import hdl_block
-from machine.utils.introspection import introspect
-from machine.utils.log import get_logger
+from src.machine.components.ROM import ROM
+from src.machine.config import *
+from src.machine.mc.mcisa import *
+from src.machine.utils.hdl import Bus
+from src.machine.utils.hdl import hdl_block
+from src.machine.utils.introspection import introspect
+from src.machine.utils.log import get_logger
 
 L = get_logger()
 

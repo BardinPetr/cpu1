@@ -3,7 +3,7 @@ import inspect
 from enum import auto
 from typing import Union, Dict
 
-from machine.utils.enums import CEnumM, CEnumS, CtrlEnum
+from src.machine.utils.enums import CEnumM, CEnumS, CtrlEnum
 
 
 class PSFlags(CEnumM):

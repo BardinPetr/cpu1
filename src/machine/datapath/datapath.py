@@ -1,15 +1,15 @@
-from machine.arch import RegFileIdCtrl, RegFileOrNormalRegister
-from machine.components.ALU import ALU
-from machine.components.ExtendedStack import ExtendedStack
-from machine.components.RAM import RAMSyncSP
-from machine.components.base import Register
-from machine.components.mux import Mux, DeMux
-from machine.components.regfile import RegisterFile
-from machine.config import *
-from machine.mc.decoders import *
-from machine.utils.hdl import hdl_block, Bus, create_reg_signals, Bus1
-from machine.utils.introspection import introspect
-from machine.utils.log import get_logger
+from src.machine.arch import RegFileIdCtrl, RegFileOrNormalRegister
+from src.machine.components.ALU import ALU
+from src.machine.components.ExtendedStack import ExtendedStack
+from src.machine.components.RAM import RAMSyncSP
+from src.machine.components.base import Register
+from src.machine.components.mux import Mux, DeMux
+from src.machine.components.regfile import RegisterFile
+from src.machine.config import *
+from src.machine.mc.decoders import *
+from src.machine.utils.hdl import hdl_block, Bus, create_reg_signals, Bus1
+from src.machine.utils.introspection import introspect
+from src.machine.utils.log import get_logger
 
 L = get_logger()
 

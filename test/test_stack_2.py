@@ -2,10 +2,10 @@ import random
 
 from myhdl import *
 
-from src.machine.components import ExtendedStack
-from src.machine.components import Clock
-from src.machine import DATA_BITS
 from src.machine import Bus1, Bus
+from src.machine import DATA_BITS
+from src.machine.components import Clock
+from src.machine.components import ExtendedStack
 from src.machine.utils.introspection import introspect, IntrospectionTree
 from src.machine.utils.testutils import myhdl_pytest
 

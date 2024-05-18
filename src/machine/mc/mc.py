@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Annotated, List, Tuple, get_type_hints
 
-from machine.config import MC_INSTR_SZ
-from machine.mc.mcisa import *
+from src.machine.config import MC_INSTR_SZ
+from src.machine.mc.mcisa import *
 
 
 @dataclass

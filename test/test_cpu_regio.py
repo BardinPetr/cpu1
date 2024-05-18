@@ -1,10 +1,10 @@
-from src.mcasm.parse import mc_compile
 from myhdl import *
 
 from src.machine import CPU
-from src.machine.utils.introspection import introspect, IntrospectionTree
 from src.machine import get_logger
+from src.machine.utils.introspection import introspect, IntrospectionTree
 from src.machine.utils.testutils import myhdl_pytest
+from src.mcasm.parse import mc_compile
 
 L = get_logger()
 
