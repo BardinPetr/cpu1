@@ -59,6 +59,7 @@ class Opcode(StrEnum):
     INV = auto()
     INC = auto()
     DEC = auto()
+    NEG = auto()
 
     # comparison
     CEQ = auto()
@@ -67,15 +68,19 @@ class Opcode(StrEnum):
 
     # stack
     IPUSH = auto()
-    XCHG = auto()
-    STKMV = auto()
+    STKMV = auto()  # stack_id is source stack
+    STKCP = auto()
     STKPOP = auto()
     STKOVR = auto()
+    STKDUP = auto()
+    STKDRP = auto()
+    STKSWP = auto()
+    STKTOP = auto()
 
     # memory
     FETCH = auto()
     STORE = auto()
-    INCSTORE = auto()
+    # INCSTORE = auto()
 
     # jumps
     JMP = auto()  # absolute on stack
@@ -87,9 +92,6 @@ class Opcode(StrEnum):
     CALL = auto()  # absolute on stack
     ICALL = auto()  # relative immediate
     RET = auto()
-
-    # loops
-    # TODO
 
     # IO
     IN = auto()

@@ -45,4 +45,3 @@ if __name__ == "__main__":
     ast = ForthTransformer(funclib=stdlib)(ast)
 
     pprint(ast)
-    # TODO cells in lexer&parser

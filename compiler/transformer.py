@@ -95,8 +95,7 @@ class ForthTransformer(Transformer):
             # relative address would be substituted in second pass
             return Syn.one(IPRelInstr(Opcode.ICALL, abs=func.loc))
 
-        print(f"Word {word} has no meaning")
-        # raise ValueError(f"Word {word} has no meaning")
+        raise ValueError(f"Word {word} has no meaning")
 
     """HERE BEGINS LANGUAGE STRUCTURES PART"""
 
@@ -171,7 +170,7 @@ class ForthTransformer(Transformer):
         return Syn.many(
             Instr(Opcode.STKMV),
             Instr(Opcode.STKMV),
-            Instr(Opcode.XCHG, stack=1),
+            Instr(Opcode.STKSWP, stack=1),
             *body,
             *post,
             IPRelInstr(Opcode.IJMPF, stack=1, rel=-to_body),
@@ -186,6 +185,7 @@ class ForthTransformer(Transformer):
         Functions are stored in dictionary, and on creation assigned with their memory location.
         Function is just code segment with ret added to it in the end
         """
+        # TODO: handle recursion
         lines.append(Instr(Opcode.RET))
         self.__functions.add_ext(name, lines)
 
