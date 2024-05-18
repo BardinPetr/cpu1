@@ -1,7 +1,6 @@
-# class Instruction:
 from enum import auto
 
-from isa.opcodes import OpcodeEnum, OpcodeGroupEnum
+from isa.model.opcodes import OpcodeEnum, OpcodeGroupEnum
 
 
 class OpcodeGroup(OpcodeGroupEnum):
@@ -74,6 +73,7 @@ class Opcode(OpcodeEnum):
 
 
 if __name__ == "__main__":
-    print("")
-    for op in Opcode:
-        print(f"{op.group.name:>5}.{op.name:6} : {op.group:04b} {op.alt:08b}")
+    print(f"{'OPCODE':11} |  GRP|     ALT|")
+    print("-" * 28)
+    for op in sorted(Opcode, key=lambda x: x.identifier):
+        print(f"{op.group.name:4}.{op.name:6} : {op.group:04b} {op.alt:08b}")

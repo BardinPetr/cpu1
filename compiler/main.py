@@ -1,10 +1,6 @@
 from pprint import pprint
 
-from forth.main import parseAST
-from lplib.lexer.tstream import CharStream
-
-from compiler.stdlib import stdlib
-from compiler.transformer import ForthTransformer
+from compiler.forth.main import translate_forth
 
 if __name__ == "__main__":
     text = """
@@ -13,6 +9,10 @@ if __name__ == "__main__":
         : fizz-buzz?  dup fizz? swap buzz? or invert ;
         : do-fizz-buzz  25 1 do cr i fizz-buzz? if i . then loop ;
         : test_while begin key dup . 32 = until ;
+    """
+
+    """
+    
         variable vars
         3234 constant const
         123 vars !
@@ -37,11 +37,7 @@ if __name__ == "__main__":
         ." dsads"
         : print-keycode begin key 33 = invert while key emit repeat ;
         : print-keycode-do  begin key dup . 32 = until ;
-        : loop-test  10 0 do i . loop ;
-    """
+        : loop-test  10 0 do i . loop ;"""
 
-    stream = CharStream(text)
-    ast = parseAST(stream)
-    ast = ForthTransformer(funclib=stdlib)(ast)
-
-    pprint(ast)
+    code = translate_forth(text)
+    pprint(code)

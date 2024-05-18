@@ -50,8 +50,7 @@
  type   ( $ -- ) \ output const string
  key ( -- n )    \ blocking read byte
  ```
- 
- 
+
  ```
  maybe implement:
  u<   ( u1 u2 -- flag )  \ True if n1 < n2  (unsigned)

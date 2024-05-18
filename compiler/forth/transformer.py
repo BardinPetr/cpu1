@@ -1,13 +1,13 @@
-from pprint import pprint
 from typing import Dict, List, Optional
 
 from lplib.lexer.tokens import Token
 from lplib.parser.transformer import Transformer
 
-from compiler.funclib import FunctionLibrary
-from compiler.isa import ImmInstr, Opcode, IPRelInstr, Instr
-from compiler.models import ForthVariable, ForthFunction, ForthCode, Instructions
-from compiler.utils import Synthetic, const_string_var_name, unwrap_code, Syn
+from compiler.forth.funclib import FunctionLibrary
+from compiler.forth.models import ForthVariable, ForthCode, Instructions
+from compiler.forth.utils import Synthetic, const_string_var_name, unwrap_code, Syn
+from isa.model.instructions import Instr, ImmInstr, IPRelInstr
+from isa.isa import Opcode
 
 
 class ForthTransformer(Transformer):

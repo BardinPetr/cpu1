@@ -1,5 +1,6 @@
-from compiler.funclib import FunctionLibrary
-from compiler.isa import Instr, Opcode, ImmInstr
+from compiler.forth.funclib import FunctionLibrary
+from isa.model.instructions import Instr, ImmInstr
+from isa.isa import Opcode
 
 stdlib = FunctionLibrary()
 
