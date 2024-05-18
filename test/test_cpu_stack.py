@@ -25,9 +25,9 @@ def test_cpu_stack():
         (DS ADD DS), push(R);
         pop(D); 
         pop(D); 
-        (RS PASSA), push(D);
+        (PASSB RS), push(D);
         pop(R);
-        (DS(INC) PASSA), push(D);
+        (PASSB DS(INC)), push(D);
         jmp loop;
     """).compiled
 
@@ -141,7 +141,7 @@ def test_cpu_stack_rep():
 
         a = 2
         b = 1
-        target = [b, a, b + a, (b + a) << b, 0]
+        target = [b, a, b + a, b << (b + a), 0]
 
         res = trace_res.peek(0, ['DS_TOP'])
         res = [i['DS_TOP'] for i in res]

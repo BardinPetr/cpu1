@@ -1,77 +1,39 @@
-| Mnemonics | Operands | DS before | DS after | RS before | RS after | Mem    | Priority |
-|-----------|----------|-----------|----------|-----------|----------|--------|----------|
-| ADD       |          | A, B      |          |           |          |        | H        |
-| ADC       |          | A, B      |          |           |          |        | L        |
-| SUB       |          | A, B      |          |           |          |        | H        |
-| MUL       |          | A, B      |          |           |          |        | M        |
-| DIV       |          | A, B      |          |           |          |        | L        |
-| AND       |          | A, B      |          |           |          |        | H        |
-| OR        |          | A, B      |          |           |          |        | H        |
-| XOR       |          | A, B      |          |           |          |        | L        |
-| ASL       |          | A, B      |          |           |          |        | M        |
-| ASR       |          | A, B      |          |           |          |        | M        |
-| ROL       |          | A, B      |          |           |          |        | M        |
-| ROR       |          | A, B      |          |           |          |        | M        |
-| NOT       |          | A         |          |           |          |        | H        |
-| NEG       |          | A         |          |           |          |        | H        |
-|           |          |           |          |           |          |        | H        |
-| DPUSH     | IMM      |           | IMM      |           |          |        | H        |
-| RPUSH     | IMM      |           |          |           | IMM      |        | H        |
-| LD        |          | A         | MEM(A)   |           |          |        | H        |
-| ST        |          | A, B      |          |           |          | A -> B | H        |
-| D2R       |          | A         |          |           | A        |        | H        |
-| R2D       |          |           | B        | B         |          |        | H        |
-|           |          |           |          |           |          |        | H        |
-|           |          |           |          |           |          |        | H        |
-|           |          |           |          |           |          |        | H        |
-|           |          |           |          |           |          |        | H        |
-|           |          |           |          |           |          |        | H        |
-|           |          |           |          |           |          |        | H        |
-|           |          |           |          |           |          |        | H        |
-|           |          |           |          |           |          |        | H        |
-|           |          |           |          |           |          |        | H        |
-|           |          |           |          |           |          |        | H        |
-| NOP       |          |           |          |           |          |        | H        |
-| HLT       |          |           |          |           |          |        | H        |
-
-#
-
-| ABBR | VAR      | SIZE      |
-|------|----------|-----------|
-| SID  | D,R      | 2b        |
-| REG  | PS,IP,?? | 2b        |
-| IMMV |          | 8b        |
-| IMMA |          | ADDR_BITS |
-
-## LD(SID, SRC)
-
-Semantics: stacks[SID].push(fetch(SRC))
-
-### LDI IMMV
-
-fetch(SRC) eq IMMV
-
-### LDR REG
-
-fetch(SRC) eq registers.read(REG)
-
-### LDM IMMA
-
-fetch(SRC) eq ram.read(IMMA)
-
-## ST(SID, DST)
-
-Semantics: DST <- stacks[SID].pop()
-
-## JCP CMODE REL
-
-if DTOS CMODE DSOS then jump (IP+REL)
-
-    FOR
-    WHILE
-
-    IO_IN = "key"
-    IO_OUT_STR = ".\""
-    IO_OUT_INT = "."
-    IO_OUT_CHAR = "emit"
-    IO_OUT_CR = "cr"
+OPCODE      |  GRP|     ALT|
+----------------------------
+              3128 27    20
+GMTH.ADD    : 0000 00000000
+GMTH.SUB    : 0000 00000001
+GMTH.DIV    : 0000 00000010
+GMTH.MUL    : 0000 00000011
+GMTH.MOD    : 0000 00000100
+GMTH.AND    : 0000 00000101
+GMTH.OR     : 0000 00000110
+GMTH.INV    : 0000 00000111
+GMTH.INC    : 0000 00001000
+GMTH.DEC    : 0000 00001001
+GMTH.NEG    : 0000 00001010
+GSTK.IPUSH  : 0001 00000000
+GSTK.STKMV  : 0001 00000001
+GSTK.STKCP  : 0001 00000010
+GSTK.STKPOP : 0001 00000011
+GSTK.STKOVR : 0001 00000100
+GSTK.STKDUP : 0001 00000101
+GSTK.STKDRP : 0001 00000110
+GSTK.STKSWP : 0001 00000111
+GSTK.STKTOP : 0001 00001000
+GCMP.CEQ    : 0010 00000000
+GCMP.CLT    : 0010 00000001
+GCMP.CGT    : 0010 00000010
+GMEM.FETCH  : 0011 00000000
+GMEM.STORE  : 0011 00000001
+GIOC.IN     : 0100 00000000
+GIOC.OUT    : 0100 00000001
+GIOC.NOP    : 0100 00000010
+GIOC.HLT    : 0100 00000011
+GJMP.JMP    : 0101 00000000
+GJMP.IJMP   : 0101 00000001
+GJMP.IJMPF  : 0101 00000010
+GJMP.IJMPT  : 0101 00000011
+GJMP.CALL   : 0101 00000100
+GJMP.ICALL  : 0101 00000101
+GJMP.RET    : 0101 00000110

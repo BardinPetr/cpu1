@@ -93,11 +93,11 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
 
     # according to BusInCtrl
     mux_bus_a_registers_in = Mux(
-        [zerobus, reg_ps_out, reg_dr_out, zerobus, d_stack_tos0, r_stack_tos0, zerobus, zerobus, zerobus],
+        [zerobus, reg_ps_out, reg_dr_out, zerobus, d_stack_tos1, r_stack_tos1, zerobus, zerobus, zerobus],
         output=tmp_bus_a_sig, ctrl=mux_bus_a_reg_in_ctrl
     )
     mux_bus_b_registers_in = Mux(
-        [zerobus, reg_ps_out, reg_dr_out, zerobus, d_stack_tos1, r_stack_tos1, zerobus, zerobus, zerobus],
+        [zerobus, reg_ps_out, reg_dr_out, zerobus, d_stack_tos0, r_stack_tos0, zerobus, zerobus, zerobus],
         output=tmp_bus_b_sig, ctrl=mux_bus_b_reg_in_ctrl
     )
 

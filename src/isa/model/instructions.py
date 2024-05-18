@@ -3,13 +3,13 @@ from typing import Optional
 
 from myhdl import intbv
 
-from isa.main import Opcode
+from isa.model.opcodes import OpcodeEnum
 from src.machine.config import INSTR_BITS
 
 
 @dataclass
 class Instruction:
-    opcode: Opcode
+    opcode: OpcodeEnum
     stack: Optional[int] = None
     ctrl: Optional[int] = None
     imm: int = 0
@@ -17,14 +17,17 @@ class Instruction:
     def __post_init__(self):
         self.group = self.opcode.value[0]
         self.alt = self.opcode.value[1]
-        if self.ctrl is None and self.stack is not None:
-            self.ctrl = self.stack
+        if self.ctrl is None:
+            if self.stack is not None:
+                self.ctrl = self.stack
+            else:
+                self.ctrl = 0
 
     def __repr__(self):
         return str(self)
 
     def str_stack(self):
-        return '@R' if self.stack != 0 else ""
+        return '@R' if self.stack is not None and self.stack == 1 else ""
 
     def __str__(self):
         return f"<{self.opcode}{self.str_stack()}>"
@@ -34,7 +37,7 @@ class Instruction:
         res[16:] = self.imm
         res[16 + 4:16] = self.ctrl
         res[20 + 8:20] = self.alt
-        res[28 + 4:28] = self.alt
+        res[28 + 4:28] = self.group
         return res
 
 

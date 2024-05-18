@@ -1,5 +1,7 @@
 from enum import auto
+from typing import List
 
+from isa.model.instructions import Instruction
 from src.isa.model.opcodes import OpcodeEnum, OpcodeGroupEnum
 
 
@@ -70,6 +72,10 @@ class Opcode(OpcodeEnum):
     # control
     NOP = auto()
     HLT = auto()
+
+
+def compile_instructions(code: List[Instruction]) -> List[int]:
+    return [int(i.pack()) for i in code]
 
 
 if __name__ == "__main__":

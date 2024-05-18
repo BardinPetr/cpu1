@@ -7,7 +7,7 @@ from src.machine.utils.introspection import introspect
 
 
 def alu_apply_port(port_data: intbv, port_ctrl):
-    res = intbv(port_data)
+    res = modbv(port_data)
     if int(port_ctrl) & ALUPortCtrl.NOT:
         res[:] = ~res
     if int(port_ctrl) & ALUPortCtrl.INC:
