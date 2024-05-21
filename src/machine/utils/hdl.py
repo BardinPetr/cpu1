@@ -58,5 +58,9 @@ def negate(x, n=DIM):
     return trunc(~x + 1, n)
 
 
+def signed(val):
+    return trunc(~abs(val) + 1) if val < 0 else val
+
+
 def set_signed(sig, val):
-    sig.next = trunc(~abs(val) + 1) if val < 0 else val
+    sig.next = signed(val)

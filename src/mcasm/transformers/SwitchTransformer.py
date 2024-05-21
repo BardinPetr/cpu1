@@ -26,11 +26,11 @@ class SwitchTransformer(Transformer):
     def __convert_to_if(alu: Tree, bit: int, cases: Dict, exit_label: Location):
         cases = [cases.get(i, []) for i in range(2)]
         if all(map(lambda x: not x, cases)):
-            return []
+            return gen_line(label=Location(name="__swif_nop"))
         branches = [
             [SwitchTransformer.__convert_to_if(alu, bit - 1, cases[br], exit_label)]
             if isinstance(cases[br], dict) else
-            cases[br][0].children
+            (cases[br][0].children if cases[br] else [])
             for br in range(2)
         ]
         return gen_line(gen_if(alu, bit, 0, *branches))

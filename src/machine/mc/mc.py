@@ -67,6 +67,14 @@ class MCInstruction:
         sep = '\n  '
         return f"{name} [{sep}{sep.join(fields)}\n]"
 
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return (f"<{self.alu_ctrl}"
+                f" A={self.alu_port_a_ctrl}({self.bus_a_in_ctrl}) "
+                f"B={self.alu_port_b_ctrl}({self.bus_b_in_ctrl})>")
+
 
 @dataclass
 class MCInstructionJump(MCInstruction):
@@ -77,6 +85,12 @@ class MCInstructionJump(MCInstruction):
     def __post_init__(self):
         self.instr_type = MCType.MC_JMP
         super().__post_init__()
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return f"{super().__str__()} & <JMP bit={self.jmp_cmp_bit} ={self.jmp_cmp_val:d} to={self.jmp_target}>"
 
 
 @dataclass

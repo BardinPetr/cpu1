@@ -74,3 +74,10 @@ class EncodedEnum:
             self.value = self.items[0].value
         else:
             self.value = reduce(lambda a, i: a | i.value, self.items, 0)
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        lst = ','.join([i.name for i in self.items])
+        return f"[{lst}]" if len(self.items) > 1 else lst

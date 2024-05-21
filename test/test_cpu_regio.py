@@ -10,7 +10,7 @@ L = get_logger()
 
 MC_ROM = mc_compile("""
 start:
-(IP ADD IGNORE(INC)) -> IP;
+(IP ADD Z(INC)) -> IP;
 (IP PASSA);
 jump start;
 """).compiled

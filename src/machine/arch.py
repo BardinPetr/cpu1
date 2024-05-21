@@ -46,11 +46,14 @@ class BusInCtrl(CEnumS):
     011x
     11xx
     """
-    IGNORE = 0
+    Z = 0
     PS = 0b0001
-    DRR = 0b0010
-    DS = 0b0100
-    RS = 0b0101
+    DR = 0b0010
+    # 0011
+    DST = 0b0100
+    DSS = 0b0101
+    RST = 0b0110
+    RSS = 0b0111
     XX = 0b1000 + RegFileIdCtrl.R0
     IP = 0b1000 + RegFileIdCtrl.IP
     CR = 0b1000 + RegFileIdCtrl.CR
@@ -63,12 +66,13 @@ class BusOutCtrl(CEnumS):
     00xx - xx is classic source
     10xx - xx is regfile ID
     """
-    IGNORE = 0b0000
+    Z = 0b0000
     PS = 0b0001
-    DRW = 0b0010
+    DR = 0b0010
     AR = 0b0011
     DS = 0b0100
     RS = 0b0101
+    # 0110 0111
     R0 = 0b1000 + RegFileIdCtrl.R0
     IP = 0b1000 + RegFileIdCtrl.IP
     CR = 0b1000 + RegFileIdCtrl.CR

@@ -26,7 +26,7 @@ stdlib['or'] = [Instr(Opcode.OR)]
 stdlib['invert'] = [Instr(Opcode.INV)]
 stdlib['negate'] = [Instr(Opcode.NEG)]
 stdlib['1-'] = [Instr(Opcode.DEC)]
-stdlib['1+'] = [Instr(Opcode.NEG)]
+stdlib['1+'] = [Instr(Opcode.INC)]
 
 # compare
 stdlib['='] = [Instr(Opcode.CEQ)]
@@ -38,7 +38,7 @@ stdlib['>='] = [Instr(Opcode.INC), Instr(Opcode.CGT)]
 
 # stack
 stdlib['dup'] = [Instr(Opcode.STKDUP)]
-stdlib['drop'] = [Instr(Opcode.STKDRP)]
+stdlib['drop'] = [Instr(Opcode.STKPOP)]
 stdlib['swap'] = [Instr(Opcode.STKSWP)]
 stdlib['over'] = [Instr(Opcode.STKOVR)]
 stdlib['true'] = [gen_push(1)]
@@ -86,7 +86,7 @@ stdlib['cr'] = [
 ]
 
 # strings
-stdlib['2drop'] = [Instr(Opcode.STKDRP), Instr(Opcode.STKDRP)]
+stdlib['2drop'] = [Instr(Opcode.STKPOP), Instr(Opcode.STKPOP)]
 stdlib['2dup'] = [Instr(Opcode.STKOVR), Instr(Opcode.STKOVR)]
 stdlib.add_ext("type", [
     # TODO

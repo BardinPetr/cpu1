@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional, List, Iterable, Tuple
 
 import myhdl
 import vcd
-from myhdl import Cosimulation, delay, intbv
+from myhdl import Cosimulation, delay, intbv, always
 from myhdl._Signal import _Signal
 from myhdl._block import _Block
 from myhdl._extractHierarchy import _MemInfo
@@ -168,7 +168,7 @@ class TraceData:
 
 
 @hdl_block
-def Trace(clk: _Signal, data: TraceData, watches: Dict[str, _Signal]):
+def TraceTick(clk: _Signal, data: TraceData, watches: Dict[str, _Signal]):
     data.clear()
     data.set_labels(watches.keys())
     data.set_types(watches.values())
@@ -185,6 +185,32 @@ def Trace(clk: _Signal, data: TraceData, watches: Dict[str, _Signal]):
             yield clk.negedge
             yield delay(1)
             checkpoint()
+
+    return pull
+
+
+@hdl_block
+def TraceInstr(
+        clk: _Signal,
+        data: TraceData,
+        watches: Dict[str, _Signal],
+        mc_pc: _Signal,
+        mc_pc_trigger_value: int
+):
+    data.clear()
+    data.set_labels(watches.keys())
+    data.set_types(watches.values())
+
+    def checkpoint():
+        data.add([intbv(tp.val) for tp in watches.values()])
+
+    @instance
+    def pull():
+        while True:
+            yield clk.negedge
+            yield delay(1)
+            if mc_pc_trigger_value == mc_pc:
+                checkpoint()
 
     return pull
 

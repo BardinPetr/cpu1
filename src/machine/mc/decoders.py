@@ -91,6 +91,10 @@ def RegWriteDecoder(
         else:
             reg_ps_wr_drv.next = None
 
+    @always(clk.posedge)
+    def reset():
+        register_wr.next = 0
+
     return introspect()
 
 

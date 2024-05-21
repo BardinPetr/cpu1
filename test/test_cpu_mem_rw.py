@@ -2,7 +2,7 @@ from myhdl import *
 
 from src.machine import CPU
 from src.machine import get_logger
-from src.machine.utils.introspection import IntrospectionTree, Trace, TraceData
+from src.machine.utils.introspection import IntrospectionTree, TraceTick, TraceData
 from src.machine.utils.testutils import myhdl_pytest
 from src.mcasm.parse import mc_compile
 
@@ -11,8 +11,8 @@ L = get_logger()
 """
 Each cycle:
     AR  <- IP
-    CR  <- DRR
-    DRW <- CR << 1
+    CR  <- DR
+    DR <- CR << 1
     WRITE MEM 
     IP  <- IP + 1
     
@@ -21,9 +21,9 @@ Each cycle:
 
 MC_ROM = mc_compile("""
 (IP PASSA) -> AR;
-(DRR PASSA) -> CR;
+(DR PASSA) -> CR;
 (IP(INC) PASSA) -> IP;
-(CR SHL IGNORE(INC)) -> DRW;
+(CR SHL Z(INC)) -> DR;
 store;
 jump 0;
 """).compiled
@@ -45,7 +45,7 @@ def test_cpu_mem_rw():
     ram = intro.datapath.ram_mod.memory
 
     trace_res = TraceData()
-    tracer = Trace(
+    tracer = TraceTick(
         intro.clk,
         trace_res,
         {

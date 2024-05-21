@@ -91,14 +91,13 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     mux_bus_a_nr_rf_ctrl, mux_bus_b_nr_rf_ctrl = Bus(enum=RegFileOrNormalRegister), Bus(enum=RegFileOrNormalRegister)
     tmp_bus_a_sig, tmp_bus_b_sig = Bus(REG_SZ), Bus(REG_SZ)
 
-    # according to BusInCtrl
+    bus_in = [zerobus, reg_ps_out, reg_dr_out, zerobus, d_stack_tos0, d_stack_tos1, r_stack_tos0, r_stack_tos1]
+    # select input channel according to BusInCtrl
     mux_bus_a_registers_in = Mux(
-        [zerobus, reg_ps_out, reg_dr_out, zerobus, d_stack_tos1, r_stack_tos1, zerobus, zerobus, zerobus],
-        output=tmp_bus_a_sig, ctrl=mux_bus_a_reg_in_ctrl
+        bus_in, output=tmp_bus_a_sig, ctrl=mux_bus_a_reg_in_ctrl
     )
     mux_bus_b_registers_in = Mux(
-        [zerobus, reg_ps_out, reg_dr_out, zerobus, d_stack_tos0, r_stack_tos0, zerobus, zerobus, zerobus],
-        output=tmp_bus_b_sig, ctrl=mux_bus_b_reg_in_ctrl
+        bus_in, output=tmp_bus_b_sig, ctrl=mux_bus_b_reg_in_ctrl
     )
 
     mux_bus_a_nr_rf = Mux(
@@ -127,7 +126,7 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
             zerobus, reg_ps_wr.driver(), ram_a_wr, reg_ar_wr,
             zerobus, zerobus, zerobus, zerobus
         ],
-        demux_bus_c_reg_id
+        ctrl=demux_bus_c_reg_id
     )
     # forward data
     demux_bus_c_reg_wr_data = DeMux(
@@ -136,12 +135,12 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
             zerobus, zerobus, ram_a_in, reg_ar_in,
             d_stack_in, r_stack_in, zerobus, zerobus
         ],
-        demux_bus_c_reg_id
+        ctrl=demux_bus_c_reg_id
     )
     demux_bus_c = DeMux(
         bus_c,
         [demux_tmp_bus_c, regfile_in],
-        demux_bus_c_nr_rf
+        ctrl=demux_bus_c_nr_rf
     )
 
     ########################################################################

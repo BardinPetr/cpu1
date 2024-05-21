@@ -1,66 +1,123 @@
-(IGNORE(INC) PASSA) push(D);
-(IGNORE(INC) ADD IGNORE(INC)) push(D);
-(DS(INC) ADD IGNORE(INC)) push(D);
+(Z(INC) ADD) push(D);
+(Z(INC) ADD Z(INC)) push(D);
+(DST(INC) ADD Z(INC)) push(D);
+
 
 start:
 
+# fetch instruction from RAM to CR, increase IP
+infetch:
+(IP ADD) -> AR;
+(DR ADD) -> CR;
+(IP(INC) ADD) -> IP;
 
-infetch: # fetch instruction from RAM and increase IP
-(IP PASSA) -> AR;
-(DRR PASSA) -> CR;
-(IP(INC) PASSA) -> IP;
-
-
+# execute command according to opcode of CR[31:20]
 exec:
-if (CR PASSA)[30] == 1 jmp GRP1XX;
-GRP0XX:
 
-# some ifs
+# group select of CR[31:28]
+switch (CR ADD)[30:28] {
+  # GMTH
+  case 0b000 {
+    switch (CR ADD)[23:20] {
+      # ADD
+      case 0b0000 { (DSS ADD DST) poprep(D); }
+      # SUB
+      case 0b0001 { (DSS ADD DST(INC,NOT)) poprep(D); }
+      # AND
+      case 0b0101 { (DSS AND DST) poprep(D); }
+      # OR
+      case 0b0110 { (DSS OR DST) poprep(D); }
+      # INV (~x)
+      case 0b0111 { (DST(NOT) ADD) rep(D); }
+      # INC
+      case 0b1000 { (DST(INC) ADD) rep(D); }
+      # DEC
+      case 0b1001 { (DST ADD Z(NOT)) rep(D); }
+      # NEG (-x)
+      case 0b1010 { (DST(NOT,INC) ADD) rep(D); }
 
-if (CR PASSA)[20] == 1 jmp C_SUB;
-C_ADD:
-(DS ADD DS) poprep(D);
-jmp end;
+      # MUL
+      case 0b0011 {
+        # TODO: multiplication MC
+      }
 
-C_SUB:
-(DS ADD DS(INC,NOT)) poprep(D);
-jmp end;
+      # MOD
+      case 0b0100 {
+        # TODO: modulo MC
+      }
 
+      # DIV
+      case 0b0010 {
+        # TODO: division MC
+      }
+    };
+  }
 
-GRP1XX:
+  # GSTK
+  case 0b001 {
+    # (CR ADD)[16] is stack id (0=D, 1=R),
+    # meaning is source stack for operation
 
+    switch (CR ADD)[22:20] {
+      # IPUSH
+      case 0b0000 { }
 
-#if (CR PASSA)[30] == 0 {
-#    if (CR PASSA)[29] == 0 {
-#        if (CR PASSA)[28] == 0 {
-#            # group 0000 : GMTH
-#
-#
-#        } else {
-#            # group 0001 : GSTK
-#        };
-#    } else {
-#        if (CR PASSA)[28] == 0 {
-#
-#        } else {
-#
-#        };
-#    };
-#} else {
-#    if (CR PASSA)[29] == 0 {
-#        if (CR PASSA)[28] == 0 {
-#
-#        } else {
-#
-#        };
-#    } else {
-#        if (CR PASSA)[28] == 0 {
-#
-#        } else {
-#
-#        };
-#    };
-#};
+      # STKMV
+      case 0b0001 { }
+
+      # STKCP
+      case 0b0010 { }
+
+      # STKPOP
+      case 0b0011 {
+        if (CR ADD)[16] == 0  { (ZERO) pop(D); }
+        else                  { (ZERO) pop(R); };
+      }
+
+      # STKDUP [a] -> [a, a]
+      case 0b0101 {
+        if (CR ADD)[16] == 0  { (DST ADD) push(D); }
+        else                  { (RST ADD) push(R); };
+      }
+
+      # STKOVR [a,b] ->
+      case 0b0100 {
+
+      }
+
+      # STKSWP [a,b] -> [b,a]
+      case 0b0110 {
+        if (CR ADD)[16] == 0  {
+          (DSS ADD) push(R);
+          (DST ADD) poprep(D);
+          (RST ADD) push(D), pop(R);
+        } else {
+#          (RS ADD) push(R);
+        };
+      }
+    };
+  }
+
+  # GCMP
+  case 0b010 {
+
+  }
+
+  #GMEM
+  case 0b011 {
+
+  }
+
+  #GIOC
+  case 0b100 {
+
+  }
+
+  #GJMP
+  case 0b101 {
+
+  }
+};
 
 
 end:

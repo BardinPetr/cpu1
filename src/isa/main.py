@@ -44,9 +44,7 @@ class Opcode(OpcodeEnum):
     STKPOP = auto()
     STKOVR = auto()
     STKDUP = auto()
-    STKDRP = auto()
     STKSWP = auto()
-    STKTOP = auto()
 
     """ OpcodeGroup.GMEM """
     FETCH = OpcodeGroup.GMEM, 0

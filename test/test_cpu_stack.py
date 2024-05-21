@@ -3,7 +3,7 @@ from myhdl import *
 from src.machine import CPU
 from src.machine import RegFileIdCtrl
 from src.machine import get_logger
-from src.machine.utils.introspection import IntrospectionTree, Trace, TraceData
+from src.machine.utils.introspection import IntrospectionTree, TraceTick, TraceData
 from src.machine.utils.testutils import myhdl_pytest
 from src.mcasm.parse import mc_compile
 
@@ -19,15 +19,15 @@ def test_cpu_stack():
     """
 
     MC_ROM = mc_compile("""
-        (IGNORE(INC) PASSA), push(D);
-        (IGNORE(INC) PASSA), push(D);
+        (Z(INC) PASSA), push(D);
+        (Z(INC) PASSA), push(D);
         loop:
-        (DS ADD DS), push(R);
+        (DSS ADD DST), push(R);
         pop(D); 
         pop(D); 
-        (PASSB RS), push(D);
+        (RST ADD), push(D);
         pop(R);
-        (PASSB DS(INC)), push(D);
+        (DST(INC) ADD), push(D);
         jmp loop;
     """).compiled
 
@@ -41,7 +41,7 @@ def test_cpu_stack():
     clk = intro.clk
 
     trace_res = TraceData()
-    tracer = Trace(
+    tracer = TraceTick(
         intro.clk,
         trace_res,
         {
@@ -104,10 +104,10 @@ def test_cpu_stack():
 @myhdl_pytest(gui=False, duration=None)
 def test_cpu_stack_rep():
     MC_ROM = mc_compile("""
-        (IGNORE(INC) PASSA) push(D);
-        (IGNORE(INC) ADD IGNORE(INC)) push(D);
-        (DS ADD DS) rep(D); 
-        (DS SHL DS) poprep(D); 
+        (Z(INC) PASSA) push(D);
+        (Z(INC) ADD Z(INC)) push(D);
+        (DSS ADD DST) rep(D); 
+        (DSS SHL DST) poprep(D); 
         pop(D);
     """).compiled
 
@@ -121,7 +121,7 @@ def test_cpu_stack_rep():
     clk = intro.clk
 
     trace_res = TraceData()
-    tracer = Trace(
+    tracer = TraceTick(
         intro.clk,
         trace_res,
         {

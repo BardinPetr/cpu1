@@ -31,11 +31,12 @@ class ControlInstructionTransformer(Transformer):
 
     def exec_stack(self, vals: List[Token]):
         stack_name = vals[1]
-        stack_cmd = arch.StackCtrl.encode_from_names([vals[0].upper()])
-        return {
-            f"stack_{stack_name.lower()}_ctrl": stack_cmd,
-            "bus_c_out_ctrl":                   arch.BusOutCtrl.encode_from_names([f"{stack_name.upper()}S"])
-        }
+        cmd_name = vals[0].upper()
+        stack_cmd = arch.StackCtrl.encode_from_names([cmd_name])
+        res = {f"stack_{stack_name.lower()}_ctrl": stack_cmd}
+        if cmd_name not in ["POP", "NONE"]:
+            res["bus_c_out_ctrl"] = arch.BusOutCtrl.encode_from_names([f"{stack_name.upper()}S"])
+        return res
 
     """IO control"""
     exec_mem = lambda self, x: dict(mem_ctrl=arch.MemCtrl.WR)

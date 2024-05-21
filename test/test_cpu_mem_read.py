@@ -3,7 +3,7 @@ from myhdl import *
 from src.machine import CPU
 from src.machine import get_logger
 from src.machine.arch import RegFileIdCtrl
-from src.machine.utils.introspection import IntrospectionTree, TraceData, Trace, IntrospectedMemory
+from src.machine.utils.introspection import IntrospectionTree, TraceData, TraceTick, IntrospectedMemory
 from src.machine.utils.testutils import myhdl_pytest
 from src.mcasm.parse import mc_compile
 
@@ -22,7 +22,7 @@ Test is to output to CR whole RAM segment from 0 to LEN.
 
 MC_ROM = mc_compile("""
 (IP PASSA) -> AR;
-(DRR PASSA) -> CR;
+(DR PASSA) -> CR;
 (IP(INC) PASSA) -> IP;
 (CR PASSA);
 jump 0;
@@ -46,7 +46,7 @@ def test_cpu_mem_read():
     seq_cr = []
 
     trace_res = TraceData()
-    tracer = Trace(
+    tracer = TraceTick(
         intro.clk,
         trace_res,
         {
