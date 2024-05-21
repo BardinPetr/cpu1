@@ -1,6 +1,6 @@
 start: block_content
 
-line: label | ((instr_if | instr_exec | instr_jump) ";")
+line: label | ((instr_switch | instr_if | instr_exec | instr_jump) ";")
 block_content: (line | block_content)*
 
 // label
@@ -35,12 +35,10 @@ jump_cmp: BINARY
 jump_target: LOC
 
 // switches
-// instr_switch: "switch"i exec_alu_compute "[" NUMBER ":" NUMBER "]" "exit"i ID "{" switch_body "}"
-// switch_body: case_def+
-// default_def: "default"i "{" case_body "}"
-// case_def: "case"i case_val "{" case_body "}"
-// case_body: line+
-// case_val: "0b"i BINARY+
+instr_switch: "switch"i exec_alu_compute "[" NUMBER ":" NUMBER "]" "{" switch_body "}"
+switch_body: case_def+
+default_def: "default"i "{" block_content "}"
+case_def: "case"i BINNUMBER "{" block_content "}"
 
 // if
 instr_if: "if"i if_check "{" block_content "}" "else"i "{" block_content "}"

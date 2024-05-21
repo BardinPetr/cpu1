@@ -49,3 +49,28 @@ def gen_jump(target: Location, cmp_pos: int = 0, cmp_val: int = 0, alu: Optional
             gen_tree('jump_target', [target])
         ]
     )
+
+
+def gen_if(alu: Tree, bit: int, value_true: int, br_true: List, br_false: List) -> Tree:
+    return gen_tree(
+        'instr_if',
+        [
+            gen_tree('if_check', [
+                alu, bit, value_true
+            ]),
+            gen_tree('block_content', br_true),
+            gen_tree('block_content', br_false)
+        ]
+    )
+
+
+def collect_bit_tree(bit, cases: Dict[int, List]):
+    if bit == -1:
+        return list(cases.values())
+    return {
+        val: collect_bit_tree(
+            bit - 1,
+            {k: v for k, v in cases.items() if not (1 & (k >> bit) ^ val)}
+        )
+        for val in range(2)
+    }
