@@ -110,8 +110,10 @@ class ALUPortCtrl(CEnumM):
     PASS = 0b0000
     NOT = 0b0001
     INC = 0b0010
-    SXT8 = 0b0100
-    SXT16 = 0b1000
+    SXTB = 0b0100
+    SXTW = 0b1000
+    TKB = 0b10000
+    TKW = 0b100000
 
 
 class ALUFlagCtrl(CEnumM):

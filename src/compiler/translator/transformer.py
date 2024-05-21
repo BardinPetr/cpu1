@@ -39,7 +39,7 @@ class ForthTransformer(Transformer):
         return var
 
     def cmd_push(self, value: int) -> Synthetic:
-        return Syn.one(ImmInstr(Opcode.IPUSH, imm=value))
+        return Syn.one(ImmInstr(Opcode.ISTKPSH, imm=value))
 
     """ Strings """
 

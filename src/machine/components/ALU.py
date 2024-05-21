@@ -8,14 +8,20 @@ from src.machine.utils.introspection import introspect
 
 def alu_apply_port(port_data: intbv, port_ctrl):
     res = modbv(port_data)
+    if int(port_ctrl) & ALUPortCtrl.TKB:
+        res[:] = res[8:]
+    elif int(port_ctrl) & ALUPortCtrl.TKW:
+        res[:] = res[16:]
+
+    if int(port_ctrl) & ALUPortCtrl.SXTB:
+        res[32:8] = ((1 << 24) - 1) if res[7] else 0
+    elif int(port_ctrl) & ALUPortCtrl.SXTW:
+        res[32:16] = ((1 << 16) - 1) if res[15] else 0
+
     if int(port_ctrl) & ALUPortCtrl.NOT:
         res[:] = ~res
     if int(port_ctrl) & ALUPortCtrl.INC:
         res[:] = res + 1
-    if int(port_ctrl) & ALUPortCtrl.SXT8:
-        res[32:8] = ((1 << 24) - 1) if res[7] else 0
-    if int(port_ctrl) & ALUPortCtrl.SXT16:
-        res[32:16] = ((1 << 16) - 1) if res[15] else 0
     return res
 
 

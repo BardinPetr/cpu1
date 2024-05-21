@@ -37,7 +37,7 @@ TEST_FUNCS = {
     'SUB':    lambda a, b, c: (ALUCtrl.ADD, APC.PASS, APC.NOT | APC.INC, trunc(a - b)),
     'SUBREV': lambda a, b, c: (ALUCtrl.ADD, APC.NOT | APC.INC, APC.PASS, trunc(b - a)),
     # check addition of 8bit sign extended value to normal
-    'ADDM8':  lambda a, b, c: (ALUCtrl.ADD, APC.PASS, APC.SXT8, trunc(a - (trunc(~b + 1, 8) if b & (1 << 7) else -b))),
+    'ADDM8':  lambda a, b, c: (ALUCtrl.ADD, APC.PASS, APC.SXTB, trunc(a - (trunc(~b + 1, 8) if b & (1 << 7) else -b))),
     # logic shifts
     'SHL':    lambda a, b, c: (ALUCtrl.SHL, APC.PASS, APC.PASS, trunc(a << b)),
     'SHR':    lambda a, b, c: (ALUCtrl.SHR, APC.PASS, APC.PASS, trunc(a >> b)),

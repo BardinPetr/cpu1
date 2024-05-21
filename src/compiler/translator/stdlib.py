@@ -12,7 +12,7 @@ STDIN_DEFAULT_REG = 0
 
 
 def gen_push(val: int) -> Instr:
-    return ImmInstr(Opcode.IPUSH, imm=val)
+    return ImmInstr(Opcode.ISTKPSH, imm=val)
 
 
 # Maths

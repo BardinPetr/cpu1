@@ -53,9 +53,9 @@ REGISTER: "PS" | "CR" | "PC"
 ALUFLAG: "Z" | "C" | "N" | "V"
 
 ALUCTRL: "ZERO" | "PASSA" | "PASSB" | "AND" | "OR" | "ADD" | "ADC" | "SHL" | "SHR" | "ASL" | "ASR" | "ROL" | "ROR"
-BUSINCTRL: "Z" | "PS" | "DR" | "DST" | "DSS" | "RST" | "RSS" | "XX" | "IP" | "CR" | "YY"
+BUSINCTRL: "Z" | "PS" | "DR" | "DST" | "DSS" | "RST" | "RSS" | "IP" | "CR"
 BUSOUTCTRL: "Z" | "PS" | "DR" | "AR" | "DS" | "RS" | "IP" | "CR"
-ALUPORTCTRL: "PASS" | "NOT" | "INC" | "SXT8" | "SXT16"
+ALUPORTCTRL: "PASS" | "NOT" | "INC" | "SXTB" | "SXTW" | "TKW" | "TKB"
 
 // misc
 HEXNUMBER: "0x"i HEXDIGIT+

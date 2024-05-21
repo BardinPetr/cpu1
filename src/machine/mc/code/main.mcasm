@@ -1,7 +1,9 @@
 (Z(INC) ADD) push(D);
 (Z(INC) ADD Z(INC)) push(D);
 (DST(INC) ADD Z(INC)) push(D);
-
+(Z(INC) ADD) push(R);
+(Z(INC) ADD Z(INC)) push(R);
+#(RST(INC) ADD Z(INC)) push(R);
 
 start:
 
@@ -16,8 +18,14 @@ exec:
 
 # group select of CR[31:28]
 switch (CR ADD)[30:28] {
-  # GMTH
+
+  #GIOC
   case 0b000 {
+
+  }
+
+  # GMTH
+  case 0b001 {
     switch (CR ADD)[23:20] {
       # ADD
       case 0b0000 { (DSS ADD DST) poprep(D); }
@@ -54,21 +62,30 @@ switch (CR ADD)[30:28] {
   }
 
   # GSTK
-  case 0b001 {
+  case 0b010 {
     # (CR ADD)[16] is stack id (0=D, 1=R),
-    # meaning is source stack for operation
+    # meaning is stack to operate on, or source stack for two-stack operation
 
     switch (CR ADD)[22:20] {
-      # IPUSH
-      case 0b0000 { }
+      # ISTKPSH
+      case 0b0000 {
+        if (CR ADD)[16] == 0  { (CR(TKW) ADD) push(D); }
+        else                  { (CR(TKW) ADD) push(R); };
+      }
 
-      # STKMV
-      case 0b0001 { }
+      # STKMV src[a];dst[] -> src[];dst[a]   (ctrl/stackid is src)
+      case 0b0001 {
+        if (CR ADD)[16] == 0  { (DST ADD) push(R), pop(D); }
+        else                  { (RST ADD) push(D), pop(R); };
+      }
 
-      # STKCP
-      case 0b0010 { }
+      # STKCP src[a];dst[] -> src[a];dst[a]   (ctrl/stackid is src)
+      case 0b0010 {
+        if (CR ADD)[16] == 0  { (DST ADD) push(R); }
+        else                  { (RST ADD) push(D); };
+      }
 
-      # STKPOP
+      # STKPOP [a] -> []
       case 0b0011 {
         if (CR ADD)[16] == 0  { (ZERO) pop(D); }
         else                  { (ZERO) pop(R); };
@@ -80,9 +97,10 @@ switch (CR ADD)[30:28] {
         else                  { (RST ADD) push(R); };
       }
 
-      # STKOVR [a,b] ->
+      # STKOVR [a,b] -> [a,b,a]
       case 0b0100 {
-
+        if (CR ADD)[16] == 0  { (DSS ADD) push(D); }
+        else                  { (RSS ADD) push(R); };
       }
 
       # STKSWP [a,b] -> [b,a]
@@ -92,29 +110,26 @@ switch (CR ADD)[30:28] {
           (DST ADD) poprep(D);
           (RST ADD) push(D), pop(R);
         } else {
-#          (RS ADD) push(R);
+          (RSS ADD) push(D);
+          (RST ADD) poprep(R);
+          (DST ADD) push(R), pop(D);
         };
       }
     };
   }
 
   # GCMP
-  case 0b010 {
-
-  }
-
-  #GMEM
   case 0b011 {
 
   }
 
-  #GIOC
-  case 0b100 {
+  # GJMP
+  case 0b101 {
 
   }
 
-  #GJMP
-  case 0b101 {
+  # GMEM
+  case 0b100 {
 
   }
 };

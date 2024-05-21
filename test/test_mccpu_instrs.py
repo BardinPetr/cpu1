@@ -20,11 +20,21 @@ L = get_logger()
 TESTS = [
     # [Opcode.ADD, 2, 1, lambda in_args, out_args: out_args[0] == (in_args[0] + in_args[1])],
     # [Opcode.SUB, 2, 1, lambda in_args, out_args: out_args[0] == (in_args[0] - in_args[1])],
-    [Opcode.STKSWP, 2, 2, lambda in_args, out_args: out_args == in_args[::-1]]
+    # [Opcode.STKSWP, 2, 2, lambda in_args, out_args: out_args == in_args[::-1]]
+    # [Opcode.STKDUP, 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+    # [Opcode.STKPOP, 2, 2, lambda in_args, out_args: out_args == in_args[::-1]]
+    # [Opcode.STKCP, dict(stack=0), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+    # [Opcode.STKCP, dict(stack=1), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+    # [Opcode.STKMV, dict(stack=0), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+    # [Opcode.STKMV, dict(stack=1), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+    # [Opcode.STKOVR, dict(stack=0), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+    # [Opcode.STKOVR, dict(stack=1), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+    [Opcode.ISTKPSH, dict(stack=0, imm=0xDEAD), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+    [Opcode.ISTKPSH, dict(stack=1, imm=0xBEEF), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
 ]
 
 RAM = compile_instructions([
-    Instr(i[0]) for i in TESTS
+    Instr(i[0], **i[1]) for i in TESTS
 ])
 
 
@@ -62,7 +72,7 @@ def test_cpu_wmc_infetch():
         # "DS_S":   d_stack.in_shift,
         # "DS_W":   d_stack.in_wr_top,
         # "DS_IN":  dp.d_stack_in,
-        "DS_SP":  dp.d_stack.sp,
+        "DS_SP":  d_stack.sp,
         "DS_TOP": dp.d_stack_tos0,
         "DS_PRV": dp.d_stack_tos1,
         "RS_SP":  dp.r_stack.sp,
@@ -116,7 +126,7 @@ def test_cpu_wmc_infetch():
         while ip != 0xA:
             yield clk.posedge
 
-        display_trace_vcd('dist', 't1', trace_res)
+        # display_trace_vcd('dist', 't1', trace_res)
         display_trace_vcd('dist', 't2', itrace_res)
         raise StopSimulation()
 
