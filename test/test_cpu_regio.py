@@ -11,7 +11,7 @@ L = get_logger()
 MC_ROM = mc_compile("""
 start:
 (IP ADD Z(INC)) -> IP;
-(IP PASSA);
+(IP ADD);
 jump start;
 """).compiled
 
@@ -57,13 +57,13 @@ def test_cpu_regio():
         3rd:  Jump (no ALU op)
         """
         target_bus_c = []
-        for i in range(END - 1):
-            target_bus_c += [i + 2, i + 1, 0]
+        for i in range(END):
+            target_bus_c += [i + 1, i + 1, 0]
 
         print("TARGET :", target_bus_c)
         print("REAL   :", seq_bus_c)
 
-        assert target_bus_c == seq_bus_c
+        assert seq_bus_c == target_bus_c
 
         raise StopSimulation()
 

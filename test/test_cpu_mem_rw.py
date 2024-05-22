@@ -20,20 +20,16 @@ Each cycle:
 """
 
 MC_ROM = mc_compile("""
-(IP PASSA) -> AR;
-(DR PASSA) -> CR;
-(IP(INC) PASSA) -> IP;
-(CR SHL Z(INC)) -> DR;
-store;
+(IP ADD) -> AR;
+(DR ADD) -> CR;
+(IP(INC) ADD) -> IP;
+(CR SHL Z(INC)) -> DR, store;
 jump 0;
 """).compiled
 
 
 @myhdl_pytest(gui=False, duration=None)
 def test_cpu_mem_rw():
-    for src, comp in zip(MC_ROM, MC_ROM):
-        L.info(f"MC{comp:064b}: {src}")
-
     LEN = 10
     RAM_SRC = [16 * i + 7 for i in range(LEN)]
     RAM_TARGET = [2 * i for i in RAM_SRC]
@@ -61,7 +57,7 @@ def test_cpu_mem_rw():
     @instance
     def stimulus():
         for i in range(len(MC_ROM) * LEN):
-            yield clk.posedge
+            yield clk.negedge
 
         ram_real = [int(ram[i]) for i in range(len(RAM_TARGET))]
 

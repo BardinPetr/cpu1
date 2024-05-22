@@ -23,8 +23,6 @@ def trunc(x, n=DIM):
 TEST_FUNCS = {
     # basic
     'ZERO':   lambda a, b, c: (ALUCtrl.ZERO, APC.PASS, APC.PASS, 0),
-    'PASSA':  lambda a, b, c: (ALUCtrl.PASSA, APC.PASS, APC.PASS, a),
-    'PASSB':  lambda a, b, c: (ALUCtrl.PASSB, APC.PASS, APC.PASS, b),
     # logic
     'OR':     lambda a, b, c: (ALUCtrl.OR, APC.PASS, APC.PASS, a | b),
     'AND':    lambda a, b, c: (ALUCtrl.AND, APC.PASS, APC.PASS, a & b),
@@ -78,8 +76,6 @@ def test_alu():
 
     CHECKS = [
         ('ZERO', 123, 321, 0),
-        ('PASSA', 123, 321, 0),
-        ('PASSB', 123, 321, 0),
         *[('AND', None, None, 0)] * 10,
         *[('OR', None, None, 0)] * 10,
         *[('ANDNN', None, None, 0)] * 2,

@@ -19,8 +19,8 @@ def test_cpu_stack():
     """
 
     MC_ROM = mc_compile("""
-        (Z(INC) PASSA), push(D);
-        (Z(INC) PASSA), push(D);
+        (Z(INC) ADD), push(D);
+        (Z(INC) ADD), push(D);
         loop:
         (DSS ADD DST), push(R);
         pop(D); 
@@ -104,7 +104,7 @@ def test_cpu_stack():
 @myhdl_pytest(gui=False, duration=None)
 def test_cpu_stack_rep():
     MC_ROM = mc_compile("""
-        (Z(INC) PASSA) push(D);
+        (Z(INC) ADD) push(D);
         (Z(INC) ADD Z(INC)) push(D);
         (DSS ADD DST) rep(D); 
         (DSS SHL DST) poprep(D); 

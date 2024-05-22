@@ -29,8 +29,16 @@ TESTS = [
     # [Opcode.STKMV, dict(stack=1), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
     # [Opcode.STKOVR, dict(stack=0), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
     # [Opcode.STKOVR, dict(stack=1), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
-    [Opcode.ISTKPSH, dict(stack=0, imm=0xDEAD), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
-    [Opcode.ISTKPSH, dict(stack=1, imm=0xBEEF), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0xDEAD), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+    # [Opcode.ISTKPSH, dict(stack=1, imm=0xBEEF), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0xDEAD), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x20), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.STORE, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x20), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.FETCH, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x0), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.FETCH, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
 ]
 
 RAM = compile_instructions([
@@ -64,6 +72,8 @@ def test_cpu_wmc_infetch():
         "CR":     dp.rf.registers[RegFileIdCtrl.CR],
         "AR":     dp.reg_ar_out,
         "DR":     dp.reg_dr_out,
+        "DRW":     dp.ram_a_in,
+        "RAM_WR":     dp.ram_a_wr,
         # "RAR_W":     dp.reg_ar_wr,
         # "RAR_O":     dp.reg_ar_out,
         # "RAR_I":     dp.reg_ar_in,

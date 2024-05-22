@@ -3,9 +3,9 @@ from pprint import pprint
 from src.mcasm.parse import MCASMCompiler
 
 txt = """
-if (CR PASSA)[30] == 0 {
-    if (CR PASSA)[29] == 0 {
-        if (CR PASSA)[28] == 0 {
+if (CR ADD)[30] == 0 {
+    if (CR ADD)[29] == 0 {
+        if (CR ADD)[28] == 0 {
             # group 0000 : GMTH
             jmp 0;
         } else {
@@ -13,21 +13,21 @@ if (CR PASSA)[30] == 0 {
             jmp 1;
         };
     } else {
-        if (CR PASSA)[28] == 0 {
+        if (CR ADD)[28] == 0 {
             jmp 2;
         } else {
             jmp 3;
         };
     };
 } else {
-    if (CR PASSA)[29] == 0 {
-        if (CR PASSA)[28] == 0 {
+    if (CR ADD)[29] == 0 {
+        if (CR ADD)[28] == 0 {
             jmp 4;
         } else {
             jmp 5;
         };
     } else {
-        if (CR PASSA)[28] == 0 {
+        if (CR ADD)[28] == 0 {
             jmp 6;
         } else {
             jmp 7;
@@ -37,15 +37,15 @@ if (CR PASSA)[30] == 0 {
 """
 
 txt = """
-#         if (CR PASSA)[28] == 0 {
+#         if (CR ADD)[28] == 0 {
 #             jmp 66;
 #         } else {
 #             jmp 77;
 #         };
 #         
-# switch (CR PASSA)[21:20] {
+# switch (CR ADD)[21:20] {
 #     case 0b0 {
-#         if (CR PASSA)[28] == 0 {
+#         if (CR ADD)[28] == 0 {
 #             jmp 66;
 #         } else {
 #             jmp 77;
@@ -55,9 +55,9 @@ txt = """
 #         jmp 1;
 #     }
 # };
-switch (CR PASSA)[30:28] {
+switch (CR ADD)[30:28] {
     case 0b000 {
-        if (CR PASSA)[28] == 0 {
+        if (CR ADD)[28] == 0 {
             jmp 66;
         } else {
             jmp 77;

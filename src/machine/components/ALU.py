@@ -63,8 +63,6 @@ def ALU(operation,
                 res[:] = 0
             case ALUCtrl.PASSA:
                 res[:] = op_a
-            case ALUCtrl.PASSB:
-                res[:] = op_b
             case ALUCtrl.AND:
                 res[:] = op_a & op_b
             case ALUCtrl.OR:

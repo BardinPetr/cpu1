@@ -2,7 +2,7 @@ from src.machine.arch import RegFileIdCtrl, RegFileOrNormalRegister
 from src.machine.components.ALU import ALU
 from src.machine.components.ExtendedStack import ExtendedStack
 from src.machine.components.RAM import RAMSyncSP
-from src.machine.components.base import Register
+from src.machine.components.base import Register, Latch
 from src.machine.components.mux import Mux, DeMux
 from src.machine.components.regfile import RegisterFile
 from src.machine.config import *
@@ -123,7 +123,7 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     demux_bus_c_reg_wr_cmd = DeMux(
         demux_bus_c_reg_wr,
         [
-            zerobus, reg_ps_wr.driver(), ram_a_wr, reg_ar_wr,
+            zerobus, reg_ps_wr.driver(), zerobus, reg_ar_wr,
             zerobus, zerobus, zerobus, zerobus
         ],
         ctrl=demux_bus_c_reg_id
@@ -150,10 +150,14 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     alu_flag_ctrl = Bus(enum=ALUFlagCtrl)
     alu_ctrl_pa, alu_ctrl_pb = [Bus(enum=ALUPortCtrl) for _ in range(2)]
 
+    alu_a_in, alu_b_in = Bus(DATA_BITS), Bus(DATA_BITS)
+    latch_alu_a_in = Latch(bus_a, alu_a_in, clk)
+    latch_alu_b_in = Latch(bus_b, alu_b_in, clk)
+
     # ALU module
     alu = ALU(
         alu_ctrl, alu_ctrl_pa, alu_ctrl_pb,
-        bus_a, bus_b,
+        alu_a_in, alu_b_in,
         bus_c,
         alu_flag_ctrl,
         reg_ps_out,

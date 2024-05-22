@@ -1,10 +1,3 @@
-(Z(INC) ADD) push(D);
-(Z(INC) ADD Z(INC)) push(D);
-(DST(INC) ADD Z(INC)) push(D);
-(Z(INC) ADD) push(R);
-(Z(INC) ADD Z(INC)) push(R);
-#(RST(INC) ADD Z(INC)) push(R);
-
 start:
 
 # fetch instruction from RAM to CR, increase IP
@@ -21,7 +14,16 @@ switch (CR ADD)[30:28] {
 
   #GIOC
   case 0b000 {
-
+    switch (CR ADD)[21:20] {
+      # HLT # TODO
+      case 0b00 { }
+      # NOP
+      case 0b01 { }
+      # IN # TODO
+      case 0b10 { }
+      # OUT # TODO
+      case 0b11 { }
+    };
   }
 
   # GMTH
@@ -124,13 +126,25 @@ switch (CR ADD)[30:28] {
   }
 
   # GJMP
-  case 0b101 {
+  case 0b100 {
 
   }
 
   # GMEM
-  case 0b100 {
+  case 0b101 {
+    switch (CR ADD)[20:20] {
+      # FETCH [addr] -> [val]
+      case 0b0 {
+        (DST ADD) -> AR;
+        (DR ADD) rep(D);
+      }
 
+      # STORE [val,addr] -> []
+      case 0b1 {
+        (DST ADD) -> AR, pop(D);
+        (DST ADD) -> DR, store, pop(D);
+      }
+    };
   }
 };
 

@@ -1,7 +1,7 @@
 from myhdl import *
 from myhdl import _Signal
 
-from src.machine.utils.hdl import hdl_block
+from src.machine.utils.hdl import hdl_block, Bus
 from src.machine.utils.introspection import introspect
 
 
@@ -28,6 +28,20 @@ def RTrig(d_in, d_out, clk, rst):
 
 Reg = Trig
 Register = Trig
+
+
+@hdl_block
+def Latch(d_in, d_out, ctrl):
+    stored = Bus()
+
+    @always_comb
+    def run():
+        if ctrl:
+            stored.next = d_in
+
+        d_out.next = stored
+
+    return introspect()
 
 
 @hdl_block

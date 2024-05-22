@@ -10,11 +10,6 @@ from src.machine.utils.log import get_logger
 L = get_logger()
 
 
-class MainBusCtrl(IntEnum):
-    ZERO = 0
-    PASSA = auto()
-
-
 @hdl_block
 def ALUDecoder(
         control_bus,

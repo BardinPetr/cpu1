@@ -93,7 +93,6 @@ class MemCtrl(CEnumS):
 class ALUCtrl(CEnumS):
     ZERO = 0
     PASSA = auto()
-    PASSB = auto()
     AND = auto()
     OR = auto()
     ADD = auto()

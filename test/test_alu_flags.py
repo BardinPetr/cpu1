@@ -28,7 +28,7 @@ def test_alu_flags():
 
     alu = ALU(ctrl, ctrla, ctrlb, in_a, in_b, out, flag_ctrl, flag_in, flag_out)
 
-    def call_alu(a, b=0, cin=0, mode=ALUCtrl.PASSA):
+    def call_alu(a, b=0, cin=0, mode=ALUCtrl.ADD):
         ctrl.next = mode
         ctrla.next = APC.PASS
         ctrlb.next = APC.PASS
