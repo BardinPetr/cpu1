@@ -1,4 +1,4 @@
-from myhdl import intbv, always_comb
+from myhdl import always_comb
 
 from src.machine.arch import RegFileIdCtrl, RegFileOrNormalRegister, BusInCtrl, BusOutCtrl, ALUCtrl, ALUFlagCtrl, \
     ALUPortCtrl

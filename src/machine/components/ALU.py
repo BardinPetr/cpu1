@@ -1,7 +1,7 @@
 from myhdl import *
 
-from src.machine.arch import PSFlags, ALUCtrl, ALUPortCtrl, ALUFlagCtrl
-from src.machine.config import DATA_BITS, REG_PS_SZ
+from src.machine.arch import PSFlags, ALUCtrl, ALUPortCtrl
+from src.machine.config import DATA_BITS
 from src.machine.utils.hdl import hdl_block, dim
 from src.machine.utils.introspection import introspect
 
