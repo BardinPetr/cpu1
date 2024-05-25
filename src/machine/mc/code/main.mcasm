@@ -115,16 +115,16 @@ switch (CR ADD)[30:28] {
   case 0b011 {
     (DSS ADD DST(NOT,INC)) push(D) set(Z,V,C,N);
 
-#    switch (CR ADD)[21:20] {
-#      # CEQ
-#      case 0b00 {
-#
-#      }
-#      # CLT
-#      case 0b01 {  }
-#      # CGT
-#      case 0b10 {  }
-#    };
+    switch (CR ADD)[21:20] {
+      # CEQ
+      case 0b00 {
+
+      }
+      # CLT
+      case 0b01 {  }
+      # CGT
+      case 0b10 {  }
+    };
   }
 
   # GJMP

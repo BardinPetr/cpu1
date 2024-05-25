@@ -57,28 +57,28 @@ def RegWriteDecoder(
 ):
     @always_comb
     def update():
+        is_exec_cmd = MCLocs.MCLType.get(control_bus) == MCLocs.MCType.MC_RUN
+
         mem_ctrl = MCLocs.MCMemCtrl.get(control_bus)
-        ram_a_wr.next = mem_ctrl[0]
+        ram_a_wr.next = mem_ctrl[0] & is_exec_cmd
 
         wr_ctrl = MCLocs.MCBusCCtrl.get(control_bus)
         regfile_in_id.next = wr_ctrl[3:]
         register_demux_id.next = wr_ctrl[3:]
         demux_bus_c_nr_rf.next = wr_ctrl[3]
 
-        enable = wr_ctrl != 0
-
         # if wr_ctrl[2] == 1 then  wr_ctrl[2:] is regfile register, else register source
         # regfile write occurring on neg edge of clk!
-        regfile_wr.next = enable and wr_ctrl[3]
+        regfile_wr.next = is_exec_cmd & wr_ctrl[3]
 
     @always(clk.negedge)
     def run():
+        is_exec_cmd = MCLocs.MCLType.get(control_bus) == MCLocs.MCType.MC_RUN
+        alu_flag_ctrl = MCLocs.MCALUFlagCtrl.get(control_bus)
         wr_ctrl = MCLocs.MCBusCCtrl.get(control_bus)
 
-        register_wr.next = (wr_ctrl != 0) and (not wr_ctrl[3])
-
-        alu_flag_ctrl = MCLocs.MCALUFlagCtrl.get(control_bus)
-        reg_ps_wr.next = alu_flag_ctrl != 0
+        register_wr.next = is_exec_cmd & (wr_ctrl != 0) & (not wr_ctrl[3])
+        reg_ps_wr.next = is_exec_cmd & (alu_flag_ctrl != 0)
 
     @always(clk.posedge)
     def reset():
@@ -96,11 +96,14 @@ def StackDecoder(
 ):
     @always_comb
     def run():
+        is_exec_cmd = MCLocs.MCLType.get(control_bus) == MCLocs.MCType.MC_RUN
         ctrl_d = MCLocs.MCStackDCtrl.get(control_bus)
         ctrl_r = MCLocs.MCStackRCtrl.get(control_bus)
-        d_stack_wr.next = ctrl_d[2]
-        r_stack_wr.next = ctrl_r[2]
+
         d_stack_shift.next = ctrl_d[2:].signed()
         r_stack_shift.next = ctrl_r[2:].signed()
+
+        d_stack_wr.next = ctrl_d[2] & is_exec_cmd
+        r_stack_wr.next = ctrl_r[2] & is_exec_cmd
 
     return introspect()

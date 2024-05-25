@@ -146,7 +146,7 @@ def test_cpu_wmc_infetch():
         while ip != 0xA:
             yield clk.posedge
 
-        display_trace_vcd('dist', 't1', trace_res)
+        # display_trace_vcd('dist', 't1', trace_res)
         display_trace_vcd('dist', 't2', itrace_res)
         raise StopSimulation()
 
