@@ -121,8 +121,8 @@ class ALUPortCtrl(CEnumM):
 class ALUFlagCtrl(CEnumM):
     SETZ = 1 << PSFlags.Z
     SETN = 1 << PSFlags.N
-    SETV = 1 << PSFlags.V
     SETC = 1 << PSFlags.C
+    SETV = 1 << PSFlags.V
 
 
 class StackCtrl(CEnumS):

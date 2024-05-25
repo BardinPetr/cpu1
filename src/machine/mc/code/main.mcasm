@@ -112,18 +112,44 @@ switch (CR ADD)[30:28] {
   }
 
   # GCMP
+  # PS is [...VCNZ]
   case 0b011 {
-    (DSS ADD DST(NOT,INC)) push(D) set(Z,V,C,N);
+    if (CR ADD)[22] == 1 {
+      # CEQ (b100)
+      (PS AND Z(INC)) poprep(D); # push z flag, it is leftmost
+    } else {
+      # CLTx, CGTx (b0XX)
+      # bit 20 selects operand order (0 for LTx, 1 for GTx, then GTx is LTx with reversed ops)
+      if (CR ADD)[20] == 0  { (DSS ADD DST(NOT,INC)) set(Z,V,C,N); }
+      else                  { (DST ADD DSS(NOT,INC)) set(Z,V,C,N); };
 
-    switch (CR ADD)[21:20] {
-      # CEQ
-      case 0b00 {
+      # here implementing only "less" variant
 
-      }
-      # CLT
-      case 0b01 {  }
-      # CGT
-      case 0b10 {  }
+      if (CR ADD)[21] == 0 {
+        # Unsigned version
+        # C <=> "<"
+        if (PS ADD)[2] == 0 { jmp cmp_ltx_exit_poprep_1; }
+        else                { jmp cmp_ltx_exit_poprep_0; };
+      } else {
+        # Signed version
+        # V^C <=> "<"
+        switch (PS ADD)[4:2] { # extract VC part and implement xor
+          case 0b00 { jmp cmp_ltx_exit_poprep_0; }
+          case 0b11 { jmp cmp_ltx_exit_poprep_0; }
+          case 0b01 { jmp cmp_ltx_exit_poprep_1; }
+          case 0b10 { jmp cmp_ltx_exit_poprep_1; }
+        };
+      };
+
+      # here using jmp to push 0/1 to exit from all nested ifs
+      # with only one command instead of sequence to speedup,
+      # as there is no optimization currently in flattening process
+      cmp_ltx_exit_poprep_0:
+      (Z ADD) poprep(D);
+      jmp exec_end;
+
+      cmp_ltx_exit_poprep_1:
+      (Z(INC) ADD) poprep(D);
     };
   }
 
@@ -150,7 +176,8 @@ switch (CR ADD)[30:28] {
   }
 };
 
+exec_end:
 
+# final
 end:
-
 jmp start;

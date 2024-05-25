@@ -3,13 +3,13 @@ from myhdl import *
 from isa.main import compile_instructions, Opcode
 from isa.model.instructions import Instr
 from machine.arch import RegFileIdCtrl
+from machine.config import DATA_BITS
 from machine.cpu import CPU
 from machine.mc.mcinstr import MCInstructionExec
 import src.machine.mc.mcisa as MCLocs
+from machine.utils.hdl import signed
 from machine.utils.log import get_logger
 from machine.utils.runutils import display_trace_vcd
-
-
 
 from src.machine.mc.code import mcrom
 from src.machine.utils.introspection import IntrospectionTree, TraceTick, TraceData, TraceInstr
@@ -39,9 +39,30 @@ TESTS = [
     # [Opcode.ISTKPSH, dict(stack=0, imm=0x0), 2, 2, lambda in_args, out_args: 0],
     # [Opcode.FETCH, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
 
-    [Opcode.ISTKPSH, dict(stack=0, imm=0x20), 2, 2, lambda in_args, out_args: 0],
-    [Opcode.ISTKPSH, dict(stack=0, imm=0x20), 2, 2, lambda in_args, out_args: 0],
-    [Opcode.CEQ, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x20), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x20), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.CEQ, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.STKPOP, {}, 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x21), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x22), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.CEQ, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.STKPOP, {}, 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x21), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x22), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.CLTS, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.STKPOP, {}, 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x21), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x22), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.CGTS, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.STKPOP, {}, 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x20), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x10), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.CLTS, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.STKPOP, {}, 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x20), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x10), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.CGTS, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.STKPOP, {}, 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
 ]
 
 RAM = compile_instructions([
@@ -79,8 +100,8 @@ def test_cpu_wmc_infetch():
         "CR":     dp.rf.registers[RegFileIdCtrl.CR],
         "AR":     dp.reg_ar_out,
         "DR":     dp.reg_dr_out,
-        "DRW":     dp.ram_a_in,
-        "RAM_WR":     dp.ram_a_wr,
+        "DRW":    dp.ram_a_in,
+        "RAM_WR": dp.ram_a_wr,
         # "RAR_W":     dp.reg_ar_wr,
         # "RAR_O":     dp.reg_ar_out,
         # "RAR_I":     dp.reg_ar_in,
@@ -96,15 +117,16 @@ def test_cpu_wmc_infetch():
         "RS_TOP": dp.r_stack_tos0,
         "RS_PRV": dp.r_stack_tos1,
         "MCPC":   mc_pc,
-        "FLAGSI":  dp.reg_ps_in,
-        "FLAGSO":  dp.reg_ps_out,
-        "FLAGSW":  dp.reg_ps_wr,
+        "FLAGSI": dp.reg_ps_in,
+        "FLAGSO": dp.reg_ps_out,
+        "FLAGSW": dp.reg_ps_wr,
     })
 
     itrace_res = TraceData()
     itracer = TraceInstr(
         intro.clk, itrace_res, {
             "IP":     ip,
+            "PS":     dp.reg_ps_out,
             "CR":     dp.rf.registers[RegFileIdCtrl.CR],
             "DS_TOP": dp.d_stack_tos0,
             "DS_PRV": dp.d_stack_tos1,
@@ -143,7 +165,7 @@ def test_cpu_wmc_infetch():
 
     @instance
     def stimulus():
-        while ip != 0xA:
+        while ip != 0x30:
             yield clk.posedge
 
         # display_trace_vcd('dist', 't1', trace_res)

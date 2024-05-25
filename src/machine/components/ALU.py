@@ -7,7 +7,7 @@ from src.machine.utils.introspection import introspect
 
 
 def alu_apply_port(port_data: intbv, port_ctrl):
-    res = modbv(port_data)
+    res = intbv(port_data)[:]
     if int(port_ctrl) & ALUPortCtrl.TKB:
         res[:] = res[8:]
     elif int(port_ctrl) & ALUPortCtrl.TKW:
@@ -19,9 +19,9 @@ def alu_apply_port(port_data: intbv, port_ctrl):
         res[32:16] = ((1 << 16) - 1) if res[15] else 0
 
     if int(port_ctrl) & ALUPortCtrl.NOT:
-        res[:] = ~res
+        res[32:] = ~res[32:]
     if int(port_ctrl) & ALUPortCtrl.INC:
-        res[:] = res + 1
+        res[32:] = intbv(res + 1)[32:]
     return res
 
 
@@ -54,8 +54,8 @@ def ALU(operation,
 
     @always_comb
     def run():
-        op_a = alu_apply_port(in_a.val, porta_ctrl)
-        op_b = alu_apply_port(in_b.val, portb_ctrl)
+        op_a = intbv(alu_apply_port(in_a.val, porta_ctrl))[DATA_BITS + 1:]
+        op_b = intbv(alu_apply_port(in_b.val, portb_ctrl))[DATA_BITS + 1:]
 
         res = intbv(0)[DATA_BITS + 1:]
         match operation:
@@ -92,18 +92,12 @@ def ALU(operation,
 
         out.next = res[DATA_BITS:]
 
-        tmp_flags[:] = flags_in.val
+        a_sign, b_sign, out_sign = op_a[DATA_BITS - 1], op_b[DATA_BITS - 1], res[DATA_BITS - 1]
 
-        if flag_ctrl.val & ALUFlagCtrl.SETZ:
-            tmp_flags[PSFlags.Z] = not res
-        if flag_ctrl.val & ALUFlagCtrl.SETN:
-            tmp_flags[PSFlags.N] = res[DATA_BITS - 1]
-        if flag_ctrl.val & ALUFlagCtrl.SETC:
-            tmp_flags[PSFlags.C] = res[DATA_BITS]
-        if flag_ctrl.val & ALUFlagCtrl.SETV:
-            out_sign = res[DATA_BITS - 1]
-            a_sign, b_sign = op_a[DATA_BITS - 1], op_b[DATA_BITS - 1]
-            tmp_flags[PSFlags.V] = (out_sign ^ a_sign) & (out_sign ^ b_sign)
+        tmp_flags[PSFlags.Z] = not res[DATA_BITS:]
+        tmp_flags[PSFlags.N] = out_sign
+        tmp_flags[PSFlags.C] = res[DATA_BITS]
+        tmp_flags[PSFlags.V] = (a_sign ^ b_sign) & (a_sign ^ out_sign)
 
         flags_out.next = tmp_flags
 

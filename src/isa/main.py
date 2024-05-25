@@ -33,9 +33,11 @@ class Opcode(OpcodeEnum):
     NEG = auto()
 
     """ OpcodeGroup.GCMP """
-    CEQ = OpcodeGroup.GCMP, 0
-    CLT = auto()
-    CGT = auto()
+    CLTU = OpcodeGroup.GCMP, 0
+    CGTU = auto()
+    CLTS = auto()
+    CGTS = auto()
+    CEQ = auto()
 
     """ OpcodeGroup.GSTK """
     ISTKPSH = OpcodeGroup.GSTK, 0

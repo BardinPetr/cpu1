@@ -37,6 +37,8 @@ class SwitchTransformer(Transformer):
 
     @v_args(inline=True)
     def instr_switch(self, alu: Tree, pos_end: int, pos_start: int, body: Dict[int, Dict | List]):
+        if pos_end < pos_start:
+            raise ValueError(f"Invalid ranges for switch {pos_end}:{pos_start}")
         exit_label = Location(name=f"__switch_{self.__switch_id}_end")
         self.__switch_id += 1
 
