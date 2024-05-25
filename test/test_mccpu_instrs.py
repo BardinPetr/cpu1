@@ -1,19 +1,19 @@
-import random
-
 from myhdl import *
-from myhdl import _Signal
 
 from isa.main import compile_instructions, Opcode
 from isa.model.instructions import Instr
-from machine import signed
+from machine.arch import RegFileIdCtrl
+from machine.cpu import CPU
+from machine.mc.mcinstr import MCInstructionExec
+import src.machine.mc.mcisa as MCLocs
+from machine.utils.log import get_logger
 from machine.utils.runutils import display_trace_vcd
-from src.machine import CPU
-from src.machine import RegFileIdCtrl
-from src.machine import get_logger
+
+
+
 from src.machine.mc.code import mcrom
 from src.machine.utils.introspection import IntrospectionTree, TraceTick, TraceData, TraceInstr
-from src.machine.utils.testutils import skip_clk, myhdl_pytest
-from test.test_utils import push_stack, pop_stack
+from src.machine.utils.testutils import myhdl_pytest
 
 L = get_logger()
 
@@ -31,7 +31,6 @@ TESTS = [
     # [Opcode.STKOVR, dict(stack=1), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
     # [Opcode.ISTKPSH, dict(stack=0, imm=0xDEAD), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
     # [Opcode.ISTKPSH, dict(stack=1, imm=0xBEEF), 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
-
     # [Opcode.ISTKPSH, dict(stack=0, imm=0xDEAD), 2, 2, lambda in_args, out_args: 0],
     # [Opcode.ISTKPSH, dict(stack=0, imm=0x20), 2, 2, lambda in_args, out_args: 0],
     # [Opcode.STORE, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
@@ -39,6 +38,10 @@ TESTS = [
     # [Opcode.FETCH, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
     # [Opcode.ISTKPSH, dict(stack=0, imm=0x0), 2, 2, lambda in_args, out_args: 0],
     # [Opcode.FETCH, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
+
+    [Opcode.ISTKPSH, dict(stack=0, imm=0x20), 2, 2, lambda in_args, out_args: 0],
+    [Opcode.ISTKPSH, dict(stack=0, imm=0x20), 2, 2, lambda in_args, out_args: 0],
+    [Opcode.CEQ, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
 ]
 
 RAM = compile_instructions([
@@ -52,6 +55,10 @@ def test_cpu_wmc_infetch():
     print(*mcrom.MICROCODE.commands, sep='\n')
     print("RAM")
     print(RAM)
+
+    for i in mcrom.MICROCODE.commands:
+        if isinstance(i, MCInstructionExec):
+            print(i.alu_flag_ctrl, i.compile(), MCLocs.MCALUFlagCtrl.get(intbv(i.compile())))
 
     cpu = CPU(mcrom.ROM, ram=RAM)
 
@@ -88,7 +95,10 @@ def test_cpu_wmc_infetch():
         "RS_SP":  dp.r_stack.sp,
         "RS_TOP": dp.r_stack_tos0,
         "RS_PRV": dp.r_stack_tos1,
-        "MCPC":   mc_pc
+        "MCPC":   mc_pc,
+        "FLAGSI":  dp.reg_ps_in,
+        "FLAGSO":  dp.reg_ps_out,
+        "FLAGSW":  dp.reg_ps_wr,
     })
 
     itrace_res = TraceData()
@@ -136,7 +146,7 @@ def test_cpu_wmc_infetch():
         while ip != 0xA:
             yield clk.posedge
 
-        # display_trace_vcd('dist', 't1', trace_res)
+        display_trace_vcd('dist', 't1', trace_res)
         display_trace_vcd('dist', 't2', itrace_res)
         raise StopSimulation()
 

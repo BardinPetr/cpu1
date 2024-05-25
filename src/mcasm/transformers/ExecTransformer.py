@@ -2,9 +2,9 @@ from typing import List
 
 from lark import Transformer, Token
 
-from machine import arch
-from machine.mc import MCInstructionExec
 from mcasm.utils import merge_dicts
+from src.machine import arch
+from src.machine.mc.mcinstr import MCInstructionExec
 
 
 class ControlInstructionTransformer(Transformer):

@@ -13,7 +13,8 @@ class IfTransformer(Transformer):
 
     def block_content(self, tree: List[Tree]):
         return reduce(
-            lambda acc, cur: acc + (self.block_content(line.children) if (line := cur.children[0]).data == 'block' else [cur]),
+            lambda acc, cur: acc + (
+                self.block_content(line.children) if (line := cur.children[0]).data == 'block' else [cur]),
             tree, []
         )
 

@@ -2,7 +2,8 @@ from math import log2, ceil
 
 from myhdl import *
 
-from src.machine.utils.hdl import *
+from src.machine.config import DATA_BITS
+from src.machine.utils.hdl import hdl_block, Bus
 from src.machine.utils.introspection import introspect
 
 

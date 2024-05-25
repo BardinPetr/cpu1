@@ -17,33 +17,6 @@
         </value>
       </option>
     </inspection_tool>
-    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="ignoredPackages">
-        <value>
-          <list size="19">
-            <item index="0" class="java.lang.String" itemvalue="opencv-python" />
-            <item index="1" class="java.lang.String" itemvalue="open3d" />
-            <item index="2" class="java.lang.String" itemvalue="ur-rtde" />
-            <item index="3" class="java.lang.String" itemvalue="roslibpy" />
-            <item index="4" class="java.lang.String" itemvalue="numpy" />
-            <item index="5" class="java.lang.String" itemvalue="selenium" />
-            <item index="6" class="java.lang.String" itemvalue="qrcode" />
-            <item index="7" class="java.lang.String" itemvalue="webdriver-manager" />
-            <item index="8" class="java.lang.String" itemvalue="pytz" />
-            <item index="9" class="java.lang.String" itemvalue="pyjwt" />
-            <item index="10" class="java.lang.String" itemvalue="python-telegram-bot" />
-            <item index="11" class="java.lang.String" itemvalue="Flask" />
-            <item index="12" class="java.lang.String" itemvalue="dataclasses-json" />
-            <item index="13" class="java.lang.String" itemvalue="schedule" />
-            <item index="14" class="java.lang.String" itemvalue="caldav" />
-            <item index="15" class="java.lang.String" itemvalue="icalendar" />
-            <item index="16" class="java.lang.String" itemvalue="python-dateutil" />
-            <item index="17" class="java.lang.String" itemvalue="flask_cors" />
-            <item index="18" class="java.lang.String" itemvalue="Pillow" />
-          </list>
-        </value>
-      </option>
-    </inspection_tool>
     <inspection_tool class="PyPep8Inspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
       <option name="ignoredErrors">
         <list>
@@ -60,11 +33,10 @@
         </list>
       </option>
     </inspection_tool>
-    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="ERROR" enabled_by_default="true" editorAttributes="WRONG_REFERENCES_ATTRIBUTES">
       <option name="ignoredIdentifiers">
         <list>
-          <option value="list.join" />
-          <option value="pyroute2.IPRoute" />
+          <option value="myhdl._block._Block.introspection" />
         </list>
       </option>
     </inspection_tool>

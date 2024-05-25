@@ -33,6 +33,12 @@ switch (CR ADD)[30:28] {
       case 0b0000 { (DSS ADD DST) poprep(D); }
       # SUB
       case 0b0001 { (DSS ADD DST(INC,NOT)) poprep(D); }
+      # DIV
+      case 0b0010 { (DSS DIV DST) poprep(D); }
+      # MUL
+      case 0b0011 { (DSS MUL DST) poprep(D); }
+      # MOD
+      case 0b0100 { (DSS MOD DST) poprep(D); }
       # AND
       case 0b0101 { (DSS AND DST) poprep(D); }
       # OR
@@ -45,21 +51,6 @@ switch (CR ADD)[30:28] {
       case 0b1001 { (DST ADD Z(NOT)) rep(D); }
       # NEG (-x)
       case 0b1010 { (DST(NOT,INC) ADD) rep(D); }
-
-      # MUL
-      case 0b0011 {
-        # TODO: multiplication MC
-      }
-
-      # MOD
-      case 0b0100 {
-        # TODO: modulo MC
-      }
-
-      # DIV
-      case 0b0010 {
-        # TODO: division MC
-      }
     };
   }
 
@@ -122,7 +113,18 @@ switch (CR ADD)[30:28] {
 
   # GCMP
   case 0b011 {
+    (DSS ADD DST(NOT,INC)) push(D) set(Z,V,C,N);
 
+#    switch (CR ADD)[21:20] {
+#      # CEQ
+#      case 0b00 {
+#
+#      }
+#      # CLT
+#      case 0b01 {  }
+#      # CGT
+#      case 0b10 {  }
+#    };
   }
 
   # GJMP

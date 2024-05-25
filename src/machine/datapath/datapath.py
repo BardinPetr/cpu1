@@ -1,12 +1,13 @@
-from src.machine.arch import RegFileIdCtrl, RegFileOrNormalRegister
+from src.machine.arch import RegFileIdCtrl, RegFileOrNormalRegister, BusInCtrl, BusOutCtrl, ALUCtrl, ALUFlagCtrl, \
+    ALUPortCtrl
 from src.machine.components.ALU import ALU
 from src.machine.components.ExtendedStack import ExtendedStack
 from src.machine.components.RAM import RAMSyncSP
 from src.machine.components.base import Register, Latch
 from src.machine.components.mux import Mux, DeMux
 from src.machine.components.regfile import RegisterFile
-from src.machine.config import *
-from src.machine.mc.decoders import *
+from src.machine.config import DATA_BITS, REG_PS_SZ, REG_SZ, ADDR_BITS, STACK_D_DEPTH, REGFILE_COUNT
+from src.machine.mc.components.decoders import RegReadDecoder, ALUDecoder, RegWriteDecoder, StackDecoder
 from src.machine.utils.hdl import hdl_block, Bus, create_reg_signals, Bus1
 from src.machine.utils.introspection import introspect
 from src.machine.utils.log import get_logger
@@ -26,8 +27,8 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     # classic registers
     # Program State register (see PSFlags)
     reg_ps_out = Bus(REG_PS_SZ)
-    reg_ps_wr = TristateSignal(intbv(0)[1:])
-    reg_ps_in = TristateSignal(intbv(0)[REG_PS_SZ:])
+    reg_ps_in = Bus(REG_PS_SZ)
+    reg_ps_wr = Bus1()
     reg_ps = Register(reg_ps_in, reg_ps_out, reg_ps_wr)
 
     # register tied to ram input addr
@@ -116,14 +117,11 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     demux_bus_c_reg_id = Bus(enum=BusOutCtrl)
     demux_bus_c_nr_rf = Bus(enum=RegFileOrNormalRegister)
 
-    # Order of demux out should be according to BusOutCtrl!
-    # TODO add write from BusC to PS via reg_ps_in.driver()
-
     # forward write signals
     demux_bus_c_reg_wr_cmd = DeMux(
         demux_bus_c_reg_wr,
         [
-            zerobus, reg_ps_wr.driver(), zerobus, reg_ar_wr,
+            zerobus, zerobus, zerobus, reg_ar_wr,
             zerobus, zerobus, zerobus, zerobus
         ],
         ctrl=demux_bus_c_reg_id
@@ -161,7 +159,7 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
         bus_c,
         alu_flag_ctrl,
         reg_ps_out,
-        reg_ps_in.driver()
+        reg_ps_in
     )
 
     ########################################################################
@@ -182,7 +180,7 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
         clk,
         control_bus,
         ram_a_wr,
-        reg_ps_wr.driver(),
+        reg_ps_wr,
         demux_bus_c_reg_wr, demux_bus_c_reg_id, demux_bus_c_nr_rf,
         regfile_wr, regfile_in_id
     )

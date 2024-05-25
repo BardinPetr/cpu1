@@ -1,4 +1,4 @@
-OPCODE        |  GRP|     ALT|
+OPCODE | GRP| ALT|
 ----------------------------
 GIOC.HLT      : 0000 00000000
 GIOC.NOP      : 0000 00000001

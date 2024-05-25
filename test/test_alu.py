@@ -58,7 +58,7 @@ def test_alu():
 
     # alu.convert('Verilog')
 
-    def call_alu(c, ca, cb, a, b, cin) -> int:
+    def call_alu(c, ca, cb, a, b, cin):
         ctrl.next = c
         ctrla.next = ca
         ctrlb.next = cb

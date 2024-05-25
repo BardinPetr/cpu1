@@ -1,8 +1,8 @@
 from myhdl import *
 
+import src.machine.mc.mcisa as MCLocs
 from src.machine.components.ROM import ROM
-from src.machine.config import *
-from src.machine.mc.mcisa import *
+from src.machine.config import MC_ADDR_SZ
 from src.machine.utils.hdl import Bus
 from src.machine.utils.hdl import hdl_block
 from src.machine.utils.introspection import introspect
@@ -26,14 +26,14 @@ def MCSequencer(clk, mc_cr, cpu_bus_c, mc_rom_data):
     def load():
         L.debug(f"UPC: {int(mc_pc):010b} UCR: {int(mc_cr):064b}")
 
-        match MCLType.get(mc_cr):
-            case MCType.MC_RUN:
+        match MCLocs.MCLType.get(mc_cr):
+            case MCLocs.MCType.MC_RUN:
                 mc_pc.next = mc_pc + 1
 
-            case MCType.MC_JMP:
-                bit = MCJmpCmpBit.get(mc_cr)
-                val = MCJmpCmpVal.get(mc_cr)
-                jmp = MCJmpTarget.get(mc_cr)
+            case MCLocs.MCType.MC_JMP:
+                bit = MCLocs.MCJmpCmpBit.get(mc_cr)
+                val = MCLocs.MCJmpCmpVal.get(mc_cr)
+                jmp = MCLocs.MCJmpTarget.get(mc_cr)
 
                 skip = cpu_bus_c[bit] ^ val
                 if skip:

@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional, List, Iterable, Tuple
 
 import myhdl
 import vcd
-from myhdl import Cosimulation, delay, intbv, always
+from myhdl import Cosimulation, delay, intbv
 from myhdl._Signal import _Signal
 from myhdl._block import _Block
 from myhdl._extractHierarchy import _MemInfo

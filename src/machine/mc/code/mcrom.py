@@ -1,8 +1,8 @@
 import pathlib
 from typing import List
 
-from src.mcasm.parse import mc_compile
 from mcasm.transformers.CodeTransformer import CompiledMC
+from src.mcasm.parse import mc_compile
 
 
 def _load():

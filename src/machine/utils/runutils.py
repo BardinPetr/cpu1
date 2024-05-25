@@ -24,7 +24,7 @@ def _insert_signal_block_classic(gtkw: GTKWSave, root: _Block, base_name: str = 
         for sig_name, sig in root.sigdict.items():
             trace_name = f"{name}.{sig_name}"
             if isinstance(sig.val, intbv | modbv):
-                trace_name += f"[{sig.val._nrbits - 1}:0]"
+                trace_name += f"[{len(sig.val) - 1}:0]"
             gtkw.trace(trace_name)
 
         for sub in root.subs:

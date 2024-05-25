@@ -41,6 +41,9 @@ class CtrlEnum(IntEnum):
 
 
 class CEnumS(CtrlEnum):
+    """
+    Enum with binary encoding
+    """
 
     @classmethod
     def encoded_len(cls):
@@ -52,6 +55,9 @@ class CEnumS(CtrlEnum):
 
 
 class CEnumM(CtrlEnum):
+    """
+    Enum with by-bit encoding and multiple select
+    """
 
     @classmethod
     def encoding_type(cls) -> EnumEncodingType:
@@ -74,6 +80,9 @@ class EncodedEnum:
             self.value = self.items[0].value
         else:
             self.value = reduce(lambda a, i: a | i.value, self.items, 0)
+
+    def __int__(self) -> int:
+        return self.value
 
     def __repr__(self):
         return str(self)

@@ -1,8 +1,8 @@
 from myhdl import *
 
-from src.machine import CPU
-from src.machine import get_logger
-from src.machine.utils.introspection import *
+from machine.cpu import CPU
+from machine.utils.introspection import IntrospectionTree, introspect
+from machine.utils.log import get_logger
 from src.machine.utils.testutils import myhdl_pytest
 from src.mcasm.parse import mc_compile
 

@@ -1,7 +1,7 @@
 from myhdl import *
 
-from src.machine import CPU
-from src.machine import get_logger
+from machine.cpu import CPU
+from machine.utils.log import get_logger
 from src.machine.arch import RegFileIdCtrl
 from src.machine.utils.introspection import IntrospectionTree, TraceData, TraceTick, IntrospectedMemory
 from src.machine.utils.testutils import myhdl_pytest

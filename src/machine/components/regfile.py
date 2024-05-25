@@ -1,5 +1,6 @@
-from src.machine.config import *
-from src.machine.mc.decoders import *
+from myhdl import always_comb, always
+
+from src.machine.config import REG_SZ
 from src.machine.utils.hdl import hdl_block, dim, Bus
 from src.machine.utils.introspection import introspect
 from src.machine.utils.log import get_logger

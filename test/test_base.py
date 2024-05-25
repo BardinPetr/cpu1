@@ -2,8 +2,9 @@ import random
 
 from myhdl import *
 
-from src.machine import Bus1
-from src.machine import introspect
+from machine.utils.hdl import Bus1
+from machine.utils.introspection import introspect
+
 from src.machine.components import Clock, Trig, RTrig, Counter
 from src.machine.utils.testutils import myhdl_pytest
 

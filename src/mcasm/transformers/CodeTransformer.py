@@ -3,7 +3,7 @@ from typing import List, Dict
 
 from lark import Transformer, Token
 
-from machine.mc import MCInstruction
+from src.machine.mc.mcinstr import MCInstruction
 
 
 @dataclass

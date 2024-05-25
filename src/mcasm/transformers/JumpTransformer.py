@@ -2,8 +2,8 @@ from typing import List
 
 from lark import Transformer
 
-from machine.mc import MCInstructionJump
 from mcasm.utils import merge_dicts, Location
+from src.machine.mc.mcinstr import MCInstructionJump
 
 
 class JumpInstructionTransformer(Transformer):

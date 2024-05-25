@@ -1,9 +1,9 @@
 from typing import List, Optional
 
 from src.machine.components.base import Clock
-from src.machine.config import *
+from src.machine.config import CONTROL_BUS_SZ, DATA_BITS
 from src.machine.datapath.datapath import DataPath
-from src.machine.mc.mcseq import MCSequencer
+from src.machine.mc.components.mcseq import MCSequencer
 from src.machine.utils.hdl import hdl_block, Bus, Bus1
 from src.machine.utils.introspection import introspect
 
