@@ -1,3 +1,6 @@
+import atexit
+from pprint import pprint
+
 from myhdl import *
 
 from isa.main import compile_instructions, Opcode
@@ -64,7 +67,6 @@ TESTS = [
     # [Opcode.CGTS, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
     # [Opcode.STKPOP, {}, 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
 
-
     # [Opcode.ISTKPSH, dict(stack=0, imm=0xF0), 2, 2, lambda in_args, out_args: 0],
     # [Opcode.RCALL, dict(imm=signed(2, 16)), 2, 2, lambda in_args, out_args: 0],
     # [Opcode.ISTKPSH, dict(stack=0, imm=0xF1), 2, 2, lambda in_args, out_args: 0],
@@ -85,6 +87,11 @@ TESTS = [
     # [Opcode.ISTKPSH, dict(stack=0, imm=0xA2), 2, 2, lambda in_args, out_args: 0],
     # [Opcode.ISTKPSH, dict(stack=0, imm=0xA3), 2, 2, lambda in_args, out_args: 0],
     # [Opcode.ISTKPSH, dict(stack=0, imm=0xA4), 2, 2, lambda in_args, out_args: 0],
+
+    [Opcode.ISTKPSH, dict(stack=0, imm=0xF1), 2, 2, lambda in_args, out_args: 0],
+    [Opcode.ISTKPSH, dict(stack=0, imm=0xF2), 2, 2, lambda in_args, out_args: 0],
+    [Opcode.ISTKPSH, dict(stack=0, imm=0xF3), 2, 2, lambda in_args, out_args: 0],
+    [Opcode.HLT, dict(), 2, 2, lambda in_args, out_args: 0],
 
 ]
 
@@ -156,7 +163,7 @@ def test_cpu_wmc_infetch():
             "RS_TOP": dp.r_stack_tos0,
             "RS_PRV": dp.r_stack_tos1
         },
-        mc_pc, mcrom.MICROCODE.labels['start']
+        mc_pc, mc_pc_trigger_value=mcrom.MICROCODE.labels['end']
     )
 
     # temp_stack = []
@@ -188,12 +195,13 @@ def test_cpu_wmc_infetch():
 
     @instance
     def stimulus():
-        steps = 300
-        while (steps := (steps-1)) > 0 and ip < 20:
+        steps = 1000
+        while steps := (steps - 1):
             yield clk.posedge
 
+    @atexit.register
+    def stop():
+        display_trace_vcd('dist', 't2', itrace_res)
         # display_trace_vcd('dist', 't1', trace_res)
-        # display_trace_vcd('dist', 't2', itrace_res)
-        raise StopSimulation()
 
     return cpu, stimulus, tracer, itracer

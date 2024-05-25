@@ -164,6 +164,9 @@ class TraceData:
                         writer.change(var, ts, int(value))
                     ts += self._half_period
 
+                for var in vars:
+                    writer.change(var, ts, 0)
+
         return True
 
 

@@ -1,6 +1,7 @@
 from myhdl import *
 
 import src.machine.mc.mcisa as MCLocs
+from machine.arch import MachineCtrl
 from src.machine.components.ROM import ROM
 from src.machine.config import MC_ADDR_SZ
 from src.machine.utils.hdl import Bus
@@ -25,6 +26,10 @@ def MCSequencer(clk, mc_cr, cpu_bus_c, mc_rom_data):
     @always(clk.negedge)
     def load():
         L.debug(f"UPC: {int(mc_pc):010b} UCR: {int(mc_cr):064b}")
+
+        do_halt = MCLocs.MCMachineCtrl.get(mc_cr) & MachineCtrl.HALT
+        if do_halt:
+            raise StopSimulation("Stopped at HALT instruction")
 
         match MCLocs.MCLType.get(mc_cr):
             case MCLocs.MCType.MC_RUN:

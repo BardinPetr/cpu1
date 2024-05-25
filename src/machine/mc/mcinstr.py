@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Annotated
 
 import src.machine.mc.mcisa as MCLocs
-from src.machine.arch import ALUCtrl, ALUPortCtrl, StackCtrl, MemCtrl, BusOutCtrl, ALUFlagCtrl, BusInCtrl
+from src.machine.arch import ALUCtrl, ALUPortCtrl, StackCtrl, MemCtrl, BusOutCtrl, ALUFlagCtrl, BusInCtrl, MachineCtrl
 from src.machine.mc.base import BaseMCInstruction
 
 
@@ -48,6 +48,7 @@ class MCInstructionExec(MCInstruction):
     mem_ctrl: Annotated[MemCtrl, MCLocs.MCMemCtrl] = MemCtrl.IGN
     stack_d_ctrl: Annotated[StackCtrl, MCLocs.MCStackDCtrl] = StackCtrl.NONE
     stack_r_ctrl: Annotated[StackCtrl, MCLocs.MCStackRCtrl] = StackCtrl.NONE
+    machine_ctrl: Annotated[MachineCtrl, MCLocs.MCMachineCtrl] = 0
 
 
 if __name__ == "__main__":

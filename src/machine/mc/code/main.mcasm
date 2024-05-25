@@ -15,8 +15,10 @@ switch (CR ADD)[30:28] {
   #GIOC
   case 0b000 {
     switch (CR ADD)[21:20] {
-      # HLT # TODO
-      case 0b00 { }
+      # HLT
+      case 0b00 {
+        ctrl(halt);
+      }
       # NOP
       case 0b01 { }
       # IN # TODO

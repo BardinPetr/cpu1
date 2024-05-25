@@ -29,6 +29,9 @@ class ControlInstructionTransformer(Transformer):
         # )
         return dict(alu_flag_ctrl=arch.ALUFlagCtrl.WRITE)
 
+    def exec_machine(self, vals: List[Token]):
+        return dict(machine_ctrl=arch.MachineCtrl.encode_from_names([i.upper() for i in vals]))
+
     def exec_stack(self, vals: List[Token]):
         stack_name = vals[1]
         cmd_name = vals[0].upper()
