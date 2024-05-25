@@ -68,7 +68,7 @@ def ALU(operation,
             case ALUCtrl.MOD:
                 res[:] = op_a % op_b
             case ALUCtrl.DIV:
-                res[:] = op_a / op_b
+                res[:] = op_a // op_b
             case ALUCtrl.ADD:
                 res[:] = op_a + op_b
             case ALUCtrl.SHL:

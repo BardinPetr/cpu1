@@ -1,19 +1,17 @@
 import atexit
-from pprint import pprint
 
 from myhdl import *
 
+import src.machine.mc.mcisa as MCLocs
+from compiler.main import compile_forth
+from compiler.memory import unpack_binary
 from isa.main import compile_instructions, Opcode
 from isa.model.instructions import Instr
 from machine.arch import RegFileIdCtrl
-from machine.config import DATA_BITS
 from machine.cpu import CPU
 from machine.mc.mcinstr import MCInstructionExec
-import src.machine.mc.mcisa as MCLocs
-from machine.utils.hdl import signed
 from machine.utils.log import get_logger
 from machine.utils.runutils import display_trace_vcd
-
 from src.machine.mc.code import mcrom
 from src.machine.utils.introspection import IntrospectionTree, TraceTick, TraceData, TraceInstr
 from src.machine.utils.testutils import myhdl_pytest
@@ -102,6 +100,11 @@ RAM = compile_instructions([
 
 @myhdl_pytest(gui=False, duration=None)
 def test_cpu_wmc_infetch():
+    RAM = compile_forth("""
+        16 2 3 + * 100 - halt
+    """)
+    RAM = unpack_binary(RAM)
+
     print("Microcode")
     print(*mcrom.MICROCODE.commands, sep='\n')
     print("RAM")
@@ -195,9 +198,10 @@ def test_cpu_wmc_infetch():
 
     @instance
     def stimulus():
-        steps = 1000
+        steps = 10000
         while steps := (steps - 1):
             yield clk.posedge
+        yield StopSimulation()
 
     @atexit.register
     def stop():

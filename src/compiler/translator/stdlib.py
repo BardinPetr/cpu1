@@ -1,5 +1,5 @@
 from isa.main import Opcode
-from src.compiler.translator.funclib import FunctionLibrary
+from compiler.translator.utils.funclib import FunctionLibrary
 from src.isa.model.instructions import Instr, ImmInstr
 
 stdlib = FunctionLibrary()

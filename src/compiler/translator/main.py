@@ -1,7 +1,7 @@
 from forth.main import parseAST
 from lplib.lexer.tstream import CharStream
 
-from src.compiler.translator.models import ForthCode
+from compiler.translator.utils.models import ForthCode
 from src.compiler.translator.stdlib import stdlib
 from src.compiler.translator.transformer import ForthTransformer
 

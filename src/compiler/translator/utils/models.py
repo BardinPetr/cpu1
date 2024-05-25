@@ -39,6 +39,10 @@ Func = ForthFunction
 
 @dataclass
 class ForthCode:
+    """
+    Provides compiled code, with separated functions, code and variables.
+
+    """
     code: List[Instruction]
     variables: Dict[str, ForthVariable]
     functions: List[ForthFunction]

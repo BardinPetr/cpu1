@@ -1,13 +1,14 @@
 from typing import Dict, List, Optional
 
 from lplib.lexer.tokens import Token
+from lplib.parser.models import PNode
 from lplib.parser.transformer import Transformer
 
+from compiler.translator.utils.funclib import FunctionLibrary
+from compiler.translator.utils.models import ForthVariable, ForthCode, Instructions
+from compiler.translator.utils.synthetic import Synthetic, const_string_var_name, unwrap_code, Syn
 from isa.main import Opcode
-from src.compiler.translator.funclib import FunctionLibrary
-from src.compiler.translator.models import ForthVariable, ForthCode, Instructions
-from src.compiler.translator.utils import Synthetic, const_string_var_name, unwrap_code, Syn
-from src.isa.model.instructions import Instr, ImmInstr, IPRelInstr
+from isa.model.instructions import Instr, ImmInstr, IPRelImmInstr, AbsImmInstr
 
 
 class ForthTransformer(Transformer):
@@ -24,14 +25,20 @@ class ForthTransformer(Transformer):
         self.__constants: Dict[str, int] = {}
         self.__variables: Dict[str, ForthVariable] = {}
 
-    def __create_variable(self, name, slots=1, init_value: Optional[List[int]] = None) -> ForthVariable:
+    def __is_name_exists(self, name) -> bool:
+        return name in self.__variables or name in self.__functions or name in self.__constants
+
+    def __create_variable(self, name, slots=1, init_value: Optional[List[int] | bytes] = None) -> ForthVariable:
         """
         Create name variable of given size
         :return: created variable
         """
-        if name in self.__variables:
+        if self.__is_name_exists(name):
             raise Exception(f"Variable {name} redefined")
+
         if init_value:
+            if isinstance(init_value, bytes):
+                init_value = [i for i in init_value]
             slots = len(init_value)
         var = ForthVariable(name, self.__storage_mem_pos, slots, init_value)
         self.__variables[name] = var
@@ -65,7 +72,7 @@ class ForthTransformer(Transformer):
     """ Definitions """
 
     def def_const(self, name, value):
-        if name in self.__constants:
+        if self.__is_name_exists(name):
             raise Exception(f"Constant {name} redefined")
         self.__constants[name] = value
 
@@ -79,21 +86,24 @@ class ForthTransformer(Transformer):
 
     def cmd_call(self, word: str) -> Synthetic:
         """
-        Parse function calls, internal word calls, synthetic word calls, constant and variables evaluation
-        Internal word calls translates directly to opcodes, and synthetic to
+        Parse function calls, and inline word calls, constant and variables evaluation
         """
         if const := self.__constants.get(word, None):
             return self.cmd_push(const)
 
         if var := self.__variables.get(word, None):
-            return self.cmd_push(var.loc)
+            return Syn.one(
+                AbsImmInstr(Opcode.ISTKPSH, imm=var.loc)
+            )
 
         if func := self.__functions[word]:
             if func.is_inline:
                 return Syn.many(*func.code)
 
             # relative address would be substituted in second pass
-            return Syn.one(IPRelInstr(Opcode.RCALL, abs=func.loc))
+            return Syn.one(
+                IPRelImmInstr(Opcode.RCALL, abs=func.loc)
+            )
 
         raise ValueError(f"Word {word} has no meaning")
 
@@ -110,7 +120,7 @@ class ForthTransformer(Transformer):
             # if-then
             br_true = branches[0]
             return Syn.many(
-                IPRelInstr(Opcode.CJMP, rel=len(br_true)),
+                IPRelImmInstr(Opcode.CJMP, rel=len(br_true)),
                 *br_true
             )
 
@@ -119,9 +129,9 @@ class ForthTransformer(Transformer):
         rel_jump_to_false = len(br_true) + 1
         rel_jump_to_end = len(br_false)
         return Syn.many(
-            IPRelInstr(Opcode.CJMP, rel=rel_jump_to_false),  # if `FALSE` jump to `label_false`
+            IPRelImmInstr(Opcode.CJMP, rel=rel_jump_to_false),  # if `FALSE` jump to `label_false`
             *br_true,
-            IPRelInstr(Opcode.RJMP, rel=rel_jump_to_end),  # jump to `label_end`
+            IPRelImmInstr(Opcode.RJMP, rel=rel_jump_to_end),  # jump to `label_end`
             # label_false
             *br_false
             # label_end
@@ -134,7 +144,7 @@ class ForthTransformer(Transformer):
         to_beginning = len(body) + 1
         return Syn.many(
             *body,
-            IPRelInstr(Opcode.CJMP, rel=-to_beginning),
+            IPRelImmInstr(Opcode.CJMP, rel=-to_beginning),
         )
 
     def while_expr(self, check, body: Instructions) -> Synthetic:
@@ -146,48 +156,55 @@ class ForthTransformer(Transformer):
         to_outside = len(body) + 1
         return Syn.many(
             *check,
-            IPRelInstr(Opcode.CJMP, rel=to_outside),
+            IPRelImmInstr(Opcode.CJMP, rel=to_outside),
             *body,
-            IPRelInstr(Opcode.RJMP, rel=-to_beginning),
+            IPRelImmInstr(Opcode.RJMP, rel=-to_beginning),
         )
 
     def for_expr(self, body: Instructions) -> Synthetic:
         """
         For loop.
-        Uses R-stack to store current index and end index [end, cur TOP].
+        Uses R-stack to store current index and end index [end, cur].
         `i` word is just peek from R-stack to D-stack.
         On init copies range to R-stack is same order.
         After body increases R TOP, and compares with end. If not equal, jump to body beginning.
         Else, on exit clear R-stack.
         """
         post = [
-            Instr(Opcode.INC, stack=1),
-            Instr(Opcode.STKOVR, stack=1),
-            Instr(Opcode.STKOVR, stack=1),
-            Instr(Opcode.CEQ, stack=1),
+            Instr(Opcode.STKMV, stack=1),
+            Instr(Opcode.INC),  # move cur and inc to D
+            Instr(Opcode.STKCP, stack=1),  # copy end to D
+            Instr(Opcode.STKOVR, stack=0),
+            Instr(Opcode.STKMV, stack=0),  # copy new cur to R
+            Instr(Opcode.CEQ),
         ]
-        to_body = len(body) + len(post) + 1
+        to_body = len(body) + len(post) + 1  # 1 for CJMP
         return Syn.many(
             Instr(Opcode.STKMV),
             Instr(Opcode.STKMV),
             Instr(Opcode.STKSWP, stack=1),
             *body,
             *post,
-            IPRelInstr(Opcode.CJMP, stack=1, rel=-to_body),
+            IPRelImmInstr(Opcode.CJMP, rel=-to_body),
             Instr(Opcode.STKPOP, stack=1),
             Instr(Opcode.STKPOP, stack=1)
         )
 
     """Functions"""
 
+    def before_function(self, tree: PNode):
+        # preallocate function to be able to recurse
+        name = tree.values[0]
+        self.__functions.add_ext_begin(name)
+        return tree
+
     def function(self, name, lines: Instructions):
         """
         Functions are stored in dictionary, and on creation assigned with their memory location.
         Function is just code segment with ret added to it in the end
         """
-        # TODO: handle recursion
         lines.append(Instr(Opcode.RET))
-        self.__functions.add_ext(name, lines)
+        self.__functions.add_ext_end(name, lines)
 
     """ Code blocks """
 

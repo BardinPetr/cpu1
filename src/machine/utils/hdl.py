@@ -48,6 +48,8 @@ UINT_MIN = 0
 UINT_MAX = (1 << DIM) - 1
 SINT_MAX = (1 << (DIM - 1)) - 1
 SINT_MIN = -(1 << (DIM - 1))
+SINT16_MAX = (1 << (16 - 1)) - 1
+SINT16_MIN = -(1 << (16 - 1))
 
 
 def trunc(x, n=DIM):
