@@ -193,7 +193,7 @@ def test_cpu_wmc_infetch():
             yield clk.posedge
 
         # display_trace_vcd('dist', 't1', trace_res)
-        display_trace_vcd('dist', 't2', itrace_res)
+        # display_trace_vcd('dist', 't2', itrace_res)
         raise StopSimulation()
 
     return cpu, stimulus, tracer, itracer

@@ -1,3 +1,5 @@
+from myhdl import intbv, always_comb
+
 from src.machine.arch import RegFileIdCtrl, RegFileOrNormalRegister, BusInCtrl, BusOutCtrl, ALUCtrl, ALUFlagCtrl, \
     ALUPortCtrl
 from src.machine.components.ALU import ALU
@@ -147,6 +149,7 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     alu_ctrl = Bus(enum=ALUCtrl)
     alu_flag_ctrl = Bus(enum=ALUFlagCtrl)
     alu_ctrl_pa, alu_ctrl_pb = [Bus(enum=ALUPortCtrl) for _ in range(2)]
+    alu_flag_out = Bus(bits=4)
 
     alu_a_in, alu_b_in = Bus(DATA_BITS), Bus(DATA_BITS)
     latch_alu_a_in = Latch(bus_a, alu_a_in, clk)
@@ -157,9 +160,21 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
         alu_ctrl, alu_ctrl_pa, alu_ctrl_pb,
         alu_a_in, alu_b_in,
         bus_c,
-        alu_flag_ctrl,
-        reg_ps_out,
-        reg_ps_in
+        alu_flag_out
+    )
+
+    ########################################################################
+    """PS CONTROL"""
+    reg_ps_updated_flag_input = Bus(bits=4)
+
+    @always_comb
+    def update_ps():
+        reg_ps_updated_flag_input.next = reg_ps_out & (~0xF) | alu_flag_out
+
+    mux_ps_input = Mux(
+        [reg_ps_out, reg_ps_updated_flag_input],
+        reg_ps_in,
+        ctrl=alu_flag_ctrl
     )
 
     ########################################################################

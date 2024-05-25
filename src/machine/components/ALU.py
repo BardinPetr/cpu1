@@ -31,8 +31,7 @@ def ALU(operation,
         porta_ctrl, portb_ctrl,
         in_a, in_b,
         out,
-        flag_ctrl,
-        flags_in, flags_out):
+        flags_out):
     """
     Asynchronous 2-port ALU with operations from ALUCtrl enum.
     Each port has individual ALU_PORT_CTRL operations applied to it before main operation.
@@ -42,16 +41,12 @@ def ALU(operation,
     :param in_a:        input signal for port A
     :param in_b:        input signal for port B
     :param out:         output signal.
-    :param flag_ctrl:
-    :param flags_in:
     :param flags_out:
     """
 
     sz = dim(in_a)
     assert sz == dim(in_b)
     assert sz == dim(out)
-
-    tmp_flags = intbv(0)[REG_PS_SZ:]
 
     @always_comb
     def run():
@@ -76,8 +71,6 @@ def ALU(operation,
                 res[:] = op_a / op_b
             case ALUCtrl.ADD:
                 res[:] = op_a + op_b
-            case ALUCtrl.ADC:
-                res[:] = op_a + op_b + flags_in[PSFlags.C]
             case ALUCtrl.SHL:
                 res[:] = (op_a << op_b)[sz:]
             case ALUCtrl.SHR:
@@ -95,11 +88,11 @@ def ALU(operation,
 
         a_sign, b_sign, out_sign = op_a[DATA_BITS - 1], op_b[DATA_BITS - 1], res[DATA_BITS - 1]
 
+        tmp_flags = intbv(0)[4:]
         tmp_flags[PSFlags.Z] = not res[DATA_BITS:]
         tmp_flags[PSFlags.N] = out_sign
         tmp_flags[PSFlags.C] = res[DATA_BITS]
-        tmp_flags[PSFlags.V] = (a_sign ^ b_sign) & (a_sign ^ out_sign)
-
+        tmp_flags[PSFlags.V] = (a_sign ^ out_sign) & (a_sign ^ out_sign)
         flags_out.next = tmp_flags
 
     return introspect()

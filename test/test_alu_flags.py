@@ -22,11 +22,9 @@ def test_alu_flags():
     ctrl = Signal(ALUCtrl.ZERO)
     ctrla = Signal(APC.PASS)
     ctrlb = Signal(APC.PASS)
-    flag_ctrl = Bus(enum=ALUFlagCtrl, state=0b1111)
-    flag_in = Bus(4)
     flag_out = Bus(4)
 
-    alu = ALU(ctrl, ctrla, ctrlb, in_a, in_b, out, flag_ctrl, flag_in, flag_out)
+    alu = ALU(ctrl, ctrla, ctrlb, in_a, in_b, out, flag_out)
 
     def call_alu(a, b=0, cin=0, mode=ALUCtrl.ADD):
         ctrl.next = mode
@@ -34,7 +32,6 @@ def test_alu_flags():
         ctrlb.next = APC.PASS
         set_signed(in_a, a)
         set_signed(in_b, b)
-        flag_in.next = (cin << PSFlags.C)
 
     TESTS = [
         # zero flag
@@ -46,7 +43,7 @@ def test_alu_flags():
         # unsigned overflow
         (dict(a=UINT_MAX), dict(C=0)),
         (dict(mode=ALUCtrl.ADD, a=UINT_MAX, b=1), dict(C=1)),
-        (dict(mode=ALUCtrl.ADC, cin=1, a=UINT_MAX, b=0), dict(C=1)),
+        # (dict(mode=ALUCtrl.ADC, cin=1, a=UINT_MAX, b=0), dict(C=1)),
         *[(
             dict(mode=ALUCtrl.ADD,
                  a=UINT_MAX - randrange(1000, UINT_MAX // 2),
@@ -73,10 +70,10 @@ def test_alu_flags():
             dict(V=1)
         ) for _ in range(10)],
         # signed overflow with carry addition
-        (dict(mode=ALUCtrl.ADC, a=SINT_MAX, b=0, cin=1), dict(V=1)),
-        (dict(mode=ALUCtrl.ADC, a=SINT_MAX, b=negate(1), cin=1), dict(V=0)),
-        (dict(mode=ALUCtrl.ADC, a=SINT_MIN, b=negate(1), cin=1), dict(V=0)),
-        (dict(mode=ALUCtrl.ADC, a=SINT_MIN, b=negate(2), cin=1), dict(V=1)),
+        # (dict(mode=ALUCtrl.ADC, a=SINT_MAX, b=0, cin=1), dict(V=1)),
+        # (dict(mode=ALUCtrl.ADC, a=SINT_MAX, b=negate(1), cin=1), dict(V=0)),
+        # (dict(mode=ALUCtrl.ADC, a=SINT_MIN, b=negate(1), cin=1), dict(V=0)),
+        # (dict(mode=ALUCtrl.ADC, a=SINT_MIN, b=negate(2), cin=1), dict(V=1)),
     ]
 
     print()

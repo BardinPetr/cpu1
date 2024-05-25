@@ -7,10 +7,12 @@ from machine.utils.hdl import signed, SINT_MIN, SINT_MAX, UINT_MAX, UINT_MIN
 
 
 def q(a, b):
-    a = intbv(signed(a))[1+DATA_BITS:]
-    b = intbv(signed(b))[1+DATA_BITS:]
+    a = intbv(signed(a))[1 + DATA_BITS:]
+    b = intbv(signed(b))[1 + DATA_BITS:]
+    b[:] = ~b + 1
 
-    pre_out = intbv((a + ~b + 1))
+    # pre_out = intbv((a + b))
+    pre_out = intbv((a + b))
 
     out = pre_out[DATA_BITS:]
     sign = pre_out[DATA_BITS - 1]
@@ -21,11 +23,15 @@ def q(a, b):
         'n':   sign,
         'z':   not out,
         'c':   carry,
-        'v':   (a_sign ^ b_sign) & (a_sign ^ sign),
+        'v':   (sign ^ a_sign) & (sign ^ b_sign), # (a_sign & b_sign & (~sign)) | ((~a_sign) & (~b_sign) & sign),
         'a':   a,
         'b':   b,
         'res': out
     }
+
+
+# a, b = 2147483647, 1
+# print(a, b, q(a, b))
 
 
 for i in range(10000):
@@ -35,7 +41,7 @@ for i in range(10000):
     assert lt == (a < b), f"{a} s< {b} = {a < b} LT={lt} {res}"
 
 for i in range(10000):
-    a,b = [random.randint(UINT_MIN, UINT_MAX) for _ in range(2)]
+    a, b = [random.randint(UINT_MIN, UINT_MAX) for _ in range(2)]
     res = q(a, b)
     lt = res['c']
     assert lt == (a < b), f"{a} u< {b} = {a < b} LT={lt} {res}"

@@ -30,7 +30,7 @@ TEST_FUNCS = {
     'ANDNN':  lambda a, b, c: (ALUCtrl.AND, APC.NOT, APC.NOT, trunc(~(a | b))),
     # addition
     'ADD':    lambda a, b, c: (ALUCtrl.ADD, APC.PASS, APC.PASS, trunc(a + b)),
-    'ADC':    lambda a, b, c: (ALUCtrl.ADC, APC.PASS, APC.PASS, trunc(a + b + c)),
+    # 'ADC':    lambda a, b, c: (ALUCtrl.ADC, APC.PASS, APC.PASS, trunc(a + b + c)),
     # check negation (subtraction via addition)
     'SUB':    lambda a, b, c: (ALUCtrl.ADD, APC.PASS, APC.NOT | APC.INC, trunc(a - b)),
     'SUBREV': lambda a, b, c: (ALUCtrl.ADD, APC.NOT | APC.INC, APC.PASS, trunc(b - a)),
@@ -50,11 +50,9 @@ def test_alu():
     ctrl = Signal(ALUCtrl.ZERO)
     ctrla = Signal(APC.PASS)
     ctrlb = Signal(APC.PASS)
-    flag_ctrl = Bus(4, state=0b1111)
-    flag_in = Bus(4)
     flag_out = Bus(4)
 
-    alu = ALU(ctrl, ctrla, ctrlb, in_a, in_b, out, flag_ctrl, flag_in, flag_out)
+    alu = ALU(ctrl, ctrla, ctrlb, in_a, in_b, out, flag_out)
 
     # alu.convert('Verilog')
 
@@ -70,7 +68,6 @@ def test_alu():
             in_b.next.signed = b
         else:
             in_b.next = b
-        flag_in.next = (cin << PSFlags.C)
 
     LARGE = [random.randrange(1 << 31, 1 << 32) for _ in range(2)]
 
@@ -82,8 +79,8 @@ def test_alu():
         ('ADD', (1 << 32) - 1, None, 0),
         ('ADD', LARGE[0], LARGE[1], 0),
         *[('ADD', None, None, 0)] * 10,
-        ('ADC', LARGE[0], LARGE[1], 0),
-        ('ADC', LARGE[0], LARGE[1], 1),
+        # ('ADC', LARGE[0], LARGE[1], 0),
+        # ('ADC', LARGE[0], LARGE[1], 1),
         ('SUB', max(LARGE), min(LARGE), 0),
         ('SUB', min(LARGE), max(LARGE), 0),
         *[('SUB', None, None, 0)] * 10,

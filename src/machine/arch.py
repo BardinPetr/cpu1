@@ -96,7 +96,6 @@ class ALUCtrl(CEnumS):
     AND = auto()
     OR = auto()
     ADD = auto()
-    ADC = auto()
     MUL = auto()
     MOD = auto()
     DIV = auto()
@@ -118,11 +117,9 @@ class ALUPortCtrl(CEnumM):
     TKW = 0b100000
 
 
-class ALUFlagCtrl(CEnumM):
-    SETZ = 1 << PSFlags.Z
-    SETN = 1 << PSFlags.N
-    SETC = 1 << PSFlags.C
-    SETV = 1 << PSFlags.V
+class ALUFlagCtrl(CEnumS):
+    NONE = 0
+    WRITE = 1
 
 
 class StackCtrl(CEnumS):

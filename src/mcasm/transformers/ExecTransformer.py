@@ -24,10 +24,10 @@ class ControlInstructionTransformer(Transformer):
             arch.ALUPortCtrl.encode_from_names(val[1:])
 
     def exec_alu_flags(self, vals: List[Token]):
-        enum = arch.ALUFlagCtrl.encode_from_names(
-            ["SET" + i.value for i in vals]
-        )
-        return dict(alu_flag_ctrl=enum)
+        # enum = arch.ALUFlagCtrl.encode_from_names(
+        #     ["SET" + i.value for i in vals]
+        # )
+        return dict(alu_flag_ctrl=arch.ALUFlagCtrl.WRITE)
 
     def exec_stack(self, vals: List[Token]):
         stack_name = vals[1]
