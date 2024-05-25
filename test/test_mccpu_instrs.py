@@ -63,6 +63,29 @@ TESTS = [
     # [Opcode.ISTKPSH, dict(stack=0, imm=0x10), 2, 2, lambda in_args, out_args: 0],
     # [Opcode.CGTS, dict(stack=0), 2, 2, lambda in_args, out_args: 0],
     # [Opcode.STKPOP, {}, 2, 2, lambda in_args, out_args: out_args == in_args[::-1]],
+
+
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0xF0), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.RCALL, dict(imm=signed(2, 16)), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0xF1), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0xF2), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0xF3), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0xF4), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.RET, dict(), 2, 2, lambda in_args, out_args: 0],
+
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x1), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.CJMP, dict(imm=signed(2, 16)), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0xF1), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0xF2), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0xF3), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0xF4), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0x0), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.CJMP, dict(imm=signed(2, 16)), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0xA1), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0xA2), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0xA3), 2, 2, lambda in_args, out_args: 0],
+    # [Opcode.ISTKPSH, dict(stack=0, imm=0xA4), 2, 2, lambda in_args, out_args: 0],
+
 ]
 
 RAM = compile_instructions([
@@ -165,7 +188,8 @@ def test_cpu_wmc_infetch():
 
     @instance
     def stimulus():
-        while ip != 0x30:
+        steps = 300
+        while (steps := (steps-1)) > 0 and ip < 20:
             yield clk.posedge
 
         # display_trace_vcd('dist', 't1', trace_res)

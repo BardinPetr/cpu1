@@ -62,8 +62,8 @@ switch (CR ADD)[30:28] {
     switch (CR ADD)[22:20] {
       # ISTKPSH
       case 0b0000 {
-        if (CR ADD)[16] == 0  { (CR(TKW) ADD) push(D); }
-        else                  { (CR(TKW) ADD) push(R); };
+        if (CR ADD)[16] == 0  { (CR(TKW,SXTW) ADD) push(D); }
+        else                  { (CR(TKW,SXTW) ADD) push(R); };
       }
 
       # STKMV src[a];dst[] -> src[];dst[a]   (ctrl/stackid is src)
@@ -155,7 +155,36 @@ switch (CR ADD)[30:28] {
 
   # GJMP
   case 0b100 {
+    switch (CR ADD)[22:20] {
+      # AJMP
+      case 0b000 {
+        (DST ADD) -> IP, pop(D);
+      }
 
+      # RJMP
+      case 0b001 {
+        (CR(TKW,SXTW) ADD IP) -> IP;
+      }
+
+      # CJMP jump IP-relative if DST==0
+      case 0b010 {
+        if (DST ADD)[0] == 1 jmp cjmp_end;
+        (CR(TKW,SXTW) ADD IP) -> IP;
+        cjmp_end:
+        pop(D);
+      }
+
+      # RCALL
+      case 0b011 {
+        (IP ADD) push(R);
+        (CR(TKW,SXTW) ADD IP) -> IP;
+      }
+
+      # RET
+      case 0b100 {
+        (RST ADD) -> IP, pop(R);
+      }
+    };
   }
 
   # GMEM

@@ -50,8 +50,11 @@ def RAMSyncSP(
 
     @always(clk.posedge)
     def read():
-        L.debug(f"READ [0x{int(addr.val):x}] == {memory[addr]}")
-        out_data.next = memory[addr]
+        try:
+            L.debug(f"READ [0x{int(addr.val):x}] == {memory[addr]}")
+            out_data.next = memory[addr]
+        except:
+            pass
 
     return introspect()
 

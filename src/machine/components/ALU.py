@@ -22,6 +22,7 @@ def alu_apply_port(port_data: intbv, port_ctrl):
         res[32:] = ~res[32:]
     if int(port_ctrl) & ALUPortCtrl.INC:
         res[32:] = intbv(res + 1)[32:]
+
     return res
 
 

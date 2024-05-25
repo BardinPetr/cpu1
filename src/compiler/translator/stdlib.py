@@ -30,11 +30,13 @@ stdlib['1+'] = [Instr(Opcode.INC)]
 
 # compare
 stdlib['='] = [Instr(Opcode.CEQ)]
-stdlib['<'] = [Instr(Opcode.CLT)]
-stdlib['>'] = [Instr(Opcode.CGT)]
+stdlib['<'] = [Instr(Opcode.CLTS)]
+stdlib['>'] = [Instr(Opcode.CGTS)]
+stdlib['u<'] = [Instr(Opcode.CLTU)]
+stdlib['u>'] = [Instr(Opcode.CGTU)]
 stdlib['<>'] = [Instr(Opcode.CEQ), Instr(Opcode.INV)]
-stdlib['<='] = [Instr(Opcode.DEC), Instr(Opcode.CLT)]
-stdlib['>='] = [Instr(Opcode.INC), Instr(Opcode.CGT)]
+stdlib['<='] = [Instr(Opcode.DEC), Instr(Opcode.CLTS)]
+stdlib['>='] = [Instr(Opcode.INC), Instr(Opcode.CGTS)]
 
 # stack
 stdlib['dup'] = [Instr(Opcode.STKDUP)]

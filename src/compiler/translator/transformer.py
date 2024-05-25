@@ -93,7 +93,7 @@ class ForthTransformer(Transformer):
                 return Syn.many(*func.code)
 
             # relative address would be substituted in second pass
-            return Syn.one(IPRelInstr(Opcode.ICALL, abs=func.loc))
+            return Syn.one(IPRelInstr(Opcode.RCALL, abs=func.loc))
 
         raise ValueError(f"Word {word} has no meaning")
 
@@ -110,7 +110,7 @@ class ForthTransformer(Transformer):
             # if-then
             br_true = branches[0]
             return Syn.many(
-                IPRelInstr(Opcode.IJMPF, rel=len(br_true)),
+                IPRelInstr(Opcode.CJMP, rel=len(br_true)),
                 *br_true
             )
 
@@ -119,9 +119,9 @@ class ForthTransformer(Transformer):
         rel_jump_to_false = len(br_true) + 1
         rel_jump_to_end = len(br_false)
         return Syn.many(
-            IPRelInstr(Opcode.IJMPF, rel=rel_jump_to_false),  # if `FALSE` jump to `label_false`
+            IPRelInstr(Opcode.CJMP, rel=rel_jump_to_false),  # if `FALSE` jump to `label_false`
             *br_true,
-            IPRelInstr(Opcode.IJMP, rel=rel_jump_to_end),  # jump to `label_end`
+            IPRelInstr(Opcode.RJMP, rel=rel_jump_to_end),  # jump to `label_end`
             # label_false
             *br_false
             # label_end
@@ -134,7 +134,7 @@ class ForthTransformer(Transformer):
         to_beginning = len(body) + 1
         return Syn.many(
             *body,
-            IPRelInstr(Opcode.IJMPF, rel=-to_beginning),
+            IPRelInstr(Opcode.CJMP, rel=-to_beginning),
         )
 
     def while_expr(self, check, body: Instructions) -> Synthetic:
@@ -146,9 +146,9 @@ class ForthTransformer(Transformer):
         to_outside = len(body) + 1
         return Syn.many(
             *check,
-            IPRelInstr(Opcode.IJMPF, rel=to_outside),
+            IPRelInstr(Opcode.CJMP, rel=to_outside),
             *body,
-            IPRelInstr(Opcode.IJMP, rel=-to_beginning),
+            IPRelInstr(Opcode.RJMP, rel=-to_beginning),
         )
 
     def for_expr(self, body: Instructions) -> Synthetic:
@@ -173,7 +173,7 @@ class ForthTransformer(Transformer):
             Instr(Opcode.STKSWP, stack=1),
             *body,
             *post,
-            IPRelInstr(Opcode.IJMPF, stack=1, rel=-to_body),
+            IPRelInstr(Opcode.CJMP, stack=1, rel=-to_body),
             Instr(Opcode.STKPOP, stack=1),
             Instr(Opcode.STKPOP, stack=1)
         )

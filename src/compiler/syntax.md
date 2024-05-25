@@ -28,14 +28,10 @@
  <>   ( n1 n2 -- flag )  \ True if n1 != n2
  <    ( n1 n2 -- flag )  \ True if n1 < n2  (signed)
  >    ( n1 n2 -- flag )  \ True if n1 > n2  (signed)
+ u<   ( u1 u2 -- flag )  \ True if n1 < n2  (unsigned)
+ u>   ( u1 u2 -- flag )  \ True if n1 > n2  (unsigned)
  <=   ( n1 n2 -- flag )  \ True if n1 <= n2  (signed)
  >=   ( n1 n2 -- flag )  \ True if n1 >= n2  (signed)
- 0=   ( n -- flag )      \ True if n = 0   (logical not, like '!' in C)
- 0<>  ( n -- flag )      \ True if n != 0
- 0<   ( n -- flag )      \ True if n < 0
- 0>   ( n -- flag )      \ True if n > 0
- 0<=  ( n -- flag )      \ True if n <= 0
- 0>=  ( n -- flag )      \ True if n >= 0
  
  2dup   ( $ -- $ $ )                   \ Stack copy of string limits
  2drop  ( $ -- )                       \ Discard string limits
@@ -53,8 +49,12 @@
 
  ```
  maybe implement:
- u<   ( u1 u2 -- flag )  \ True if n1 < n2  (unsigned)
- u>   ( u1 u2 -- flag )  \ True if n1 > n2  (unsigned)
+ 0=   ( n -- flag )      \ True if n = 0   (logical not, like '!' in C)
+ 0<>  ( n -- flag )      \ True if n != 0
+ 0<   ( n -- flag )      \ True if n < 0
+ 0>   ( n -- flag )      \ True if n > 0
+ 0<=  ( n -- flag )      \ True if n <= 0
+ 0>=  ( n -- flag )      \ True if n >= 0
  u<=  ( u1 u2 -- flag )  \ True if n1 <= n2  (unsigned)
  u>=  ( u1 u2 -- flag )  \ True if n1 >= n2  (unsigned)
  /mod    ( n1 n2 -- n1%n2 n1/n2 )

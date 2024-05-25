@@ -53,15 +53,10 @@ class Opcode(OpcodeEnum):
     STORE = auto()
 
     """ OpcodeGroup.GJMP """
-    # jumps
-    JMP = OpcodeGroup.GJMP, 0  # absolute on stack
-    IJMP = auto()  # relative immediate
-    IJMPF = auto()  # relative immediate jump if stack is false
-    IJMPT = auto()  # relative immediate jump if stack is true
-
-    # functions
-    CALL = auto()  # absolute on stack
-    ICALL = auto()  # relative immediate
+    AJMP = OpcodeGroup.GJMP, 0b000  # absolute on stack
+    RJMP = auto()  # ip-relative immediate
+    CJMP = auto()  # ip-relative immediate jump if stack is
+    RCALL = auto()  # relative immediate
     RET = auto()
 
     """ OpcodeGroup.GIOC """
