@@ -16,8 +16,8 @@ packages = [
 python = "^3.11"
 pyvcd = "^0.4.0"
 lark = "^1.1.9"
-lplib = { git = "https://github.com/BardinPetr/lexer-parser.git" }
 myhdl = { git = "https://github.com/BardinPetr/myhdl.git", rev = "feature_typed" }
+cpu1lplib = { git = "https://github.com/BardinPetr/lexer-parser.git" }
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.0.2"

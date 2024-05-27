@@ -49,7 +49,7 @@ class BusInCtrl(CEnumS):
     Z = 0
     PS = 0b0001
     DR = 0b0010
-    # 0011
+    IOR = 0b0011
     DST = 0b0100
     DSS = 0b0101
     RST = 0b0110
@@ -131,7 +131,24 @@ class StackCtrl(CEnumS):
 
 
 class MachineCtrl(CEnumM):
-    HALT = 0b1
+    HALT = 0b001
+    IOWR = 0b010
+    IORD = 0b100
+
+
+class MachineIOCtrl(CEnumS):
+    NONE = 0
+    SET_ADDR = 1
+    SET_DATA = 2
+    GET_DATA = 3
+    REQ_READ = 4
+    REQ_WRITE = 5
+
+
+class IOBusCtrl(CEnumM):
+    WR = 0b001
+    RD = 0b010
+    TXE = 0b100
 
 
 def extract_enums() -> Dict[str, Dict[str, int]]:

@@ -14,17 +14,22 @@ switch (CR ADD)[30:28] {
 
   #GIOC
   case 0b000 {
-    switch (CR ADD)[21:20] {
-      # HLT
-      case 0b00 {
-        ctrl(halt);
-      }
-      # NOP
-      case 0b01 { }
-      # IN # TODO
-      case 0b10 { }
-      # OUT # TODO
-      case 0b11 { }
+    if (CR ADD)[21] == 0 {
+      if (CR ADD)[20] == 1 jmp end; # 0b01 NOP
+      # 0b00 HLT
+      ctrl(halt);
+    } else {
+      # IO instructions
+      (DST(TKW) ADD) io(set_addr), pop(D);
+      if (CR ADD)[20] == 0 {
+        # 0b10 IN  [addr] -> [val]
+        io(req_read);
+        (IOR ADD) io(get_data), push(D);
+      } else {
+        # 0b11 OUT [val, addr] -> []
+        (DST ADD) io(set_data), pop(D);
+        io(req_write);
+      };
     };
   }
 

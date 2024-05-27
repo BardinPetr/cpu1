@@ -1,5 +1,6 @@
 import os
-from typing import Optional, Dict, Type
+from itertools import zip_longest
+from typing import Optional, Dict, Type, List
 
 from myhdl import intbv, modbv, _Signal, Signal
 from myhdl._ShadowSignal import _TristateSignal
@@ -31,10 +32,11 @@ def _insert_signal_block_classic(gtkw: GTKWSave, root: _Block, base_name: str = 
             _insert_signal_block_classic(gtkw, sub, base_name=name)
 
 
-def gtkw_update_traces(gtkw: GTKWSave, base: str, example: Dict[str, _Signal]):
-    for name, sig in example.items():
-        val = sig.val
-        sig_len = len(sig)
+def gtkw_update_traces(gtkw: GTKWSave, base: str, example: Dict[str, _Signal], sizes: List[int]=[]):
+    for (name, sig), sig_len in zip_longest(example.items(), sizes, fillvalue=None):
+        if sig_len is None:
+            sig_len = len(sig)
+
         is_bool = sig_len == 1
 
         trace_name = f"{base}.{name}"
@@ -42,19 +44,18 @@ def gtkw_update_traces(gtkw: GTKWSave, base: str, example: Dict[str, _Signal]):
         trace_color = GTKWColor.green
         trace_translate_path = None
 
-        if isinstance(sig, _TristateSignal):
-            pass
-        elif isinstance(val, intbv | modbv):
-            pass
-
         if is_bool:
             trace_color = GTKWColor.red
             trace_fmt = 'bin'
         else:
             trace_name += f"[{sig_len - 1}:0]"
 
-        if 'ctrl' in trace_name:
+        if sig.val is None:
+            trace_color = GTKWColor.yellow
+        elif 'ctrl' in trace_name.lower():
             trace_color = GTKWColor.orange
+        elif 1 < sig_len < 32:
+            trace_color = GTKWColor.indigo
 
         enc: Type[CtrlEnum] = getattr(sig, 'encoding', None)
         if enc is not None:
@@ -94,7 +95,8 @@ def display_trace_vcd(build_dir: str, name: str, data: TraceData):
         with gtkw.group(base):
             gtkw_update_traces(
                 gtkw, base,
-                {k: Signal(v) for k, v in data.as_dict()[0].items()}
+                {k: Signal(v) for k, v in data.as_dict()[0].items()},
+                data.dims
             )
 
     display_vcd(build_dir, name, _update)

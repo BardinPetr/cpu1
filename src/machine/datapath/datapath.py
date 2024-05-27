@@ -1,5 +1,6 @@
 from myhdl import always_comb
 
+from machine.components.io.io_controller import IOController
 from src.machine.arch import RegFileIdCtrl, RegFileOrNormalRegister, BusInCtrl, BusOutCtrl, ALUCtrl, ALUFlagCtrl, \
     ALUPortCtrl
 from src.machine.components.ALU import ALU
@@ -8,7 +9,7 @@ from src.machine.components.RAM import RAMSyncSP
 from src.machine.components.base import Register, Latch
 from src.machine.components.mux import Mux, DeMux
 from src.machine.components.regfile import RegisterFile
-from src.machine.config import DATA_BITS, REG_PS_SZ, REG_SZ, ADDR_BITS, STACK_D_DEPTH, REGFILE_COUNT
+from src.machine.config import DATA_BITS, REG_PS_SZ, REG_SZ, ADDR_BITS, STACK_D_DEPTH, REGFILE_COUNT, IO_DATA_BUS_SIZE
 from src.machine.mc.components.decoders import RegReadDecoder, ALUDecoder, RegWriteDecoder, StackDecoder
 from src.machine.utils.hdl import hdl_block, Bus, create_reg_signals, Bus1
 from src.machine.utils.introspection import introspect
@@ -18,7 +19,7 @@ L = get_logger()
 
 
 @hdl_block
-def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
+def DataPath(clk, control_bus, bus_a, bus_b, bus_c, iobus_clk, iobus_ctrl, iobus_addr, iobus_data, ram=None):
     """
     Description of CPU datapath
     """
@@ -50,8 +51,16 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     )
 
     ########################################################################
-    """RAM SECTION"""
+    """IO SECTION"""
+    io_ctrl_data_output = Bus(bits=IO_DATA_BUS_SIZE)
+    io_ctrl = IOController(
+        clk, iobus_clk, control_bus,
+        iobus_ctrl, iobus_addr, iobus_data,
+        bus_c, io_ctrl_data_output
+    )
 
+    ########################################################################
+    """RAM SECTION"""
     ram_a_wr = Bus1()
     ram_a_in, ram_a_out = Bus(DATA_BITS), Bus(DATA_BITS)
     reg_dr_out = Bus(DATA_BITS)  # no need to make real register for DR, just using output bus from memory module
@@ -94,7 +103,8 @@ def DataPath(clk, control_bus, bus_a, bus_b, bus_c, ram=None):
     mux_bus_a_nr_rf_ctrl, mux_bus_b_nr_rf_ctrl = Bus(enum=RegFileOrNormalRegister), Bus(enum=RegFileOrNormalRegister)
     tmp_bus_a_sig, tmp_bus_b_sig = Bus(REG_SZ), Bus(REG_SZ)
 
-    bus_in = [zerobus, reg_ps_out, reg_dr_out, zerobus, d_stack_tos0, d_stack_tos1, r_stack_tos0, r_stack_tos1]
+    bus_in = [zerobus, reg_ps_out, reg_dr_out, io_ctrl_data_output, d_stack_tos0, d_stack_tos1, r_stack_tos0,
+              r_stack_tos1]
     # select input channel according to BusInCtrl
     mux_bus_a_registers_in = Mux(
         bus_in, output=tmp_bus_a_sig, ctrl=mux_bus_a_reg_in_ctrl

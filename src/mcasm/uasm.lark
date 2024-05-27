@@ -8,7 +8,7 @@ label: ID ":"
 
 // normal instructions
 instr_exec: _exec+
-_exec: exec_alu | exec_alu_flags | exec_mem | exec_stack | exec_machine
+_exec: exec_alu | exec_alu_flags | exec_mem | exec_stack | exec_machine | exec_io
 
 exec_alu: exec_alu_compute _exec_alu_store
 exec_alu_compute: "(" alu_op_a? alu_ctrl alu_op_b? ")"
@@ -22,6 +22,7 @@ alu_ctrl: ALUCTRL
 exec_alu_flags: "set" "(" ALUFLAG+ ")"
 exec_mem: "store"
 exec_machine: "ctrl" "(" MACHINE_FLAG+ ")"
+exec_io: "io" "(" IO_FLAG+ ")"
 
 // stacks
 exec_stack: STACK_OP "(" STACK_TYPE ")"
@@ -53,9 +54,10 @@ LOC: NUMBER | HEXNUMBER | ID
 REGISTER: "PS" | "CR"
 ALUFLAG: "Z" | "C" | "N" | "V"
 MACHINE_FLAG: "HALT"i | "IOR"i | "IOW"i
+IO_FLAG: "set_addr" | "set_data" | "req_read" | "req_write" | "tx_end"  | "rx_ack" | "get_data"
 
 ALUCTRL: "ZERO" | "PASSA" | "AND" | "OR" | "MUL" | "MOD" | "DIV" | "ADD" | "SHL" | "SHR" | "ASL" | "ASR" | "ROL" | "ROR"
-BUSINCTRL: "Z" | "PS" | "DR" | "DST" | "DSS" | "RST" | "RSS" | "IP" | "CR"
+BUSINCTRL: "Z" | "PS" | "DR" | "DST" | "DSS" | "RST" | "RSS" | "IP" | "CR" | "IOR"
 BUSOUTCTRL: "Z" | "PS" | "DR" | "AR" | "DS" | "RS" | "IP" | "CR"
 ALUPORTCTRL: "PASS" | "NOT" | "INC" | "SXTB" | "SXTW" | "TKW" | "TKB"
 

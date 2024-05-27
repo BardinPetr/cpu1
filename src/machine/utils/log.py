@@ -2,7 +2,7 @@ import inspect
 import logging
 
 # IS_DEBUG = os.getenv("DEBUG") is not None
-IS_DEBUG = True
+IS_DEBUG = False
 
 logging.basicConfig(
     level=logging.DEBUG,

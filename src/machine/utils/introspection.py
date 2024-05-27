@@ -101,7 +101,7 @@ class TraceData:
     def __init__(self, period_ns: int = 10):
         self._run = True
         self._labels: List[str] = []
-        self._dims: List[int] = []
+        self.dims: List[int] = []
         self._history: List[List[intbv]] = []
         self._period = period_ns
         self._half_period = period_ns // 2
@@ -122,7 +122,7 @@ class TraceData:
         self._labels = list(labels)
 
     def set_types(self, example: Iterable[_Signal]):
-        self._dims = [dim(i) for i in example]
+        self.dims = [dim(i) for i in example]
 
     def as_list(self) -> List[List[intbv]]:
         return self._history
@@ -155,13 +155,13 @@ class TraceData:
             with vcd.VCDWriter(file, timescale='1 ns') as writer:
                 vars = [
                     writer.register_var('main', name, 'reg', size=sz)
-                    for name, sz in zip(self._labels, self._dims)
+                    for name, sz in zip(self._labels, self.dims)
                 ]
 
                 ts = 0
                 for line in self._history:
                     for var, value in zip(vars, line):
-                        writer.change(var, ts, int(value))
+                        writer.change(var, ts, int(value) if value is not None else 'z')
                     ts += self._half_period
 
                 for var in vars:
@@ -177,7 +177,8 @@ def TraceTick(clk: _Signal, data: TraceData, watches: Dict[str, _Signal]):
     data.set_types(watches.values())
 
     def checkpoint():
-        data.add([intbv(tp.val) for tp in watches.values()])
+        data.add([intbv(tp.val) if tp.val is not None else None
+                  for tp in watches.values()])
 
     @instance
     def pull():

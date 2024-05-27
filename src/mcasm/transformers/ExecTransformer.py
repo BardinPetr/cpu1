@@ -32,6 +32,9 @@ class ControlInstructionTransformer(Transformer):
     def exec_machine(self, vals: List[Token]):
         return dict(machine_ctrl=arch.MachineCtrl.encode_from_names([i.upper() for i in vals]))
 
+    def exec_io(self, vals: List[Token]):
+        return dict(io_ctrl=arch.MachineIOCtrl.encode_from_names([i.upper() for i in vals]))
+
     def exec_stack(self, vals: List[Token]):
         stack_name = vals[1]
         cmd_name = vals[0].upper()

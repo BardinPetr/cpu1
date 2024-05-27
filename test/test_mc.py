@@ -17,11 +17,11 @@ MCS_LOG.setLevel(logging.DEBUG)
 @myhdl_pytest(gui=False, duration=None)
 def test_mc():
     clk = Bus1()
+    clkd = Bus1()
     cld = Clock(clk, 10)
 
     CR = Bus(MC_INSTR_SZ)
     busc = Bus(MC_INSTR_SZ, state=0b10)
-
     mc_cr = Bus(MC_INSTR_SZ)
 
     MC_ROM = [
@@ -46,7 +46,7 @@ def test_mc():
         *MC_ROM[1:]
     ]
 
-    mcc = MCSequencer(clk, mc_cr, busc, mc_rom_data=MC_ROM)
+    mcc = MCSequencer(clk, clkd, mc_cr, busc, mc_rom_data=MC_ROM)
 
     @instance
     def stimulus():

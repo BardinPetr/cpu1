@@ -1,7 +1,8 @@
 from enum import IntEnum
 from typing import TypeVar
 
-from src.machine.arch import BusInCtrl, BusOutCtrl, MemCtrl, ALUCtrl, ALUPortCtrl, ALUFlagCtrl, StackCtrl, MachineCtrl
+from src.machine.arch import BusInCtrl, BusOutCtrl, MemCtrl, ALUCtrl, ALUPortCtrl, ALUFlagCtrl, StackCtrl, MachineCtrl, \
+    MachineIOCtrl
 from src.machine.mc.base import MCLocator as L
 from src.machine.utils.enums import CEnumS
 
@@ -28,13 +29,14 @@ MCMemCtrl = L(MemCtrl).after(MCBusCCtrl)
 MCStackDCtrl = L(StackCtrl).after(MCMemCtrl)
 MCStackRCtrl = L(StackCtrl).after(MCStackDCtrl)
 MCMachineCtrl = L(MachineCtrl).after(MCStackRCtrl)
+MCMachineIOCtrl = L(MachineIOCtrl).after(MCMachineCtrl)
 
 # ending for jump
 MCJmpCmpBit = L(bits=16).after(MCBusBCtrl)
 MCJmpCmpVal = L(bits=1).after(MCJmpCmpBit)
 MCJmpTarget = L(bits=11).after(MCJmpCmpVal)
 
-MCHeadNormal = MCMachineCtrl
+MCHeadNormal = MCMachineIOCtrl
 MCHeadJump = MCJmpTarget
 
 if __name__ == "__main__":

@@ -13,7 +13,7 @@ L = get_logger()
 
 
 @hdl_block
-def MCSequencer(clk, mc_cr, cpu_bus_c, mc_rom_data):
+def MCSequencer(clk, clk_dp, mc_cr, cpu_bus_c, mc_rom_data):
     mc_pc = Bus(MC_ADDR_SZ)
 
     mc_rom = ROM(
@@ -22,6 +22,10 @@ def MCSequencer(clk, mc_cr, cpu_bus_c, mc_rom_data):
         mc_cr,
         mc_rom_data
     )
+
+    @always_comb
+    def dp_clg():
+        clk_dp.next = clk
 
     @always(clk.negedge)
     def load():

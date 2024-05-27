@@ -1,8 +1,9 @@
 import functools
 from typing import Optional, Type
 
-from myhdl import block, intbv, modbv
-from myhdl._Signal import _Signal
+from myhdl import block, intbv, modbv, TristateSignal
+from myhdl._ShadowSignal import _TristateSignal
+from myhdl._Signal import _Signal, Signal
 
 from src.machine.config import DATA_BITS
 from src.machine.utils.enums import CtrlEnum
@@ -12,7 +13,11 @@ def hdl_block(func):
     return functools.wraps(func)(block(func))
 
 
-def Bus(bits: Optional[int] = None, state=0, min=None, max=None, enum: Optional[Type[CtrlEnum]] = None) -> _Signal:
+def Bus(bits: Optional[int] = None,
+        state=0,
+        min=None, max=None,
+        enum: Optional[Type[CtrlEnum]] = None,
+        tristate=False) -> _Signal | _TristateSignal:
     if min is not None or max is not None:
         content = intbv(state, min=min, max=max)
     else:
@@ -20,11 +25,16 @@ def Bus(bits: Optional[int] = None, state=0, min=None, max=None, enum: Optional[
             bits = enum.encoded_len()
         content = intbv(state)[bits:]
 
+    if tristate:
+        sig = TristateSignal(content)
+        sig.encoding = enum
+        return sig
+
     return _Signal(content, encoding=enum)
 
 
-def Bus1(state=0) -> _Signal:
-    return _Signal(intbv(state)[1:])
+def Bus1(state=0, delay=0) -> _Signal:
+    return Signal(intbv(state)[1:], delay=delay)
 
 
 def dim(sig: _Signal | intbv | modbv) -> int:
