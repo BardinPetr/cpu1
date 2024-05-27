@@ -1,7 +1,9 @@
-from typing import List, Optional
+from typing import List, Optional, Callable
+
+from myhdl import _Signal
+from myhdl._block import _Block
 
 from machine.arch import IOBusCtrl
-from machine.components.io.dev_printer import IODevPrinter
 from src.machine.components.base import Clock
 from src.machine.config import CONTROL_BUS_SZ, DATA_BITS, IO_ADDR_BUS_SIZE, IO_DATA_BUS_SIZE
 from src.machine.datapath.datapath import DataPath
@@ -11,7 +13,9 @@ from src.machine.utils.introspection import introspect
 
 
 @hdl_block
-def CPU(mc_rom: List[int], ram: Optional[List[int]] = None):
+def CPU(mc_rom: List[int],
+        ram: Optional[List[int]] = None,
+        iobus_clk=None, iobus_ctrl=None, iobus_addr=None, iobus_data=None):
     # control module base clock
     clk_dp = Bus1(delay=1)
     clk = Bus1()
@@ -25,12 +29,6 @@ def CPU(mc_rom: List[int], ram: Optional[List[int]] = None):
     bus_b = Bus(DATA_BITS)
     bus_c = Bus(DATA_BITS)
 
-    # io buses
-    iobus_ctrl = Bus(enum=IOBusCtrl)
-    iobus_addr = Bus(bits=IO_ADDR_BUS_SIZE)
-    iobus_data = Bus(bits=IO_DATA_BUS_SIZE, tristate=True)
-    iobus_clk = Bus1(0)
-
     # submodules
     control = MCSequencer(
         clk, clk_dp,
@@ -43,16 +41,6 @@ def CPU(mc_rom: List[int], ram: Optional[List[int]] = None):
         bus_a, bus_b, bus_c,
         iobus_clk, iobus_ctrl, iobus_addr, iobus_data,
         ram=ram
-    )
-
-    # io
-    dev0 = IODevPrinter(
-        iobus_clk, iobus_ctrl, iobus_addr, iobus_data,
-        address=0x10, address_count=0xF
-    )
-    dev1 = IODevPrinter(
-        iobus_clk, iobus_ctrl, iobus_addr, iobus_data,
-        address=0x20, address_count=0xF
     )
 
     return introspect()

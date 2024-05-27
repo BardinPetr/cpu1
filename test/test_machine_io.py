@@ -1,14 +1,12 @@
 import atexit
 
 from myhdl import *
-from myhdl._ShadowSignal import _ShadowSignal, _SliceSignal
+from myhdl._ShadowSignal import _SliceSignal
 
-import src.machine.mc.mcisa as MCLocs
 from isa.main import compile_instructions, Opcode
 from isa.model.instructions import Instr
 from machine.arch import RegFileIdCtrl
-from machine.cpu import CPU
-from machine.mc.mcinstr import MCInstructionExec
+from machine.main import Machine
 from machine.utils.log import get_logger
 from machine.utils.runutils import display_trace_vcd
 from src.machine.mc.code import mcrom
@@ -38,9 +36,9 @@ RAM = compile_instructions([
 
 @myhdl_pytest(gui=False, duration=None)
 def test_cpu_wmc_infetch():
-    cpu = CPU(mcrom.ROM, ram=RAM)
+    machine = Machine(ram=RAM)
 
-    intro = IntrospectionTree.build(cpu)
+    intro = IntrospectionTree.build(machine).cpu
     dp = intro.datapath
     clk = intro.clk
     ip = dp.rf.registers[RegFileIdCtrl.IP]
@@ -111,4 +109,4 @@ def test_cpu_wmc_infetch():
         display_trace_vcd('dist', 't2', itrace_res)
         display_trace_vcd('dist', 't1', trace_res)
 
-    return cpu, stimulus, tracer, itracer
+    return machine, stimulus, tracer, itracer
