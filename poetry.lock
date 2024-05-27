@@ -12,6 +12,21 @@ files = [
 ]
 
 [[package]]
+name = "cpulplib"
+version = "1.5.5"
+description = ""
+optional = false
+python-versions = "^3.11"
+files = []
+develop = false
+
+[package.source]
+type = "git"
+url = "https://github.com/BardinPetr/lexer-parser"
+reference = "HEAD"
+resolved_reference = "da3ff6a0719a9c7e0d5cdc6464622c1b2979f199"
+
+[[package]]
 name = "iniconfig"
 version = "2.0.0"
 description = "brain-dead simple config-ini parsing"
@@ -114,4 +129,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "3abb9c5a4c3d5ca07b8ce3b733a554bf66df140333e0ad603a9a9571659e6f5b"
+content-hash = "3e55efac5c9ef07a4df4d7eaac25f99ac7d056cf266e9d14c45fa1a87a2f7e7b"

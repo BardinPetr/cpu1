@@ -39,7 +39,7 @@ def test_cpu_mem_read():
     cpu = CPU(MC_ROM, RAM)
 
     intro = IntrospectionTree.build(cpu)
-    clk = intro.clk
+    clk = intro.clk_dp
     bus_a, bus_b, bus_c = intro.bus_a, intro.bus_b, intro.bus_c
     mem: IntrospectedMemory = intro.datapath.ram_mod.memory
 
@@ -47,10 +47,10 @@ def test_cpu_mem_read():
 
     trace_res = TraceData()
     tracer = TraceTick(
-        intro.clk,
+        intro.clk_dp,
         trace_res,
         {
-            "CLK": intro.clk,
+            "CLK": intro.clk_dp,
             "MCR": intro.control_bus,
             "A":   intro.datapath.bus_a,
             "B":   intro.datapath.bus_b,

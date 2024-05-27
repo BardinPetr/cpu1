@@ -49,13 +49,13 @@ def test_cpu_wmc_infetch():
 
     intro = IntrospectionTree.build(machine).cpu
     dp = intro.datapath
-    clk = intro.clk
+    clk = intro.clk_dp
     ip = dp.rf.registers[RegFileIdCtrl.IP]
     mc_pc = intro.control.mc_pc
     d_stack = dp.d_stack
 
     trace_res = TraceData()
-    tracer = TraceTick(intro.clk, trace_res, {
+    tracer = TraceTick(clk, trace_res, {
         "CLK":        clk,
         "A":          dp.bus_a,
         "B":          dp.bus_b,
@@ -94,7 +94,7 @@ def test_cpu_wmc_infetch():
 
     itrace_res = TraceData()
     itracer = TraceInstr(
-        intro.clk, itrace_res, {
+        clk, itrace_res, {
             "IP":     ip,
             "PS":     dp.reg_ps_out,
             "CR":     dp.rf.registers[RegFileIdCtrl.CR],
@@ -115,7 +115,8 @@ def test_cpu_wmc_infetch():
 
     @atexit.register
     def stop():
-        display_trace_vcd('dist', 't2', itrace_res)
-        display_trace_vcd('dist', 't1', trace_res)
+        pass
+        # display_trace_vcd('dist', 't2', itrace_res)
+        # display_trace_vcd('dist', 't1', trace_res)
 
     return machine, stimulus, tracer, itracer

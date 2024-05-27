@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from machine.io.bus import create_io_bus
 from src.machine.components.base import Clock
 from src.machine.config import CONTROL_BUS_SZ, DATA_BITS
 from src.machine.datapath.datapath import DataPath
@@ -12,8 +13,11 @@ from src.machine.utils.introspection import introspect
 def CPU(mc_rom: List[int],
         ram: Optional[List[int]] = None,
         iobus_clk=None, iobus_ctrl=None, iobus_addr=None, iobus_data=None):
+    if any(map(lambda x: x is None, [iobus_clk, iobus_ctrl, iobus_addr, iobus_data])):
+        iobus_clk, iobus_ctrl, iobus_addr, iobus_data = create_io_bus()
+
     # control module base clock
-    clk_dp = Bus1(delay=1)
+    clk_dp = Bus1(delay=0)
     clk = Bus1()
     clg = Clock(clk, 10)
 

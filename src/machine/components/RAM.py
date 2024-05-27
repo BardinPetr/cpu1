@@ -42,10 +42,10 @@ def RAMSyncSP(
                 memory[i].next = v
         yield None
 
-    @always(clk.posedge)
+    @always(clk.negedge)
     def write():
         if wr:
-            L.debug(f"WRITE [0x{int(addr.val):x}] = {in_data.val}")
+            L.info(f"WRITE [0x{int(addr.val):x}] = {in_data.val}")
             memory[addr].next = in_data
 
     @always(clk.posedge)

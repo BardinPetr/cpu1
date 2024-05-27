@@ -39,11 +39,11 @@ def test_cpu_stack():
 
     intro = IntrospectionTree.build(cpu)
     dp = intro.datapath
-    clk = intro.clk
+    clk = intro.clk_dp
 
     trace_res = TraceData()
     tracer = TraceTick(
-        intro.clk,
+        clk,
         trace_res,
         {
             "CLK":    clk,
@@ -119,11 +119,11 @@ def test_cpu_stack_rep():
 
     intro = IntrospectionTree.build(cpu)
     dp = intro.datapath
-    clk = intro.clk
+    clk = intro.clk_dp
 
     trace_res = TraceData()
     tracer = TraceTick(
-        intro.clk,
+        clk,
         trace_res,
         {
             "CLK":    clk,
