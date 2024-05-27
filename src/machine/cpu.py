@@ -1,4 +1,3 @@
-import io
 from typing import List, Optional
 
 from machine.arch import IOBusCtrl

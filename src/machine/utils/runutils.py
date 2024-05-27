@@ -3,7 +3,6 @@ from itertools import zip_longest
 from typing import Optional, Dict, Type, List
 
 from myhdl import intbv, modbv, _Signal, Signal
-from myhdl._ShadowSignal import _TristateSignal
 from myhdl._block import _Block
 from vcd.gtkw import GTKWSave, spawn_gtkwave_interactive, GTKWColor
 
@@ -32,7 +31,7 @@ def _insert_signal_block_classic(gtkw: GTKWSave, root: _Block, base_name: str = 
             _insert_signal_block_classic(gtkw, sub, base_name=name)
 
 
-def gtkw_update_traces(gtkw: GTKWSave, base: str, example: Dict[str, _Signal], sizes: List[int]=[]):
+def gtkw_update_traces(gtkw: GTKWSave, base: str, example: Dict[str, _Signal], sizes: List[int] = []):
     for (name, sig), sig_len in zip_longest(example.items(), sizes, fillvalue=None):
         if sig_len is None:
             sig_len = len(sig)

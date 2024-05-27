@@ -23,7 +23,7 @@ def q(a, b):
         'n':   sign,
         'z':   not out,
         'c':   carry,
-        'v':   (sign ^ a_sign) & (sign ^ b_sign), # (a_sign & b_sign & (~sign)) | ((~a_sign) & (~b_sign) & sign),
+        'v':   (sign ^ a_sign) & (sign ^ b_sign),  # (a_sign & b_sign & (~sign)) | ((~a_sign) & (~b_sign) & sign),
         'a':   a,
         'b':   b,
         'res': out

@@ -1,5 +1,4 @@
 from myhdl import always, always_comb
-from myhdl._Signal import _DelayedSignal
 
 import src.machine.mc.mcisa as MCLocs
 from machine.arch import MachineIOCtrl, IOBusCtrl

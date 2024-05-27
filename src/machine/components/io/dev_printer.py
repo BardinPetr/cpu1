@@ -1,15 +1,14 @@
-from logging import INFO
 from sys import stdout
 
-from myhdl import always_comb, always, delay, instance
-from myhdl._ShadowSignal import _SliceSignal
+from myhdl import always, delay, instance
 
 from machine.arch import IOBusCtrl
-from src.machine.utils.hdl import hdl_block, dim, Bus, Bus1
+from src.machine.utils.hdl import hdl_block, Bus
 from src.machine.utils.introspection import introspect
 from src.machine.utils.log import get_logger
 
 L = get_logger()
+
 
 @hdl_block
 def IODevPrinter(

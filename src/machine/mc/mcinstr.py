@@ -52,6 +52,7 @@ class MCInstructionExec(MCInstruction):
     machine_ctrl: Annotated[MachineCtrl, MCLocs.MCMachineCtrl] = 0
     io_ctrl: Annotated[MachineIOCtrl, MCLocs.MCMachineIOCtrl] = 0
 
+
 if __name__ == "__main__":
     print(MCInstructionJump.describe())
     print(MCInstructionExec.describe())
