@@ -51,16 +51,19 @@ class ForthTransformer(Transformer):
     """ Strings """
 
     def cmd_str(self, token: Token) -> Synthetic:
-        """For defining const string and returning its (add, len)"""
+        """
+        For defining const string and returning its address
+        String is stored as [length_byte, *data_bytes]
+        """
         text = token.value
-        data = text.encode('ascii')
+        text_enc = text.encode('ascii')
+        data = [len(text_enc), *text_enc]
+
         name = const_string_var_name(text)
         if not (var := self.__variables.get(name, None)):
             var = self.__create_variable(name, init_value=data)
-        return Syn.many(
-            self.cmd_push(var.loc),
-            self.cmd_push(var.size_slots)
-        )
+
+        return self.cmd_call(var.name)  # pull var address in valid form
 
     def cmd_io_str(self, token: Token) -> Synthetic:
         """For inplace print string"""
@@ -223,5 +226,3 @@ class ForthTransformer(Transformer):
             self.__variables,
             self.__functions.to_memory()
         )
-
-    # TODO add checks

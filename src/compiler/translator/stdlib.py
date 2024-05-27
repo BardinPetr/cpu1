@@ -4,11 +4,11 @@ from src.isa.model.instructions import Instr, ImmInstr
 
 stdlib = FunctionLibrary()
 
-STDOUT_DEV = 0
-STDOUT_DEFAULT_REG = 0
-STDOUT_INT_REG = 1
-STDIN_DEV = 1
-STDIN_DEFAULT_REG = 0
+STDOUT_BUSY_REG = 0x10
+STDOUT_CHAR_REG = 0x11
+STDOUT_INT_REG = 0x12
+STDIN_BUSY_REG = 0x20
+STDIN_REG = 0x21
 
 
 def gen_push(val: int) -> Instr:
@@ -19,7 +19,7 @@ def gen_push(val: int) -> Instr:
 stdlib['+'] = [Instr(Opcode.ADD)]
 stdlib['-'] = [Instr(Opcode.SUB)]
 stdlib['*'] = [Instr(Opcode.MUL)]
-stdlib['/'] = [Instr(Opcode.DIV)]  # maybe external synthetic?
+stdlib['/'] = [Instr(Opcode.DIV)]
 stdlib['mod'] = [Instr(Opcode.MOD)]
 stdlib['and'] = [Instr(Opcode.AND)]
 stdlib['or'] = [Instr(Opcode.OR)]
@@ -61,25 +61,23 @@ stdlib['+!'] = [
 # ctrl
 stdlib['i'] = [Instr(Opcode.STKCP, stack=1)]
 stdlib['halt'] = [Instr(Opcode.HLT)]
+stdlib['cells'] = []
 
 # io in
 stdlib['io@'] = [Instr(Opcode.IN)]
 stdlib['key'] = [
-    gen_push(STDIN_DEV),
-    gen_push(STDIN_DEFAULT_REG),
+    gen_push(STDIN_REG),
     *stdlib['io@'].code
 ]
 
 # io out
 stdlib['io!'] = [Instr(Opcode.OUT)]
 stdlib['.'] = [
-    gen_push(STDOUT_DEV),
     gen_push(STDOUT_INT_REG),
     *stdlib['io!'].code
 ]
 stdlib['emit'] = [
-    gen_push(STDOUT_DEV),
-    gen_push(STDOUT_INT_REG),
+    gen_push(STDOUT_CHAR_REG),
     *stdlib['io!'].code
 ]
 stdlib['cr'] = [
@@ -87,10 +85,6 @@ stdlib['cr'] = [
     *stdlib['emit'].code
 ]
 
-# strings
-stdlib['2drop'] = [Instr(Opcode.STKPOP), Instr(Opcode.STKPOP)]
-stdlib['2dup'] = [Instr(Opcode.STKOVR), Instr(Opcode.STKOVR)]
-stdlib.add_ext("type", [
-    # TODO
-])
-stdlib['cells'] = []
+# stdlib.add_ext("type", [
+# TODO
+# ])

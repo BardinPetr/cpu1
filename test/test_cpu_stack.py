@@ -13,12 +13,6 @@ L = get_logger()
 
 @myhdl_pytest(gui=False, duration=None)
 def test_cpu_stack():
-    """
-    implemented function is equivalent to:
-    while True:
-    TODO
-    """
-
     MC_ROM = mc_compile("""
         (Z(INC) ADD), push(D);
         (Z(INC) ADD), push(D);

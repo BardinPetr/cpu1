@@ -112,6 +112,7 @@ def test_cpu_wmc_infetch():
         while steps := (steps - 1):
             yield clk.posedge
         yield StopSimulation()
+        # TODO actual io test
 
     @atexit.register
     def stop():

@@ -12,7 +12,6 @@ def Mux(inputs: List[_Signal], output: _Signal, ctrl: _Signal):
     """
     Asynchronous multiplexer with any number of ports.
     Sets output to 0 if ctrl value is out of inputs array range.
-    TODO: signal arrays are incompatible with Verilog translation
     :param ctrl:   number of signal in input array
     :param output: output of selected input signal
     :param inputs: input signal array

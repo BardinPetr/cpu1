@@ -32,10 +32,10 @@ def IODevPrinter(
                 if print_control != 0:
                     return  # ignore while busy
 
-                if register == 0:
+                if register == 1:
                     print_control.next = 1
                     print_value.next = 0xFF & bus_data
-                elif register == 1:
+                elif register == 2:
                     print_control.next = 2
                     print_value.next = bus_data
                 else:
@@ -43,7 +43,7 @@ def IODevPrinter(
 
             if bus_ctrl & IOBusCtrl.RD:
                 L.info(f"READ DEV {address:02x} REG {register:02x}")
-                if register == 2:  # busy register
+                if register == 0:  # busy register
                     data_drv.next = print_control != 0
                 else:
                     data_drv.next = 0
