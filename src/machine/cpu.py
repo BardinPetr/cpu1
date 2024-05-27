@@ -1,11 +1,7 @@
-from typing import List, Optional, Callable
+from typing import List, Optional
 
-from myhdl import _Signal
-from myhdl._block import _Block
-
-from machine.arch import IOBusCtrl
 from src.machine.components.base import Clock
-from src.machine.config import CONTROL_BUS_SZ, DATA_BITS, IO_ADDR_BUS_SIZE, IO_DATA_BUS_SIZE
+from src.machine.config import CONTROL_BUS_SZ, DATA_BITS
 from src.machine.datapath.datapath import DataPath
 from src.machine.mc.components.mcseq import MCSequencer
 from src.machine.utils.hdl import hdl_block, Bus, Bus1

@@ -1,6 +1,6 @@
 from myhdl import always_comb
 
-from machine.components.io.io_controller import IOController
+from machine.io.io_controller import IOController
 from src.machine.arch import RegFileIdCtrl, RegFileOrNormalRegister, BusInCtrl, BusOutCtrl, ALUCtrl, ALUFlagCtrl, \
     ALUPortCtrl
 from src.machine.components.ALU import ALU

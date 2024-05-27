@@ -29,6 +29,9 @@ def IODevPrinter(
 
             if bus_ctrl & IOBusCtrl.WR:
                 L.info(f"WRITE DEV {address:02x} REG {register:02x} VAL {bus_data}")
+                if print_control != 0:
+                    return  # ignore while busy
+
                 if register == 0:
                     print_control.next = 1
                     print_value.next = 0xFF & bus_data
@@ -56,7 +59,7 @@ def IODevPrinter(
 
             if print_control != 0:
                 text = chr(int(print_value)) if print_control == 1 else str(int(print_value))
-                print(text, file=output)
+                print(text, file=output, end="")
 
                 yield delay(simulate_delay)
                 print_control.next = 0
