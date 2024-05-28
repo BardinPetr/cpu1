@@ -17,7 +17,7 @@ def IODevKeyboard(
         bus_clk,
         bus_ctrl, bus_addr, bus_data,
         address, address_count,
-        source: TextIO = stdin, simulate_delay=2000):
+        source: TextIO = stdin, simulate_delay=0):
     end_address = address_count + address - 1
     data_drv = bus_data.driver()
     last_read_time = Bus(bits=128)

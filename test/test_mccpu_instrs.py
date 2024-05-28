@@ -103,7 +103,7 @@ def test_cpu_wmc_infetch():
     RAM = compile_forth("""
         16 2 3 + * 100 - halt
     """)
-    RAM = unpack_binary(RAM)
+    RAM = unpack_binary(RAM.mem_binary)
 
     print("Microcode")
     print(*mcrom.MICROCODE.commands, sep='\n')
@@ -206,7 +206,7 @@ def test_cpu_wmc_infetch():
     @atexit.register
     def stop():
         pass
-        # display_trace_vcd('dist', 't2', itrace_res)
+        display_trace_vcd('dist', 't2', itrace_res)
         # display_trace_vcd('dist', 't1', trace_res)
 
     return cpu, stimulus, tracer, itracer

@@ -1,4 +1,4 @@
-from myhdl import *
+from myhdl import StopSimulation, always, always_comb
 
 import src.machine.mc.mcisa as MCLocs
 from machine.arch import MachineCtrl

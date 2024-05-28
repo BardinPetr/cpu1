@@ -1,4 +1,5 @@
 from sys import stdout
+from typing import TextIO
 
 from myhdl import always, delay, instance
 
@@ -15,7 +16,7 @@ def IODevPrinter(
         bus_clk,
         bus_ctrl, bus_addr, bus_data,
         address, address_count,
-        output=stdout, simulate_delay=1000):
+        output: TextIO = stdout, simulate_delay=0):
     end_address = address_count + address - 1
     data_drv = bus_data.driver()
 

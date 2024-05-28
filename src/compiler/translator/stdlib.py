@@ -85,6 +85,6 @@ stdlib['cr'] = [
     *stdlib['emit'].code
 ]
 
-# stdlib.add_ext("type", [
+stdlib.add_ext("type", [
 # TODO
-# ])
+])

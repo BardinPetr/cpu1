@@ -1,8 +1,11 @@
 import io
-from typing import List
+import sys
+from typing import List, TextIO
 
+from compiler.memory import unpack_binary
 from machine.arch import IOBusCtrl
-from machine.config import IO_ADDR_BUS_SIZE, IO_DATA_BUS_SIZE
+from machine.config import IO_ADDR_BUS_SIZE, IO_DATA_BUS_SIZE, IO_PRINTER_ADDR_BASE, IO_PRINTER_ADDR_COUNT, \
+    IO_KEYBOARD_ADDR_BASE, IO_KEYBOARD_ADDR_COUNT
 from machine.cpu import CPU
 from machine.io.bus import create_io_bus
 from machine.io.dev_keyboard import IODevKeyboard
@@ -13,23 +16,34 @@ from machine.utils.introspection import introspect
 
 
 @hdl_block
-def Machine(ram: List[int]):
+def Machine(ram: List[int] | bytes,
+            rom=None,
+            io_input: TextIO = sys.stdin,
+            io_output: TextIO = sys.stdout,
+            io_input_delay: int = 1000,
+            io_output_delay: int = 1000):
+    if rom is None:
+        rom = mcrom.ROM
+    if isinstance(ram, bytes | bytearray):
+        ram = unpack_binary(ram)
+
     # external io buses
     iobus_clk, iobus_ctrl, iobus_addr, iobus_data = create_io_bus()
 
     cpu = CPU(
-        mcrom.ROM, ram,
-        iobus_clk, iobus_ctrl, iobus_addr, iobus_data,
+        rom, ram,
+        iobus_clk, iobus_ctrl, iobus_addr, iobus_data
     )
 
     dev0 = IODevPrinter(
         iobus_clk, iobus_ctrl, iobus_addr, iobus_data,
-        address=0x10, address_count=0x3
+        address=IO_PRINTER_ADDR_BASE, address_count=IO_PRINTER_ADDR_COUNT,
+        output=io_output, simulate_delay=io_output_delay
     )
     dev1 = IODevKeyboard(
         iobus_clk, iobus_ctrl, iobus_addr, iobus_data,
-        address=0x20, address_count=0x3,
-        source=io.StringIO("hello")
+        address=IO_KEYBOARD_ADDR_BASE, address_count=IO_KEYBOARD_ADDR_COUNT,
+        source=io_input, simulate_delay=io_input_delay
     )
 
     return introspect()

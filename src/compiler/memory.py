@@ -1,5 +1,5 @@
 from functools import reduce
-from typing import List
+from typing import List, Tuple
 
 from myhdl import intbv
 
@@ -48,7 +48,7 @@ def linker(source: ForthCode) -> List[int | Instr]:
     return code
 
 
-def pack_binary(source: List[int | Instr]):
+def pack_binary(source: List[int | Instr]) -> Tuple[List[intbv], bytearray]:
     """
     Compiles flattened instruction and data list
     :return: representation as list of INSTR_BITS words and as byte array packed as 32 little-endian numbers

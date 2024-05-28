@@ -100,7 +100,7 @@ class TraceData:
 
     def __init__(self, period_ns: int = 10):
         self._run = True
-        self._labels: List[str] = []
+        self.labels: List[str] = []
         self.dims: List[int] = []
         self._history: List[List[intbv]] = []
         self._period = period_ns
@@ -108,7 +108,10 @@ class TraceData:
 
     def clear(self):
         self._history = []
-        self._labels = []
+        self.labels = []
+
+    def __len__(self) -> int:
+        return len(self._history)
 
     def peek(self, front: Optional[int] = None, names: List[str] = []):
         return [
@@ -119,7 +122,7 @@ class TraceData:
         ]
 
     def set_labels(self, labels: Iterable[str]):
-        self._labels = list(labels)
+        self.labels = list(labels)
 
     def set_types(self, example: Iterable[_Signal]):
         self.dims = [dim(i) for i in example]
@@ -138,7 +141,7 @@ class TraceData:
         return list(zip(self.as_list_front(1), self.as_list_front(0)))
 
     def as_dict(self) -> List[Dict[str, intbv]]:
-        return [dict(zip(self._labels, i)) for i in self.as_list()]
+        return [dict(zip(self.labels, i)) for i in self.as_list()]
 
     def stop(self):
         self._run = False
@@ -155,7 +158,7 @@ class TraceData:
             with vcd.VCDWriter(file, timescale='1 ns') as writer:
                 vars = [
                     writer.register_var('main', name, 'reg', size=sz)
-                    for name, sz in zip(self._labels, self.dims)
+                    for name, sz in zip(self.labels, self.dims)
                 ]
 
                 ts = 0

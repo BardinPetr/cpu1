@@ -1,8 +1,10 @@
 from typing import List, Optional
 
+from myhdl import intbv
+
 from machine.io.bus import create_io_bus
 from src.machine.components.base import Clock
-from src.machine.config import CONTROL_BUS_SZ, DATA_BITS
+from src.machine.config import DATA_BITS, MC_INSTR_SZ
 from src.machine.datapath.datapath import DataPath
 from src.machine.mc.components.mcseq import MCSequencer
 from src.machine.utils.hdl import hdl_block, Bus, Bus1
@@ -11,7 +13,7 @@ from src.machine.utils.introspection import introspect
 
 @hdl_block
 def CPU(mc_rom: List[int],
-        ram: Optional[List[int]] = None,
+        ram: Optional[List[int | intbv]] = None,
         iobus_clk=None, iobus_ctrl=None, iobus_addr=None, iobus_data=None):
     if any(map(lambda x: x is None, [iobus_clk, iobus_ctrl, iobus_addr, iobus_data])):
         iobus_clk, iobus_ctrl, iobus_addr, iobus_data = create_io_bus()
@@ -22,7 +24,7 @@ def CPU(mc_rom: List[int],
     clg = Clock(clk, 10)
 
     # control buses
-    control_bus = Bus(CONTROL_BUS_SZ)
+    control_bus = Bus(MC_INSTR_SZ)
 
     # general-purpose buses
     bus_a = Bus(DATA_BITS)
