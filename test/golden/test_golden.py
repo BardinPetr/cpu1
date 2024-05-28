@@ -21,15 +21,15 @@ def test_golden(golden: GoldenTestFixture):
     out_trace_tick = format_test_trace_output(res.trace_tick)
     out_trace_instr = format_test_trace_output(res.trace_instr)
 
-    with open(f"test_trace_tick_{golden.path.name}.md", "w") as f:
+    with open(f"dist/test_trace_tick_{golden.path.name}.md", "w") as f:
         f.write(out_trace_tick)
-    with open(f"test_trace_instr_{golden.path.name}.md", "w") as f:
+    with open(f"dist/test_trace_instr_{golden.path.name}.md", "w") as f:
         f.write(out_trace_instr)
 
     # display_trace_vcd('dist', 'instr_trace', res.trace_instr)
     # display_trace_vcd('dist', 'tick_trace', res.trace_tick)
 
-    assert len(res.trace_tick) and len(res.trace_instr), "Simulation failed"
+    assert len(res.trace_tick) and len(res.trace_instr), "Simulation ended with empty trace"
     assert out_code == golden.out["out_compiled"], "Compiled instruction list mismatch"
     assert res.stdout == golden.out["out_stdout"], "Stdout mismatch"
     assert out_trace_instr == golden.out["out_trace"], "Instruction trace mismatch"
