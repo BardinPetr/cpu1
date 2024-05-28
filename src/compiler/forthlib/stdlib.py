@@ -1,4 +1,4 @@
-from compiler.translator.utils.funclib import FunctionLibrary
+from compiler.utils.funclib import FunctionLibrary
 from isa.main import Opcode
 from src.isa.model.instructions import Instr, ImmInstr
 
@@ -84,7 +84,3 @@ stdlib['cr'] = [
     gen_push(ord('\n')),
     *stdlib['emit'].code
 ]
-
-stdlib.add_ext("type", [
-    # TODO
-])

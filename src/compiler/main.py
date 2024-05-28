@@ -7,10 +7,10 @@ from typing import List
 from myhdl import intbv
 
 from compiler.memory import linker, pack_binary, ForthLinkResults
-from compiler.translator.utils.models import ForthCode
+from compiler.transformer import translate_forth
+from compiler.utils.models import ForthCode
 from isa.model.instructions import Instr
 from machine.config import INSTR_BYTE
-from src.compiler.translator.main import translate_forth
 
 
 @dataclass

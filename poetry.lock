@@ -23,7 +23,7 @@ files = [
 
 [[package]]
 name = "cpulplib"
-version = "1.5.5"
+version = "1.5.7"
 description = ""
 optional = false
 python-versions = "^3.11"
@@ -34,7 +34,7 @@ develop = false
 type = "git"
 url = "https://github.com/BardinPetr/lexer-parser"
 reference = "HEAD"
-resolved_reference = "da3ff6a0719a9c7e0d5cdc6464622c1b2979f199"
+resolved_reference = "dfdda96c3bf039f60e987d45c4175dac9a2f7051"
 
 [[package]]
 name = "iniconfig"

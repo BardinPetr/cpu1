@@ -1,12 +1,16 @@
+import re
 from typing import Dict, List, Optional
 
+from forth.main import parseAST
 from lplib.lexer.tokens import Token
+from lplib.lexer.tstream import CharStream
 from lplib.parser.models import PNode
 from lplib.parser.transformer import Transformer
 
-from compiler.translator.utils.funclib import FunctionLibrary
-from compiler.translator.utils.models import ForthVariable, ForthCode, Instructions
-from compiler.translator.utils.synthetic import Synthetic, const_string_var_name, unwrap_code, Syn
+from compiler.forthlib.stdlib import stdlib
+from compiler.utils.funclib import FunctionLibrary
+from compiler.utils.models import ForthVariable, ForthCode, Instructions
+from compiler.utils.synthetic import Synthetic, const_string_var_name, unwrap_code, Syn
 from isa.main import Opcode
 from isa.model.instructions import Instr, ImmInstr, IPRelImmInstr, AbsImmInstr
 
@@ -226,3 +230,20 @@ class ForthTransformer(Transformer):
             self.__variables,
             self.__functions.to_memory()
         )
+
+
+def preprocess_forth(code: str) -> str:
+    import_re = re.compile(r"\\import (/?(?:[^/\s]+/)*[^/\s]+)")
+
+    files = set(import_re.findall(code))
+    try:
+        libs = "\n".join(open(i, "r").read() for i in files)
+    except IOError:
+        raise ValueError(f"Invalid include paths: {files}")
+
+    return libs + import_re.sub("", code)
+
+
+def translate_forth(forth_code: str) -> ForthCode:
+    ast = parseAST(CharStream(preprocess_forth(forth_code)))
+    return ForthTransformer(funclib=stdlib)(ast)

@@ -4,7 +4,7 @@ from typing import List, Tuple
 
 from myhdl import intbv
 
-from compiler.translator.utils.models import ForthCode
+from compiler.utils.models import ForthCode
 from isa.model.instructions import Instr, IPRelImmInstr, AbsImmInstr
 from machine.config import INSTR_BITS, INSTR_BYTE
 from machine.utils.hdl import SINT16_MIN, SINT16_MAX
