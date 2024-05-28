@@ -2,7 +2,7 @@ from random import randrange
 
 from myhdl import *
 
-from src.machine.arch import PSFlags, ALUCtrl, ALUPortCtrl, ALUFlagCtrl
+from src.machine.arch import PSFlags, ALUCtrl, ALUPortCtrl
 from src.machine.components.ALU import ALU
 from src.machine.utils.hdl import *
 from src.machine.utils.introspection import introspect

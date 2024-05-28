@@ -8,7 +8,6 @@ from isa.model.instructions import Instr
 from machine.arch import RegFileIdCtrl
 from machine.main import Machine
 from machine.utils.log import get_logger
-from machine.utils.runutils import display_trace_vcd
 from src.machine.mc.code import mcrom
 from src.machine.utils.introspection import IntrospectionTree, TraceTick, TraceData, TraceInstr
 from src.machine.utils.testutils import myhdl_pytest

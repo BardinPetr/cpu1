@@ -4,7 +4,6 @@ from myhdl import *
 
 from machine.utils.hdl import Bus1
 from machine.utils.introspection import introspect
-
 from src.machine.components import Clock, Trig, RTrig, Counter
 from src.machine.utils.testutils import myhdl_pytest
 

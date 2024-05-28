@@ -5,7 +5,6 @@ from myhdl import *
 from machine.utils.hdl import Bus, Bus1
 from machine.utils.introspection import introspect
 from machine.utils.log import get_logger
-
 from src.machine.components import Clock
 from src.machine.components import RegisterFile
 from src.machine.utils.testutils import myhdl_pytest

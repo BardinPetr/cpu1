@@ -1,9 +1,7 @@
-from typing import Tuple
+from tabulate import tabulate
 
 from compiler.main import ForthCompilationArtifact
-from isa.model.instructions import Instruction
 from machine.utils.introspection import TraceData
-from tabulate import tabulate
 
 
 def format_test_code_output(fca: ForthCompilationArtifact) -> str:

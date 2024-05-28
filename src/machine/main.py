@@ -1,17 +1,15 @@
-import io
 import sys
 from typing import List, TextIO
 
 from compiler.memory import unpack_binary
-from machine.arch import IOBusCtrl
-from machine.config import IO_ADDR_BUS_SIZE, IO_DATA_BUS_SIZE, IO_PRINTER_ADDR_BASE, IO_PRINTER_ADDR_COUNT, \
+from machine.config import IO_PRINTER_ADDR_BASE, IO_PRINTER_ADDR_COUNT, \
     IO_KEYBOARD_ADDR_BASE, IO_KEYBOARD_ADDR_COUNT
 from machine.cpu import CPU
 from machine.io.bus import create_io_bus
 from machine.io.dev_keyboard import IODevKeyboard
 from machine.io.dev_printer import IODevPrinter
 from machine.mc.code import mcrom
-from machine.utils.hdl import hdl_block, Bus, Bus1
+from machine.utils.hdl import hdl_block
 from machine.utils.introspection import introspect
 
 

@@ -3,7 +3,6 @@ from myhdl import *
 from machine.arch import RegFileIdCtrl
 from machine.cpu import CPU
 from machine.utils.log import get_logger
-
 from src.machine.utils.introspection import IntrospectionTree, TraceTick, TraceData
 from src.machine.utils.testutils import myhdl_pytest
 from src.mcasm.parse import mc_compile

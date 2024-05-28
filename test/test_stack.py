@@ -5,7 +5,6 @@ from myhdl import *
 from machine.arch import StackCtrl
 from machine.config import DATA_BITS
 from machine.utils.hdl import Bus, Bus1
-
 from src.machine.components import Clock
 from src.machine.components.Stack import Stack
 from src.machine.utils.introspection import introspect, IntrospectionTree

@@ -1,9 +1,9 @@
 import pytest
+from pytest_golden.plugin import GoldenTestFixture
 
 from test.golden.formatter import format_test_code_output, format_test_trace_output
 from test.golden.models import MachineTestSpec
 from test.golden.runner import execute_test
-from pytest_golden.plugin import GoldenTestFixture
 
 
 @pytest.mark.golden_test("golden_def/*.yml")
