@@ -31,7 +31,7 @@ def execute_test(spec: MachineTestSpec) -> MachineTestReport:
     )
 
     # Run testbench
-    run_sim(dut, duration=spec.sim_time_limit)
+    run_sim(dut, duration=spec.sim_time_limit, gtk_wave=spec.gui)
 
     # create report
     out_text = io_output_buffer.getvalue()

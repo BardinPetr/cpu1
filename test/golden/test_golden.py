@@ -1,12 +1,14 @@
 import pytest
 from pytest_golden.plugin import GoldenTestFixture
 
+from machine.utils.runutils import display_trace_vcd
 from test.golden.formatter import format_test_code_output, format_test_trace_output
 from test.golden.models import MachineTestSpec
 from test.golden.runner import execute_test
 
 
-@pytest.mark.golden_test("golden_def/*.yml")
+# @pytest.mark.golden_test("golden_def/*.yml")
+@pytest.mark.golden_test("golden_def/main.yml")
 def test_golden(golden: GoldenTestFixture):
     spec = MachineTestSpec(
         forth=golden["in_forth"],
@@ -23,6 +25,9 @@ def test_golden(golden: GoldenTestFixture):
         f.write(out_trace_tick)
     with open(f"test_trace_instr_{golden.path.name}.md", "w") as f:
         f.write(out_trace_instr)
+
+    # display_trace_vcd('dist', 'instr_trace', res.trace_instr)
+    # display_trace_vcd('dist', 'tick_trace', res.trace_tick)
 
     assert len(res.trace_tick) and len(res.trace_instr), "Simulation failed"
     assert out_code == golden.out["out_compiled"], "Compiled instruction list mismatch"

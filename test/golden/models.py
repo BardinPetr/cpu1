@@ -9,6 +9,7 @@ class MachineTestSpec:
     forth: str
     stdin: str
     sim_time_limit: int = 100000
+    gui: bool = False
 
 
 @dataclass

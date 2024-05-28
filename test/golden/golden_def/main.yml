@@ -1,0 +1,6 @@
+in_forth: |-
+  halt
+in_stdin: ''
+out_stdout: ''
+out_trace: ''
+out_compiled: ''
