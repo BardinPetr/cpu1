@@ -1,4 +1,5 @@
 import sys
+from io import StringIO
 from typing import List, TextIO
 
 from compiler.memory import unpack_binary
@@ -16,8 +17,8 @@ from machine.utils.introspection import introspect
 @hdl_block
 def Machine(ram: List[int] | bytes,
             rom=None,
-            io_input: TextIO = sys.stdin,
-            io_output: TextIO = sys.stdout,
+            io_input: TextIO = StringIO(),
+            io_output: TextIO = StringIO(),
             io_input_delay: int = 1000,
             io_output_delay: int = 1000):
     if rom is None:

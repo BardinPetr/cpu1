@@ -5,7 +5,7 @@ from machine.utils.log import get_logger
 
 from src.machine.utils.introspection import IntrospectionTree, TraceTick, TraceData
 from src.machine.utils.testutils import myhdl_pytest
-from src.mcasm.parse import mc_compilefrom myhdl import *
+from src.mcasm.parse import mc_compile
 
 L = get_logger()
 

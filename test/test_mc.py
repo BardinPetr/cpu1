@@ -4,12 +4,12 @@ from myhdl import *
 
 from machine.utils.hdl import Bus, Bus1
 from machine.utils.introspection import introspect
+from machine.utils.testutils import myhdl_pytest
 
 from src.machine.components import Clock
 from src.machine.config import MC_INSTR_SZ
 from src.machine.mc.mcinstr import MCInstructionJump, MCInstructionExec
 from src.machine.mc.components.mcseq import MCSequencer, L as MCS_LOG
- logging
 
 MCS_LOG.setLevel(logging.DEBUG)
 

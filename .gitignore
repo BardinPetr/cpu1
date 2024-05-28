@@ -173,3 +173,4 @@ dist/
 *.v
 *.vcd
 *.gtkw
+*.yml.md
