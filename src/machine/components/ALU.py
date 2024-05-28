@@ -75,14 +75,6 @@ def ALU(operation,
                 res[:] = (op_a << op_b)[sz:]
             case ALUCtrl.SHR:
                 res[:] = op_a >> op_b
-            case ALUCtrl.ASL:
-                raise Exception("Not implemented")
-            case ALUCtrl.ASR:
-                raise Exception("Not implemented")
-            case ALUCtrl.ROL:
-                raise Exception("Not implemented")
-            case ALUCtrl.ROR:
-                raise Exception("Not implemented")
 
         out.next = res[DATA_BITS:]
 

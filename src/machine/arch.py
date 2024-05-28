@@ -101,10 +101,6 @@ class ALUCtrl(CEnumS):
     DIV = auto()
     SHL = auto()
     SHR = auto()
-    ASL = auto()
-    ASR = auto()
-    ROL = auto()
-    ROR = auto()
 
 
 class ALUPortCtrl(CEnumM):

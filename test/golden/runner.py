@@ -16,7 +16,7 @@ def execute_test(spec: MachineTestSpec) -> MachineTestReport:
 
     # Prepare testbench
     io_input_buffer, io_output_buffer = io.StringIO(spec.stdin), io.StringIO()
-    tick_trace_data, inst_trace_data = TraceData(period_ns=10), TraceData(period_ns=20)
+    tick_trace_data, inst_trace_data = TraceData(), TraceData(period_ns=20)
 
     dut = machine_testbench(
         dict(
@@ -41,13 +41,3 @@ def execute_test(spec: MachineTestSpec) -> MachineTestReport:
         stdout=out_text,
         code=fca
     )
-
-
-def cli():
-    pass
-    # display_trace_vcd('dist', 'instr_trace', inst_trace_data)
-    # display_trace_vcd('dist', 'tick_trace', tick_trace_data)
-
-
-if __name__ == "__main__":
-    cli()

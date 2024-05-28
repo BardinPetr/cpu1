@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from functools import reduce
 from typing import List, Tuple
 
@@ -9,7 +10,15 @@ from machine.config import INSTR_BITS, INSTR_BYTE
 from machine.utils.hdl import SINT16_MIN, SINT16_MAX
 
 
-def linker(source: ForthCode) -> List[int | Instr]:
+@dataclass
+class ForthLinkResults:
+    mem: List[int | Instr]
+    instructions: List[Instr]
+    reloc_vars: int
+    reloc_funcs: int
+
+
+def linker(source: ForthCode) -> ForthLinkResults:
     """
     Generates memory layout from variables, and flattened functions and main code.
     Translates relative addresses to absolute.
@@ -40,12 +49,19 @@ def linker(source: ForthCode) -> List[int | Instr]:
 
         code.append(instr)
 
+    out_instr = code[:]
+
     # allocate variables
     for name, var in source.variables.items():
         contents = var.init_value or []
         code += contents + [0] * (var.size_slots - len(contents))
 
-    return code
+    return ForthLinkResults(
+        mem=code,
+        instructions=out_instr,
+        reloc_vars=variable_relocate_pos,
+        reloc_funcs=function_relocate_pos
+    )
 
 
 def pack_binary(source: List[int | Instr]) -> Tuple[List[intbv], bytearray]:

@@ -19,7 +19,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-b", "--bin",
         action="store_true",
-        help="Compile print binary encoded instrunctions"
+        help="Compile print binary encoded instructions"
     )
     parser.add_argument(
         "-j", "--json",
