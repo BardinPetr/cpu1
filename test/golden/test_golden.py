@@ -7,8 +7,8 @@ from test.golden.models import MachineTestSpec
 from test.golden.runner import execute_test
 
 
-# @pytest.mark.golden_test("golden_def/*.yml")
-@pytest.mark.golden_test("golden_def/main.yml")
+@pytest.mark.golden_test("golden_def/*.yml")
+# @pytest.mark.golden_test("golden_def/main.yml")
 def test_golden(golden: GoldenTestFixture):
     spec = MachineTestSpec(
         forth=golden["in_forth"],

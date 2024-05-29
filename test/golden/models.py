@@ -8,7 +8,7 @@ from machine.utils.introspection import TraceData
 class MachineTestSpec:
     forth: str
     stdin: str
-    sim_time_limit: int = 1000000
+    sim_time_limit: int = 10000000
     gui: bool = False
 
 
