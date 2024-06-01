@@ -42,14 +42,11 @@ def IOController(
             case MachineIOCtrl.GET_DATA:
                 bus_ctrl.next = IOBusCtrl.TXE
 
-    fuck = Bus1(0)
-
     @always(clk.posedge)
     def read():
         enable = MCLocs.MCLType.get(mc_control) == MCLocs.MCType.MC_RUN
         ctrl = MCLocs.MCMachineIOCtrl.get(mc_control)
 
-        fuck.next = ctrl == MachineIOCtrl.GET_DATA
         if enable and ctrl == MachineIOCtrl.GET_DATA:
             L.info(f"IOCTRL READ FROM {bus_addr} is {bus_data}")
             data_output.next = bus_data
