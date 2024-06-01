@@ -72,9 +72,3 @@ class Opcode(OpcodeEnum):
 def compile_instructions(code: List[Instruction]) -> List[int]:
     return [int(i.pack()) for i in code]
 
-
-if __name__ == "__main__":
-    print(f"{'OPCODE':13} |  GRP|     ALT|")
-    print("-" * 28)
-    for op in sorted(Opcode, key=lambda x: x.identifier):
-        print(f"{op.group.name:4}.{op.name:8} : {op.group:04b} {op.alt:08b}")
