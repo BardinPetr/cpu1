@@ -1,38 +1,11 @@
-import enum
-import inspect
-from enum import auto
-from typing import Union, Dict
 
-from src.machine.utils.enums import CEnumM, CEnumS, CtrlEnum
+<details>
 
+<summary>Описания управляющих сигналов микрокоманды</summary>
 
-class PSFlags(CEnumM):
-    Z = 0
-    N = 1
-    C = 2
-    V = 3
-    RUN = 4
+#### Типы полей:
 
-    @staticmethod
-    def decode_flags(val: Union['PSFlags', int]) -> dict:
-        val = int(val)
-        return {i.name: bool(val & (1 << i.value)) for i in PSFlags}
-
-    @staticmethod
-    def print_flags(val: Union['PSFlags', int]) -> str:
-        decoded = PSFlags.decode_flags(val)
-        decoded = sorted(decoded.items(), key=lambda x: -PSFlags[x[0]].value)
-        return ''.join((n if v else '-') for n, v in decoded)
-
-
-class RegFileIdCtrl(CEnumS):
-    R0 = 0
-    IP = 1
-    CR = 2
-    R1 = 3
-    R2 = 4
-
-
+```python
 class BusInCtrl(CEnumS):
     """
     Format:
@@ -49,8 +22,9 @@ class BusInCtrl(CEnumS):
     RSS = 0b0111  # значение под вершиной стека R
     IP = 0b1000 + RegFileIdCtrl.IP  # регистр IP
     CR = 0b1000 + RegFileIdCtrl.CR  # регистр CR
+```
 
-
+```python
 class BusOutCtrl(CEnumS):
     """
     Format:
@@ -65,18 +39,15 @@ class BusOutCtrl(CEnumS):
     RS = 0b0101  # передача входного значения в контроллер стека R
     IP = 0b1000 + RegFileIdCtrl.IP  # запись в IP
     CR = 0b1000 + RegFileIdCtrl.CR  # запись в CR
+```
 
-
-class RegFileOrNormalRegister(CEnumS):
-    NR = 0
-    RF = 1
-
-
+```python
 class MemCtrl(CEnumS):
     IGN = 0  # нет записи
     WR = 1  # запись в память
+```
 
-
+```python
 class ALUCtrl(CEnumS):
     """
     Операции АЛУ
@@ -91,8 +62,9 @@ class ALUCtrl(CEnumS):
     DIV = auto()
     SHL = auto()
     SHR = auto()
+```
 
-
+```python
 class ALUPortCtrl(CEnumM):
     """
     Набор операций применяемый к порту АЛУ перед вычислением, множественный выбор
@@ -104,13 +76,15 @@ class ALUPortCtrl(CEnumM):
     SXTW = 0b1000  # расширение знака 16->32бит
     TKB = 0b10000  # взятие младшего байта
     TKW = 0b100000  # взятие младшего слова (16 бит)
+```
 
-
+```python
 class ALUFlagCtrl(CEnumS):
     NONE = 0  # не менять PS
     WRITE = 1  # сохранить флаги в PS
+```
 
-
+```python
 class StackCtrl(CEnumS):
     """
     биты 0-1 определяют сдвиг вершины стека
@@ -121,12 +95,14 @@ class StackCtrl(CEnumS):
     POP = 0b011  # классический pop со сдвигом
     REP = 0b100  # запись в вершину без сдвига
     POPREP = 0b111  # альтернатива последовательным POP и REP
+```
 
-
+```python
 class MachineCtrl(CEnumM):
     HALT = 0b1  # остановить исполнение
+```
 
-
+```python
 class MachineIOCtrl(CEnumS):
     NONE = 0
     SET_ADDR = 1  # начало взаимодействия, выбрать адрес
@@ -134,19 +110,6 @@ class MachineIOCtrl(CEnumS):
     GET_DATA = 3  # получить данные из контроллера после получения
     REQ_READ = 4  # отправить запрос на чтение
     REQ_WRITE = 5  # отправить данные устройству
+```
 
-
-class IOBusCtrl(CEnumM):
-    WR = 0b001
-    RD = 0b010
-    TXE = 0b100
-
-
-def extract_enums() -> Dict[str, Dict[str, int]]:
-    external_frame = inspect.getouterframes(inspect.currentframe())[1]
-    f_locals = external_frame.frame.f_locals
-    return {
-        k: {e(e_k).name: e_k.value for e_k in e}
-        for k, e in f_locals.items()
-        if type(e) == enum.EnumType and issubclass(e, CtrlEnum) and len(e) > 0
-    }
+</details>

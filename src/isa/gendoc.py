@@ -81,7 +81,7 @@ if __name__ == "__main__":
         stack_effect_fmt(DESCRIPTIONS[i][1]),
         stack_effect_fmt(DESCRIPTIONS[i][2]),
         DESCRIPTIONS[i][3] or ""
-    ] for i in cmds if i in DESCRIPTIONS]
+    ] for i in cmds]
     table = tabulate(
         cmds,
         headers=["", "", "Group", "Alt", "Params", "Base stack eff", "Other stack eff", "Effect"],
@@ -92,8 +92,3 @@ if __name__ == "__main__":
     with open("isagen.md", "w") as f:
         f.write(table)
         print(table)
-
-    # print(f"{'OPCODE':13} |  GRP|     ALT|")
-    # print("-" * 28)
-    # for op in :
-    #     print(f"{op.group.name:4}.{op.name:8} : {op.group:04b} {op.alt:08b}")

@@ -62,12 +62,12 @@ class BaseMCInstruction:
 
     def __post_init__(self):
         self._init_locators()
-        self.fields = self._inspect_fields()
+        self.fields = self.inspect_fields()
 
     def compile(self) -> int:
         res = intbv(0)[MC_INSTR_SZ:]
 
-        fields = self._inspect_fields()
+        fields = self.inspect_fields()
         for param_name, _, locator in fields:
             try:
                 locator.put(res, self.__getattribute__(param_name))
@@ -93,7 +93,8 @@ class BaseMCInstruction:
         #         locator.after(fields[i - 1][2])
 
     @classmethod
-    def _inspect_fields(cls) -> List[Tuple[str, Annotated, MCLocator]]:
+    def inspect_fields(cls) -> List[Tuple[str, Annotated, MCLocator]]:
+        cls._init_locators()
         return [
             (name, annot, annot.__metadata__[0])
             for name, annot in get_type_hints(cls, include_extras=True).items()
@@ -101,9 +102,8 @@ class BaseMCInstruction:
 
     @classmethod
     def describe(cls):
-        cls._init_locators()
         name = cls.__name__.replace("MCInstruction", "")
-        fields = cls._inspect_fields()
+        fields = cls.inspect_fields()
         fields = [
             (f"[{loc.loc_start:2d}:{loc.loc_end:2d}) "
              f"{loc.size:2d}b   "
