@@ -9,9 +9,11 @@ SELECTED = [
 ]
 
 template = """
+### Описания управляющих сигналов микрокоманды
+
 <details>
 
-<summary>Описания управляющих сигналов микрокоманды</summary>
+<summary>Листинг</summary>
 
 #### Типы полей:
 
@@ -21,7 +23,7 @@ template = """
 """
 
 if __name__ == "__main__":
-    source = open("arch.py", "r").read()
+    source = open("../../src/machine/arch.py", "r").read()
     classes = re.finditer(r"^class (\w+).*?\n\n", source, re.DOTALL | re.MULTILINE)
     classes = [
         f"```python\n{i.group(0).strip()}\n```"

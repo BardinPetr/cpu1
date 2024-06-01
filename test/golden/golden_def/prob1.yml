@@ -1,11 +1,12 @@
 in_forth: |-
+  1001 constant upper-bound
   variable sum
 
   : add-all-dividing ( delta -- )   \ add all numbers from delta to 1001 to variable sum, 
                                     \ increasing current by delta (i.e. for 5: 5 10 15 ... 1000)
     dup             \ store as [delta, current]
     begin 
-      dup 1001 <    \ while current < 1000 
+      dup upper-bound <    \ while current < 1000 
     while 
       dup sum +!    \ sum += current
       over +        \ current += delta
@@ -15,7 +16,7 @@ in_forth: |-
   : sub-all-dividing ( delta -- )   \ same as add-all-dividing, but decreases sum var
     dup           
     begin 
-      dup 1001 <    
+      dup upper-bound <    
     while 
       dup negate sum +!             \ sum -= current
       over +        

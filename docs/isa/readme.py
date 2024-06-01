@@ -34,6 +34,7 @@ def gen_eff(cnt=None, out=None, op=None, names: Optional[List[str]] = None):
             res.append(out)
     return names, res
 
+
 DESCRIPTIONS = {
     Opcode.ADD:     ["", gen_eff(2, op="+"), None, None],
     Opcode.SUB:     ["", gen_eff(2, op="-"), None, None],
@@ -71,7 +72,6 @@ DESCRIPTIONS = {
     Opcode.OUT:     ["", gen_eff(names=["val", "reg"], out=""), None, "IO[reg] <= val"],
 }
 
-
 if __name__ == "__main__":
     cmds = sorted(Opcode, key=lambda x: x.identifier)
     cmds = [[
@@ -89,6 +89,6 @@ if __name__ == "__main__":
         stralign="left",
     )
 
-    with open("isagen.md", "w") as f:
+    with open("readme.md", "w") as f:
         f.write(table)
         print(table)
