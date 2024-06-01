@@ -1,38 +1,58 @@
-import re
+from typing import Type
 
-SELECTED = [
-    "MCType",
-    "ALUCtrl", "ALUPortCtrl", "ALUFlagCtrl",
-    "BusInCtrl", "BusOutCtrl",
-    "MemCtrl", "StackCtrl",
-    "MachineCtrl", "MachineIOCtrl"
-]
+from tabulate import tabulate
 
-template = """
-### Описания управляющих сигналов микрокоманды
+from machine.mc.mcinstr import MCInstructionExec, MCInstructionJump, MCInstruction
 
-<details>
+DESCRIPTION = {
+    "instr_type":      "Тип инструкции",
+    "alu_ctrl":        "Управление операций АЛУ",
+    "alu_port_a_ctrl": "Операция на входе А АЛУ",
+    "alu_port_b_ctrl": "Операция на входе B АЛУ",
+    "bus_a_in_ctrl":   "Выбор источника данных для шины А",
+    "bus_b_in_ctrl":   "Выбор источника данных для шины В",
+    "jmp_cmp_bit":     "Бит для компаратора при сравнении для условного перехода",
+    "jmp_cmp_val":     "Значение бита сравнения для условного перехода, при котором он совершается",
+    "jmp_target":      "Смещение в микро-инструкциях для условного перехода",
+    "alu_flag_ctrl":   "Управление сохранением флагов АЛУ",
+    "bus_c_out_ctrl":  "Выбор получателя значения с шины C",
+    "mem_ctrl":        "Управление записью в память",
+    "stack_d_ctrl":    "Управление стеком данных",
+    "stack_r_ctrl":    "Управление стеком возврата",
+    "machine_ctrl":    "Управление исполнением",
+    "io_ctrl":         "Управление контроллером ввода-вывода"
+}
 
-<summary>Листинг</summary>
 
-#### Типы полей:
+def describe_mc_md(x: Type[MCInstruction]) -> str:
+    rows = [
+        (
+            f"[{loc.loc_start:2d}:{loc.loc_end:2d})",
+            f"{loc.size}b",
+            annot.__args__[0].__name__,
+            name,
+            DESCRIPTION.get(name, "")
+        )
+        for name, annot, loc in x.inspect_fields()
+    ]
 
-{}
+    table = tabulate(
+        rows,
+        headers=["Loc", "Size", "Type", "Name", "Description"],
+        tablefmt="github",
+        stralign="left",
+    )
 
-</details>
-"""
+    return f"### {x.__name__.replace('MCInstruction', '')}\n\n" + table
+
+
+def gen_doc_mcisa():
+    return '\n\n'.join([describe_mc_md(i)
+                        for i in (MCInstructionJump, MCInstructionExec)])
+
 
 if __name__ == "__main__":
-    source = open("../../src/machine/arch.py", "r").read()
-    classes = re.finditer(r"^class (\w+).*?\n\n", source, re.DOTALL | re.MULTILINE)
-    classes = [
-        f"```python\n{i.group(0).strip()}\n```"
-        for i in classes
-        if i.group(1) in SELECTED
-    ]
-    classes = '\n\n'.join(classes)
-
-    res = template.format(classes)
     with open("readme.md", "w") as f:
+        res = gen_doc_mcisa()
         f.write(res)
         print(res)
