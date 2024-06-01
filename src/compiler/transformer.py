@@ -237,7 +237,7 @@ def preprocess_forth(code: str) -> str:
 
     files = set(import_re.findall(code))
     try:
-        libs = "\n".join(open(i, "r").read() for i in files)
+        libs = "\n".join(preprocess_forth(open(i, "r").read()) for i in files)
     except IOError:
         raise ValueError(f"Invalid include paths: {files}")
 

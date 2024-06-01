@@ -1,4 +1,5 @@
-: type ( addr -- )  \ prints string by its address, string in pascal format
+\ prints string by its address, string in pascal format
+: type ( addr -- )
   dup @             \ read length
   0 do
     1+ dup @ emit
@@ -6,7 +7,8 @@
   drop              \ drop last addr
 ;
 
-: read ( -- addr ) \ read line of input before \n into variable pointed by addr
+\ read line of input before \n into variable pointed by addr, string in pascal format
+: read ( -- addr )
   dup              \ save one copy to write len in the end
   begin
     1+             \ increase pointer
