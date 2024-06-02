@@ -41,7 +41,7 @@ MCMachineCtrl = L(MachineCtrl).after(MCStackRCtrl)
 MCMachineIOCtrl = L(MachineIOCtrl).after(MCMachineCtrl)
 
 # ending for jump
-MCJmpCmpBit = L(bits=16).after(MCBusBCtrl)
+MCJmpCmpBit = L(bits=5).after(MCBusBCtrl)
 MCJmpCmpVal = L(bits=1).after(MCJmpCmpBit)
 MCJmpTarget = L(bits=11).after(MCJmpCmpVal)
 

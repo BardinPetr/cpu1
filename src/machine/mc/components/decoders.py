@@ -94,8 +94,9 @@ def StackDecoder(
         ctrl_d = MCLocs.MCStackDCtrl.get(control_bus)
         ctrl_r = MCLocs.MCStackRCtrl.get(control_bus)
 
-        d_stack_shift.next = ctrl_d[2:].signed()
-        r_stack_shift.next = ctrl_r[2:].signed()
+        if is_exec_cmd:
+            d_stack_shift.next = ctrl_d[2:].signed()
+            r_stack_shift.next = ctrl_r[2:].signed()
 
         d_stack_wr.next = ctrl_d[2] & is_exec_cmd
         r_stack_wr.next = ctrl_r[2] & is_exec_cmd
