@@ -25,12 +25,6 @@ class PSFlags(CEnumM):
 
 
 class BusInCtrl(CEnumS):
-    """
-    Format:
-    0xxx - xx is classic source
-    1xxx - xx is regfile ID
-    """
-
     Z = 0  # ноль
     PS = 0b0001  # регистр PS
     DR = 0b0010  # регистр вывода данных из памяти

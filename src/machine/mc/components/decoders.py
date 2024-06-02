@@ -1,7 +1,10 @@
 from myhdl import *
 
 import src.machine.mc.mcisa as MCLocs
-from src.machine.utils.hdl import hdl_block
+from machine.arch import BusOutCtrl
+from machine.components.mux import DeMux
+from machine.config import DATA_BITS
+from src.machine.utils.hdl import hdl_block, Bus, Bus1
 from src.machine.utils.introspection import introspect
 from src.machine.utils.log import get_logger
 
@@ -32,18 +35,40 @@ def RegReadDecoder(control_bus, mux_busa_in_ctrl, mux_busb_in_ctrl):
 
 @hdl_block
 def RegWriteDecoder(
-    clk, control_bus, ram_a_wr, reg_ps_wr, register_wr, register_demux_id
+        clk, control_bus,
+        register_demux_id,
+        ram_a_wr, reg_ps_wr,
+        reg_drw_wr,
+        reg_ar_wr,
+        reg_ip_wr,
+        reg_cr_wr
 ):
-    @always(clk.posedge)
-    def select():
-        c_out_ctrl = MCLocs.MCBusCCtrl.get(control_bus)
+    zerobus = Bus(DATA_BITS, state=0)
+    demux_bus_c_reg_wr = Bus1(0)
+
+    # forward WR signals
+    demux_bus_c_reg_wr_cmd = DeMux(
+        demux_bus_c_reg_wr,
+        # According to BusOutCtrl
+        [
+            zerobus,
+            zerobus,
+            reg_drw_wr,
+            reg_ar_wr,
+            zerobus,
+            zerobus,
+            reg_ip_wr,
+            reg_cr_wr
+        ],
+        ctrl=register_demux_id,
+    )
 
     @always(clk.negedge)
     def write():
         is_exec_cmd = MCLocs.MCLType.get(control_bus) == MCLocs.MCType.MC_RUN
 
         c_out_ctrl = MCLocs.MCBusCCtrl.get(control_bus)
-        register_wr.next = is_exec_cmd & (c_out_ctrl != 0)
+        demux_bus_c_reg_wr.next = is_exec_cmd & (c_out_ctrl != 0)
         register_demux_id.next = c_out_ctrl
 
         ram_ctrl = MCLocs.MCMemCtrl.get(control_bus)[0]
@@ -54,14 +79,14 @@ def RegWriteDecoder(
 
     @always(clk.posedge)
     def reset():
-        register_wr.next = 0
+        demux_bus_c_reg_wr.next = 0
 
     return introspect()
 
 
 @hdl_block
 def StackDecoder(
-    clk, control_bus, d_stack_shift, d_stack_wr, r_stack_shift, r_stack_wr
+        clk, control_bus, d_stack_shift, d_stack_wr, r_stack_shift, r_stack_wr
 ):
     @always_comb
     def run():

@@ -14,12 +14,12 @@ from src.machine.utils.introspection import introspect
 
 @hdl_block
 def CPU(
-    mc_rom: List[int],
-    ram: Optional[List[int | intbv]] = None,
-    iobus_clk=None,
-    iobus_ctrl=None,
-    iobus_addr=None,
-    iobus_data=None,
+        mc_rom: List[int],
+        ram: Optional[List[int | intbv]] = None,
+        iobus_clk=None,
+        iobus_ctrl=None,
+        iobus_addr=None,
+        iobus_data=None,
 ):
     if any(map(lambda x: x is None, [iobus_clk, iobus_ctrl, iobus_addr, iobus_data])):
         iobus_clk, iobus_ctrl, iobus_addr, iobus_data = create_io_bus()
@@ -34,14 +34,14 @@ def CPU(
         Bus(enum=BusInCtrl),
         Bus(enum=BusInCtrl),
     )
-    demux_bus_c_reg_wr = Bus1()
-    demux_bus_c_reg_id = Bus(enum=BusOutCtrl)
     alu_ctrl = Bus(enum=ALUCtrl)
     alu_flag_ctrl = Bus(enum=ALUFlagCtrl)
     alu_ctrl_pa, alu_ctrl_pb = [Bus(enum=ALUPortCtrl) for _ in range(2)]
     reg_ps_wr, ram_a_wr = [Bus1(0) for _ in range(2)]
     d_stack_wr, r_stack_wr = [Bus1(0) for _ in range(2)]
     d_stack_shift, r_stack_shift = [Bus(min=-1, max=2) for _ in range(2)]
+    reg_drw_wr, reg_ar_wr, reg_ip_wr, reg_cr_wr = [Bus1(0) for _ in range(4)]
+    demux_bus_c_reg_id = Bus(enum=BusOutCtrl)
 
     # general-purpose buses
     bus_a = Bus(DATA_BITS)
@@ -63,12 +63,15 @@ def CPU(
         mux_bus_b_reg_in_ctrl,
         ram_a_wr,
         reg_ps_wr,
-        demux_bus_c_reg_wr,
         demux_bus_c_reg_id,
         d_stack_shift,
         d_stack_wr,
         r_stack_shift,
         r_stack_wr,
+        reg_drw_wr,
+        reg_ar_wr,
+        reg_ip_wr,
+        reg_cr_wr,
         mc_rom_data=mc_rom,
     )
 
@@ -91,12 +94,15 @@ def CPU(
         mux_bus_b_reg_in_ctrl,
         ram_a_wr,
         reg_ps_wr,
-        demux_bus_c_reg_wr,
         demux_bus_c_reg_id,
         d_stack_shift,
         d_stack_wr,
         r_stack_shift,
         r_stack_wr,
+        reg_drw_wr,
+        reg_ar_wr,
+        reg_ip_wr,
+        reg_cr_wr,
         ram=ram,
     )
 

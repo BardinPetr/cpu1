@@ -40,12 +40,15 @@ def DataPath(
     mux_bus_b_reg_in_ctrl,
     ram_a_wr,
     reg_ps_wr,
-    demux_bus_c_reg_wr,
     demux_bus_c_reg_id,
     d_stack_shift,
     d_stack_wr,
     r_stack_shift,
     r_stack_wr,
+    reg_drw_wr,
+    reg_ar_wr,
+    reg_ip_wr,
+    reg_cr_wr,
     ram=None,
 ):
     """
@@ -62,17 +65,17 @@ def DataPath(
     reg_ps = Register(reg_ps_in, reg_ps_out, reg_ps_wr)
 
     # register tied to ram input addr
-    reg_ar_in, reg_ar_out, reg_ar_wr = create_reg_signals()
+    reg_ar_in, reg_ar_out, _ = create_reg_signals()
     reg_ar = Register(reg_ar_in, reg_ar_out, reg_ar_wr)
 
     # register tied to ram input data
-    reg_drw_in, reg_drw_out, reg_drw_wr = create_reg_signals()
+    reg_drw_in, reg_drw_out, _ = create_reg_signals()
     reg_drw = Register(reg_drw_in, reg_drw_out, reg_drw_wr)
 
-    reg_cr_in, reg_cr_out, reg_cr_wr = create_reg_signals()
+    reg_cr_in, reg_cr_out, _ = create_reg_signals()
     reg_cr = Register(reg_cr_in, reg_cr_out, reg_cr_wr)
 
-    reg_ip_in, reg_ip_out, reg_ip_wr = create_reg_signals()
+    reg_ip_in, reg_ip_out, _ = create_reg_signals()
     reg_ip = Register(reg_ip_in, reg_ip_out, reg_ip_wr)
 
     ########################################################################
@@ -146,6 +149,7 @@ def DataPath(
 
     ########################################################################
     """BUS INPUT SECTION"""
+    # select input channel according to BusInCtrl
     bus_in = [
         zerobus,
         reg_ps_out,
@@ -159,29 +163,11 @@ def DataPath(
         reg_cr_out,
     ]
 
-    # select input channel according to BusInCtrl
     mux_bus_a_registers_in = Mux(bus_in, output=bus_a, ctrl=mux_bus_a_reg_in_ctrl)
     mux_bus_b_registers_in = Mux(bus_in, output=bus_b, ctrl=mux_bus_b_reg_in_ctrl)
 
     ########################################################################
     """BUS OUTPUT SECTION"""
-    # forward WR signals
-    demux_bus_c_reg_wr_cmd = DeMux(
-        demux_bus_c_reg_wr,
-        # According to BusOutCtrl
-        [
-            zerobus,
-            zerobus,
-            reg_drw_wr,
-            reg_ar_wr,
-            zerobus,
-            zerobus,
-            reg_ip_wr,
-            reg_cr_wr,
-        ],
-        ctrl=demux_bus_c_reg_id,
-    )
-
     # forward data signals
     demux_bus_c_reg_wr_data = DeMux(
         bus_c,
