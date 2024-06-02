@@ -14,12 +14,12 @@ from src.machine.utils.introspection import introspect
 
 @hdl_block
 def CPU(
-        mc_rom: List[int],
-        ram: Optional[List[int | intbv]] = None,
-        iobus_clk=None,
-        iobus_ctrl=None,
-        iobus_addr=None,
-        iobus_data=None,
+    mc_rom: List[int],
+    ram: Optional[List[int | intbv]] = None,
+    iobus_clk=None,
+    iobus_ctrl=None,
+    iobus_addr=None,
+    iobus_data=None,
 ):
     if any(map(lambda x: x is None, [iobus_clk, iobus_ctrl, iobus_addr, iobus_data])):
         iobus_clk, iobus_ctrl, iobus_addr, iobus_data = create_io_bus()

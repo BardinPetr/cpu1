@@ -14,29 +14,29 @@ L = get_logger()
 
 @hdl_block
 def MCControl(
-        clk,
-        clk_dp,
-        clk_dp_wr,
-        control_bus,
-        bus_c,
-        alu_ctrl,
-        alu_ctrl_pa,
-        alu_ctrl_pb,
-        alu_flag_ctrl,
-        mux_bus_a_reg_in_ctrl,
-        mux_bus_b_reg_in_ctrl,
-        ram_a_wr,
-        reg_ps_wr,
-        demux_bus_c_reg_id,
-        d_stack_shift,
-        d_stack_wr,
-        r_stack_shift,
-        r_stack_wr,
-        reg_drw_wr,
-        reg_ar_wr,
-        reg_ip_wr,
-        reg_cr_wr,
-        mc_rom_data,
+    clk,
+    clk_dp,
+    clk_dp_wr,
+    control_bus,
+    bus_c,
+    alu_ctrl,
+    alu_ctrl_pa,
+    alu_ctrl_pb,
+    alu_flag_ctrl,
+    mux_bus_a_reg_in_ctrl,
+    mux_bus_b_reg_in_ctrl,
+    ram_a_wr,
+    reg_ps_wr,
+    demux_bus_c_reg_id,
+    d_stack_shift,
+    d_stack_wr,
+    r_stack_shift,
+    r_stack_wr,
+    reg_drw_wr,
+    reg_ar_wr,
+    reg_ip_wr,
+    reg_cr_wr,
+    mc_rom_data,
 ):
     seq = MCSequencer(
         clk, clk_dp, clk_dp_wr, control_bus, bus_c, mc_rom_data=mc_rom_data
@@ -51,13 +51,15 @@ def MCControl(
     )
 
     reg_w_dec = RegWriteDecoder(
-        clk_dp, control_bus,
+        clk_dp,
+        control_bus,
         demux_bus_c_reg_id,
-        ram_a_wr, reg_ps_wr,
+        ram_a_wr,
+        reg_ps_wr,
         reg_drw_wr,
         reg_ar_wr,
         reg_ip_wr,
-        reg_cr_wr
+        reg_cr_wr,
     )
 
     stack_dec = StackDecoder(

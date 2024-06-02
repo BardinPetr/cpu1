@@ -1,7 +1,6 @@
 from myhdl import *
 
 import src.machine.mc.mcisa as MCLocs
-from machine.arch import BusOutCtrl
 from machine.components.mux import DeMux
 from machine.config import DATA_BITS
 from src.machine.utils.hdl import hdl_block, Bus, Bus1
@@ -35,13 +34,15 @@ def RegReadDecoder(control_bus, mux_busa_in_ctrl, mux_busb_in_ctrl):
 
 @hdl_block
 def RegWriteDecoder(
-        clk, control_bus,
-        register_demux_id,
-        ram_a_wr, reg_ps_wr,
-        reg_drw_wr,
-        reg_ar_wr,
-        reg_ip_wr,
-        reg_cr_wr
+    clk,
+    control_bus,
+    register_demux_id,
+    ram_a_wr,
+    reg_ps_wr,
+    reg_drw_wr,
+    reg_ar_wr,
+    reg_ip_wr,
+    reg_cr_wr,
 ):
     zerobus = Bus(DATA_BITS, state=0)
     demux_bus_c_reg_wr = Bus1(0)
@@ -58,7 +59,7 @@ def RegWriteDecoder(
             zerobus,
             zerobus,
             reg_ip_wr,
-            reg_cr_wr
+            reg_cr_wr,
         ],
         ctrl=register_demux_id,
     )
@@ -86,7 +87,7 @@ def RegWriteDecoder(
 
 @hdl_block
 def StackDecoder(
-        clk, control_bus, d_stack_shift, d_stack_wr, r_stack_shift, r_stack_wr
+    clk, control_bus, d_stack_shift, d_stack_wr, r_stack_shift, r_stack_wr
 ):
     @always_comb
     def run():
