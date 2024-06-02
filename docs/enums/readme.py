@@ -2,10 +2,15 @@ import re
 
 SELECTED = [
     "MCType",
-    "ALUCtrl", "ALUPortCtrl", "ALUFlagCtrl",
-    "BusInCtrl", "BusOutCtrl",
-    "MemCtrl", "StackCtrl",
-    "MachineCtrl", "MachineIOCtrl"
+    "ALUCtrl",
+    "ALUPortCtrl",
+    "ALUFlagCtrl",
+    "BusInCtrl",
+    "BusOutCtrl",
+    "MemCtrl",
+    "StackCtrl",
+    "MachineCtrl",
+    "MachineIOCtrl",
 ]
 
 template = """
@@ -30,7 +35,7 @@ if __name__ == "__main__":
         for i in classes
         if i.group(1) in SELECTED
     ]
-    classes = '\n\n'.join(classes)
+    classes = "\n\n".join(classes)
 
     res = template.format(classes)
     with open("readme.md", "w") as f:
