@@ -1,3 +1,8 @@
+
+<details>
+
+<summary>Таблица</summary>
+
 |      |         |   Group |   Alt | Params     | Base stack eff          | Other stack eff   | Effect                             |
 |------|---------|---------|-------|------------|-------------------------|-------------------|------------------------------------|
 | GIOC | HLT     |    0000 |  0000 |            |                         |                   | stop machine                       |
@@ -34,3 +39,5 @@
 | GJMP | RET     |    0100 |  0100 |            |                         | [ addr ] -> [  ]  | IP <= addr                         |
 | GMEM | FETCH   |    0101 |  0000 |            | [ addr ] -> [ val ]     |                   | val <= MEM[addr]                   |
 | GMEM | STORE   |    0101 |  0001 |            | [ val; addr ] -> [  ]   |                   | MEM[addr] <= val                   |
+ 
+</details>
