@@ -8,3 +8,13 @@
 - `forth | stack | neum | mc | instr | binary | stream | port | pstr | prob1 | cache`
 - Базовый вариант
 
+
+
+
+
+| ФИО                    | алг             | LoC   | code байт   | code инстр.   | инстр.   | такт.   | вариант                                                                                        |
+|------------------------|-----------------|-------|-------------|---------------|----------|---------|------------------------------------------------------------------------------------------------| 
+| Бардин Петр Алексеевич | hello           | <LoC> | <code байт> | <code инстр.> | <инстр.> | <такт.> | `forth  \| stack \| neum \| mc \| instr \| binary \| stream \| port \| pstr \| prob1 \| cache` |
+| Бардин Петр Алексеевич | cat             | <LoC> | <code байт> | <code инстр.> | <инстр.> | <такт.> | `forth  \| stack \| neum \| mc \| instr \| binary \| stream \| port \| pstr \| prob1 \| cache` |
+| Бардин Петр Алексеевич | hello_user_name | <LoC> | <code байт> | <code инстр.> | <инстр.> | <такт.> | `forth  \| stack \| neum \| mc \| instr \| binary \| stream \| port \| pstr \| prob1 \| cache` |
+| Бардин Петр Алексеевич | prob1           | <LoC> | <code байт> | <code инстр.> | <инстр.> | <такт.> | `forth  \| stack \| neum \| mc \| instr \| binary \| stream \| port \| pstr \| prob1 \| cache` |
