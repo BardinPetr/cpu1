@@ -59,13 +59,10 @@ jobs:
           name: test-results
           path: test-results.xml
 
-  report:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
       - uses: dorny/test-reporter@v1
+        if: success() || failure()
         with:
           artifact: test-results
-          name: Python Tests
+          name: Test Report
           path: '*.xml'
           reporter: java-junit
