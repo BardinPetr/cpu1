@@ -59,7 +59,7 @@ if __name__ == "__main__":
     )
 
     # Run testbench
-    run_sim(dut, duration=10000, gtk_wave=args.gtkwave)
+    run_sim(dut, duration=10000000, gtk_wave=args.gtkwave)
 
     if args.gtkwave:
         display_trace_vcd("dist", "instr_trace", inst_trace_data)

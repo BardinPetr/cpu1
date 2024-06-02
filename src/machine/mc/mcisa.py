@@ -48,8 +48,6 @@ MCJmpTarget = L(bits=11).after(MCJmpCmpVal)
 MCHeadNormal = MCMachineIOCtrl
 MCHeadJump = MCJmpTarget
 
-print(MCMachineIOCtrl)
-
 if __name__ == "__main__":
     print(f"MCN LEN={MCHeadNormal.loc_end}")
     print(f"MCJ LEN={MCHeadJump.loc_end}")
