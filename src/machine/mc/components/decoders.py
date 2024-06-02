@@ -98,6 +98,9 @@ def StackDecoder(
         if is_exec_cmd:
             d_stack_shift.next = ctrl_d[2:].signed()
             r_stack_shift.next = ctrl_r[2:].signed()
+        else:
+            d_stack_shift.next = 0
+            r_stack_shift.next = 0
 
         d_stack_wr.next = ctrl_d[2] & is_exec_cmd
         r_stack_wr.next = ctrl_r[2] & is_exec_cmd
