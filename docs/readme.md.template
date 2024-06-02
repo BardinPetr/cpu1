@@ -12,9 +12,9 @@
 
 
 
-| ФИО                    | алг             | LoC   | code байт   | code инстр.   | инстр.   | такт.   | вариант                                                                                        |
-|------------------------|-----------------|-------|-------------|---------------|----------|---------|------------------------------------------------------------------------------------------------| 
-| Бардин Петр Алексеевич | hello           | <LoC> | <code байт> | <code инстр.> | <инстр.> | <такт.> | `forth  \| stack \| neum \| mc \| instr \| binary \| stream \| port \| pstr \| prob1 \| cache` |
-| Бардин Петр Алексеевич | cat             | <LoC> | <code байт> | <code инстр.> | <инстр.> | <такт.> | `forth  \| stack \| neum \| mc \| instr \| binary \| stream \| port \| pstr \| prob1 \| cache` |
-| Бардин Петр Алексеевич | hello_user_name | <LoC> | <code байт> | <code инстр.> | <инстр.> | <такт.> | `forth  \| stack \| neum \| mc \| instr \| binary \| stream \| port \| pstr \| prob1 \| cache` |
-| Бардин Петр Алексеевич | prob1           | <LoC> | <code байт> | <code инстр.> | <инстр.> | <такт.> | `forth  \| stack \| neum \| mc \| instr \| binary \| stream \| port \| pstr \| prob1 \| cache` |
+| ФИО                    | алг             | LoC | code байт | code инстр. | инстр. | такт.  | вариант                                                                                        |
+|------------------------|-----------------|-----|-----------|-------------|--------|--------|------------------------------------------------------------------------------------------------| 
+| Бардин Петр Алексеевич | cat             | 6   | 32        | 8           | 39     | 533    | `forth  \| stack \| neum \| mc \| instr \| binary \| stream \| port \| pstr \| prob1 \| cache` |
+| Бардин Петр Алексеевич | hello           | 5   | 236       | 46          | 158    | 2225   | `forth  \| stack \| neum \| mc \| instr \| binary \| stream \| port \| pstr \| prob1 \| cache` |
+| Бардин Петр Алексеевич | hello_user_name | 16  | 1448      | 72          | 734    | 10291  | `forth  \| stack \| neum \| mc \| instr \| binary \| stream \| port \| pstr \| prob1 \| cache` |
+| Бардин Петр Алексеевич | prob1           | 30  | 188       | 46          | 9079   | 130180 | `forth  \| stack \| neum \| mc \| instr \| binary \| stream \| port \| pstr \| prob1 \| cache` |
