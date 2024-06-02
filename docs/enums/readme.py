@@ -29,7 +29,7 @@ template = """
 
 if __name__ == "__main__":
     source = open("../../src/machine/arch.py", "r").read()
-    classes = re.finditer(r"^class (\w+).*?\n\n", source, re.DOTALL | re.MULTILINE)
+    classes = re.finditer(r"^class (\w+).*?\n\n\n", source, re.DOTALL | re.MULTILINE)
     classes = [
         f"```python\n{i.group(0).strip()}\n```"
         for i in classes
