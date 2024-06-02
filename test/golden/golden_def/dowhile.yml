@@ -1,5 +1,5 @@
 in_forth: |-
-  : whiletest begin key dup emit 46 = until 36 emit ;
+  : whiletest begin key dup emit 46 = until 36 emit ; \ should print until '.' and then stop and print '$'
   whiletest
   halt
 in_stdin: abcde, fgh! help.

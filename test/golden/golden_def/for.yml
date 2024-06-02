@@ -4,6 +4,7 @@ in_forth: |-
   2 loop-test cr
   1 loop-test cr cr
 
+  \ print 5 lines, in each should be all numbers from 0 and less then the line number
   : loop-loop 
     5 0 do 
       i 1 + dup . 58 emit

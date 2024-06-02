@@ -1,5 +1,5 @@
 in_forth: |-
-  : test-repeat 0 begin 101 <> while key dup emit repeat ; 
+  : test-repeat 0 begin 101 <> while key dup emit repeat ;  \ should print out from input until 'e'
   test-repeat
   halt
 in_stdin: abcdef.

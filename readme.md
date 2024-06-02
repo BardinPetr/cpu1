@@ -1,14 +1,15 @@
 # Лабораторная работа №3, Архитектура компьютера
 
 - Выполнил
-    - Бардин Петр Алексеевич, P3219
+    - Бардин Петр Алексеевич, P3219, 367079
 - Преподаватель
     - Пенской Александр Владимирович
-
 - `forth | stack | neum | mc | instr | binary | stream | port | pstr | prob1 | cache`
 - Базовый вариант
 
 Реализация потактового симулятора стекового 32-битного процессора с микропрограммным управлением.
+
+Симулятор выполнен с применением фреймворка MyHDL.
 
 <!-- TOC -->
 * [Лабораторная работа №3, Архитектура компьютера](#лабораторная-работа-3-архитектура-компьютера)
@@ -69,6 +70,7 @@
     * [Задача hello](#задача-hello)
     * [Задача hello_user_name](#задача-hellousername)
     * [Задача prob1](#задача-prob1)
+      * [Дополнительные тесты](#дополнительные-тесты)
     * [CLI Симулятора](#cli-симулятора)
 <!-- TOC -->
 
@@ -92,32 +94,260 @@
 по заднему фронту происходит либо инкремент MC_PC,
 либо для микрокоманд ветвления сравнение шины C с условием перехода и изменение MC_PC.
 
-Типы микрокоманд по представляемым возможностям:
 
+Типы микрокоманд по представляемым возможностям:
 - exec
-    - чтение регистров
-    - чтение памяти
-    - АЛУ
-    - запись регистров
-    - запись памяти
-    - управление IO
-    - управление стеком
+    1. чтение регистров или памяти в шины А, В
+    2. выполнение операции АЛУ, установка значения в шине C
+    3. управление стеком
+    4. запись в регистры, память или верх стека
+    5. управление IO
 - jump
-    - чтение регистров
-    - чтение памяти
-    - АЛУ
-    - выполнение условного перехода в микрокоде
-        - проверка происходит сравнением выбранного бита шины C с булевы значением в команде
+    1. выполнение операции на АЛУ с возможностью чтения регистров и памяти, выдача данных на шину C (как пункты 1 и 2 exec)
+    2. выполнение условного перехода в микрокоде
+        - проверка сравнением одного выбранного бита шины C после АЛУ с булевым значением в команде
         - переход по абсолютному адресу
 
 Микрокод процессора расположен в [файле](src/machine/mc/code/main.mcasm).
+
+<details>
+
+<summary>Листинг микрокода</summary>
+
+```
+start:
+
+# fetch instruction from RAM to CR, increase IP
+infetch:
+(IP ADD) -> AR;
+(DR ADD) -> CR;
+(IP(INC) ADD) -> IP;
+
+# execute command according to opcode of CR[31:20]
+exec:
+
+# group select of CR[31:28]
+switch (CR ADD)[30:28] {
+
+  #GIOC
+  case 0b000 {
+    if (CR ADD)[21] == 0 {
+      if (CR ADD)[20] == 1 jmp end; # 0b01 NOP
+      # 0b00 HLT
+      ctrl(halt);
+    } else {
+      # IO instructions
+      (DST(TKW) ADD) io(set_addr), pop(D);
+      if (CR ADD)[20] == 0 {
+        # 0b10 IN  [addr] -> [val]
+        io(req_read);
+        (IOR ADD) io(get_data), push(D);
+      } else {
+        # 0b11 OUT [val, addr] -> []
+        (DST ADD) io(set_data), pop(D);
+        io(req_write);
+      };
+    };
+  }
+
+  # GMTH
+  case 0b001 {
+    switch (CR ADD)[23:20] {
+      # ADD
+      case 0b0000 { (DSS ADD DST) poprep(D); }
+      # SUB
+      case 0b0001 { (DSS ADD DST(INC,NOT)) poprep(D); }
+      # DIV
+      case 0b0010 { (DSS DIV DST) poprep(D); }
+      # MUL
+      case 0b0011 { (DSS MUL DST) poprep(D); }
+      # MOD
+      case 0b0100 { (DSS MOD DST) poprep(D); }
+      # AND
+      case 0b0101 { (DSS AND DST) poprep(D); }
+      # OR
+      case 0b0110 { (DSS OR DST) poprep(D); }
+      # INV (~x)
+      case 0b0111 { (DST(NOT) ADD) rep(D); }
+      # INC
+      case 0b1000 { (DST(INC) ADD) rep(D); }
+      # DEC
+      case 0b1001 { (DST ADD Z(NOT)) rep(D); }
+      # NEG (-x)
+      case 0b1010 { (DST(NOT,INC) ADD) rep(D); }
+    };
+  }
+
+  # GSTK
+  case 0b010 {
+    # (CR ADD)[16] is stack id (0=D, 1=R),
+    # meaning is stack to operate on, or source stack for two-stack operation
+
+    switch (CR ADD)[22:20] {
+      # ISTKPSH
+      case 0b0000 {
+        if (CR ADD)[16] == 0  { (CR(TKW,SXTW) ADD) push(D); }
+        else                  { (CR(TKW,SXTW) ADD) push(R); };
+      }
+
+      # STKMV src[a];dst[] -> src[];dst[a]   (ctrl/stackid is src)
+      case 0b0001 {
+        if (CR ADD)[16] == 0  { (DST ADD) push(R), pop(D); }
+        else                  { (RST ADD) push(D), pop(R); };
+      }
+
+      # STKCP src[a];dst[] -> src[a];dst[a]   (ctrl/stackid is src)
+      case 0b0010 {
+        if (CR ADD)[16] == 0  { (DST ADD) push(R); }
+        else                  { (RST ADD) push(D); };
+      }
+
+      # STKPOP [a] -> []
+      case 0b0011 {
+        if (CR ADD)[16] == 0  { (ZERO) pop(D); }
+        else                  { (ZERO) pop(R); };
+      }
+
+      # STKDUP [a] -> [a, a]
+      case 0b0101 {
+        if (CR ADD)[16] == 0  { (DST ADD) push(D); }
+        else                  { (RST ADD) push(R); };
+      }
+
+      # STKOVR [a,b] -> [a,b,a]
+      case 0b0100 {
+        if (CR ADD)[16] == 0  { (DSS ADD) push(D); }
+        else                  { (RSS ADD) push(R); };
+      }
+
+      # STKSWP [a,b] -> [b,a]
+      case 0b0110 {
+        if (CR ADD)[16] == 0  {
+          (DSS ADD) push(R);
+          (DST ADD) poprep(D);
+          (RST ADD) push(D), pop(R);
+        } else {
+          (RSS ADD) push(D);
+          (RST ADD) poprep(R);
+          (DST ADD) push(R), pop(D);
+        };
+      }
+    };
+  }
+
+  # GCMP
+  # PS is [...VCNZ]
+  case 0b011 {
+    # bit 20 selects operand order (0 for LTx, 1 for GTx, then GTx is LTx with reversed ops)
+    if (CR ADD)[20] == 0  { (DSS ADD DST(NOT,INC)) set(Z,V,C,N); }
+    else                  { (DST ADD DSS(NOT,INC)) set(Z,V,C,N); };
+
+    if (CR ADD)[22] == 1 {
+      # CEQ (b100)
+      (PS AND Z(INC)) poprep(D); # push z flag, it is leftmost
+    } else {
+      # CLTx, CGTx (b0XX)
+      # here implementing only "less" variant
+
+      if (CR ADD)[21] == 0 {
+        # Unsigned version
+        # C <=> "<"
+        if (PS ADD)[2] == 0 { jmp cmp_ltx_exit_poprep_1; }
+        else                { jmp cmp_ltx_exit_poprep_0; };
+      } else {
+        # Signed version
+        # V^C <=> "<"
+        switch (PS ADD)[4:2] { # extract VC part and implement xor
+          case 0b00 { jmp cmp_ltx_exit_poprep_0; }
+          case 0b11 { jmp cmp_ltx_exit_poprep_0; }
+          case 0b01 { jmp cmp_ltx_exit_poprep_1; }
+          case 0b10 { jmp cmp_ltx_exit_poprep_1; }
+        };
+      };
+
+      # here using jmp to push 0/1 to exit from all nested ifs
+      # with only one command instead of sequence to speedup,
+      # as there is no optimization currently in flattening process
+      cmp_ltx_exit_poprep_0:
+      (Z ADD) poprep(D);
+      jmp exec_end;
+
+      cmp_ltx_exit_poprep_1:
+      (Z(INC) ADD) poprep(D);
+    };
+  }
+
+  # GJMP
+  case 0b100 {
+    switch (CR ADD)[22:20] {
+      # AJMP
+      case 0b000 {
+        (DST ADD) -> IP, pop(D);
+      }
+
+      # RJMP
+      case 0b001 {
+        (CR(TKW,SXTW) ADD IP) -> IP;
+      }
+
+      # CJMP jump IP-relative if DST==0
+      case 0b010 {
+        if (DST ADD)[0] == 1 jmp cjmp_end;
+        (CR(TKW,SXTW) ADD IP) -> IP;
+        cjmp_end:
+        pop(D);
+      }
+
+      # RCALL
+      case 0b011 {
+        (IP ADD) push(R);
+        (CR(TKW,SXTW) ADD IP) -> IP;
+      }
+
+      # RET
+      case 0b100 {
+        (RST ADD) -> IP, pop(R);
+      }
+    };
+  }
+
+  # GMEM
+  case 0b101 {
+    switch (CR ADD)[20:20] {
+      # FETCH [addr] -> [val]
+      case 0b0 {
+        (DST(TKW) ADD) -> AR;
+        (DR ADD) rep(D);
+      }
+
+      # STORE [val,addr] -> []
+      case 0b1 {
+        (DST(TKW) ADD) -> AR, pop(D);
+        (DST ADD) -> DR, pop(D);
+        store;
+      }
+    };
+  }
+};
+
+exec_end:
+
+# final
+end:
+jmp start;
+
+```
+
+
+</details>
 
 Принцип работы микрокода:
 
 - загрузка инструкции по IP в CR
 - инкремент IP
-- последовательные проверками битов CR для определения команды по opcode
+- последовательные проверки битов CR для определения команды по opcode
 - исполнение микрокода команды
+- переход в начало
 
 ### Control unit
 
@@ -206,7 +436,7 @@
 Схемы сделаны при помощи ПО Logisim Evolution, проект прилагается.
 
 Все логические компоненты напрямую отражаются в идентичные в коде модели.
-На схемах представлены только основные модули системы, 
+На схемах представлены только основные модули системы,
 в частности, не присутствуют те, в которых для симуляции есть несинтезируемые операции из Python.
 Сигналы на схемах заименованы в соответствии с моделью.
 
@@ -1063,6 +1293,8 @@ $ poetry run pytest
 
 [Golden-test](test/golden/golden_def/cat.yml)
 
+В бесконечном цикле читаем символ, выводим его.
+
 ```forth
 : cat 
   begin
@@ -1251,6 +1483,10 @@ Hello
 
 [Golden-test](test/golden/golden_def/hello.yml)
 
+Определяем строку в статической памяти,
+получаем адрес строки, затем вызываем библиотечную функцию печати строки,
+для нее документация представлена в [файле](src/compiler/forthlib/iolib.fth) библиотеки.
+
 <details>
 <summary>Листинг</summary>
 
@@ -1268,6 +1504,11 @@ halt
 ### Задача hello_user_name
 
 [Golden-test](test/golden/golden_def/hello_user_name.yml)
+
+Определяем функции для вывода вспомогательных символов,
+резервируем в статической памяти буфер под строку,
+затем выводим приглашение, читаем строку в буфер,
+потом выводим последовательно текст и эту строку.
 
 <details>
 <summary>Листинг</summary>
@@ -1297,6 +1538,11 @@ halt
 ### Задача prob1
 
 [Golden-test](test/golden/golden_def/prob1.yml)
+
+Сначала в переменную `sum` функцией `add-all-dividing` суммируем все числа,
+делящиеся на 3, потом на 5, затем вычитаем те, что были посчитаны дважды,
+то есть те что делятся на 5.
+Вместо проверки делимости просто перебираем числа с фиксированным шагом.
 
 <details>
 <summary>Листинг</summary>
@@ -1336,6 +1582,20 @@ halt
 ```
 
 </details>
+
+#### Дополнительные тесты
+
+- math.yml - проверка математических операций
+- comp.yml - проверка операторов сравнения
+- stack.yml - проверка функций преобразования d-стека
+- if.yml - проверка условных операторов и их вложенности
+- varconst.yml - проверка создание переменных и констант
+- arr.yml - проверка создания, чтения и записи в статические массивы
+- dowhile.yml - проверка цикла формата do-while
+- while.yml - проверка цикла формата while
+- for.yml - проверка цикла формата for
+- func.yml - проверка создания и вызова функций, включая функции из функций
+- io.yml - проверка базового ввода-вывода
 
 ### CLI Симулятора
 
