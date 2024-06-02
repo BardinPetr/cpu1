@@ -16,7 +16,7 @@ def get_logger(name=None):
         caller = inspect.stack()[1]
         name = inspect.getmodule(caller[0]).__name__
 
-    l = logging.getLogger(name)
+    log = logging.getLogger(name)
     if not IS_DEBUG:
-        l.setLevel(logging.INFO)
-    return l
+        log.setLevel(logging.INFO)
+    return log

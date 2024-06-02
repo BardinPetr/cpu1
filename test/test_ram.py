@@ -2,10 +2,10 @@ from random import randrange
 
 from myhdl import *
 
+from machine.components.RAM import RAMSyncSP
+from machine.components.base import Clock
 from machine.utils.hdl import Bus1
 from machine.utils.introspection import introspect
-from src.machine.components import Clock
-from src.machine.components import RAMSyncSP
 from src.machine.utils.testutils import myhdl_pytest
 
 

@@ -28,6 +28,13 @@ pytest-golden = "^0.2.2"
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.4.7"
 
+[tool.ruff.lint]
+ignore = [
+    "E731", # for using lambdas in class (Lark)
+    "F403", "F405", # for from myhdl import *
+    "F841" # unused vars in fucntion, needed for MyHDL instances()
+]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

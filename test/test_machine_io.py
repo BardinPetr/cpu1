@@ -8,7 +8,6 @@ from isa.main import compile_instructions, Opcode
 from isa.model.instructions import Instr
 from machine.main import Machine
 from machine.utils.log import get_logger
-from machine.utils.runutils import display_trace_vcd
 from src.machine.mc.code import mcrom
 from src.machine.utils.introspection import (
     IntrospectionTree,

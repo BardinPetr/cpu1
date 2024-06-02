@@ -2,8 +2,8 @@ from random import randrange
 
 from myhdl import *
 
+from machine.components.mux import Mux, DeMux
 from machine.utils.introspection import introspect
-from src.machine.components import Mux, DeMux
 from src.machine.utils.testutils import myhdl_pytest
 
 

@@ -2,7 +2,6 @@ from myhdl import *
 
 from machine.cpu import CPU
 from machine.utils.log import get_logger
-from machine.utils.runutils import display_trace_vcd
 from src.machine.utils.introspection import IntrospectionTree, TraceTick, TraceData
 from src.machine.utils.testutils import myhdl_pytest
 from src.mcasm.parse import mc_compile

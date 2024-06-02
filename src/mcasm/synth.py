@@ -1,6 +1,6 @@
-from src.machine.arch import *
+from src.machine.arch import *  # noqa F403
 
-enums = extract_enums()
+enums = extract_enums()  # noqa F405
 
 for name, vals in enums.items():
     print(name)

@@ -10,7 +10,6 @@ from isa.model.instructions import Instr
 from machine.cpu import CPU
 from machine.mc.mcinstr import MCInstructionExec
 from machine.utils.log import get_logger
-from machine.utils.runutils import display_trace_vcd
 from src.machine.mc.code import mcrom
 from src.machine.utils.introspection import (
     IntrospectionTree,

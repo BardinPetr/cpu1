@@ -54,8 +54,8 @@ def RAMSyncSP(
         try:
             L.debug(f"READ [0x{int(addr.val):x}] == {memory[addr]}")
             out_data.next = memory[addr]
-        except:
-            pass
+        except IndexError:
+            out_data.next = 0
 
     return introspect()
 
@@ -94,7 +94,7 @@ def RAMSyncDP(
             memory[addr_a].next = di_a
 
     @always(clk_b.posedge)
-    def write():
+    def read():
         do_b.next = memory[addr_b]
         if wr_b:
             memory[addr_b].next = di_b
