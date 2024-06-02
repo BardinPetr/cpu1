@@ -30,3 +30,4 @@ def test_golden(golden: GoldenTestFixture):
     assert out_code == golden.out["out_compiled"], "Compiled instruction list mismatch"
     assert res.stdout == golden.out["out_stdout"], "Stdout mismatch"
     assert out_trace_instr == golden.out["out_trace"], "Instruction trace mismatch"
+    assert res.logs == golden.out["logs"], "Log file mismatch"

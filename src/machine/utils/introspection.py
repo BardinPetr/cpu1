@@ -13,6 +13,7 @@ from myhdl._Signal import _Signal
 from myhdl._block import _Block
 from myhdl._extractHierarchy import _MemInfo
 from myhdl._instance import _Instantiator, instance
+from myhdl import _simulator as sim
 
 from src.machine.utils.colors import Colors
 from src.machine.utils.hdl import hdl_block, dim
@@ -101,8 +102,9 @@ class IntrospectionTree(BlockIntrospection):
 
 
 class TraceData:
-    def __init__(self, period_ns: int = 10):
+    def __init__(self, period_ns: int = 10, include_time=False):
         self._run = True
+        self._include_time = include_time
         self.labels: List[str] = []
         self.dims: List[int] = []
         self._history: List[List[intbv]] = []
@@ -125,9 +127,13 @@ class TraceData:
 
     def set_labels(self, labels: Iterable[str]):
         self.labels = list(labels)
+        if self._include_time:
+            self.labels = ["TIME", *labels]
 
     def set_types(self, example: Iterable[_Signal]):
         self.dims = [dim(i) for i in example]
+        if self._include_time:
+            self.dims = [64, *self.dims]
 
     def as_list(self) -> List[List[intbv]]:
         return self._history
@@ -150,6 +156,8 @@ class TraceData:
 
     def add(self, x: List[intbv]):
         if self._run:
+            if self._include_time:
+                x = [intbv(sim.now())[64:], *x]
             self._history.append(x)
 
     def as_vcd(self, filepath: str):

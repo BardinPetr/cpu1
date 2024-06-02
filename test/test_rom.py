@@ -2,9 +2,9 @@ from random import randrange
 
 from myhdl import *
 
+from machine.components.ROM import ROM
 from machine.utils.hdl import Bus1
 from machine.utils.introspection import introspect
-from src.machine.components import ROM
 from src.machine.utils.testutils import myhdl_pytest
 
 

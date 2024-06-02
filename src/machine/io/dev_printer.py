@@ -2,6 +2,7 @@ from sys import stdout
 from typing import TextIO
 
 from myhdl import always, delay, instance
+from myhdl import _simulator as sim
 
 from machine.arch import IOBusCtrl
 from src.machine.utils.hdl import hdl_block, Bus
@@ -34,7 +35,9 @@ def IODevPrinter(
             register = bus_addr - address
 
             if bus_ctrl & IOBusCtrl.WR:
-                L.info(f"WRITE DEV {address:02x} REG {register:02x} VAL {bus_data}")
+                L.info(
+                    f"at {sim.now()} WRITE DEV {address:02x} REG {register:02x} VAL {bus_data}"
+                )
                 if print_control != 0:
                     return  # ignore while busy
 
@@ -48,7 +51,7 @@ def IODevPrinter(
                     print_control.next = 0
 
             if bus_ctrl & IOBusCtrl.RD:
-                L.info(f"READ DEV {address:02x} REG {register:02x}")
+                L.info(f"at {sim.now()} READ DEV {address:02x} REG {register:02x}")
                 if register == 0:  # busy register
                     data_drv.next = print_control != 0
                 else:

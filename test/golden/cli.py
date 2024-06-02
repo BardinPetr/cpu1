@@ -42,7 +42,10 @@ if __name__ == "__main__":
 
     io_input_buffer, io_output_buffer = io.StringIO(input_text), io.StringIO()
 
-    tick_trace_data, inst_trace_data = TraceData(), TraceData(period_ns=20)
+    tick_trace_data, inst_trace_data = (
+        TraceData(include_time=True),
+        TraceData(period_ns=20, include_time=True),
+    )
     dut = machine_testbench(
         dict(
             ram=mem_binary,

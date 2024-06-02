@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from myhdl import *
 from myhdl import _Signal
+from myhdl import _simulator as sim
 
 from src.machine.utils.hdl import hdl_block, Bus
 from src.machine.utils.introspection import introspect
@@ -46,7 +47,7 @@ def RAMSyncSP(
     @always(clk.negedge)
     def write():
         if wr:
-            L.info(f"WRITE [0x{int(addr.val):x}] = {in_data.val}")
+            L.info(f"at {sim.now()} WRITE [0x{int(addr.val):x}] = {in_data.val}")
             memory[addr].next = in_data
 
     @always(clk.posedge)

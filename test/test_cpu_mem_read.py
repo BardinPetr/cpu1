@@ -2,7 +2,6 @@ from myhdl import *
 
 from machine.cpu import CPU
 from machine.utils.log import get_logger
-from machine.utils.runutils import display_trace_vcd
 from src.machine.utils.introspection import (
     IntrospectionTree,
     TraceData,
@@ -34,7 +33,7 @@ jump 0;
 """).compiled
 
 
-@myhdl_pytest(gui=True, duration=None)
+@myhdl_pytest(gui=False, duration=None)
 def test_cpu_mem_read():
     for src, comp in zip(MC_ROM, MC_ROM):
         L.info(f"MC{comp:064b}: {src}")
@@ -81,7 +80,7 @@ def test_cpu_mem_read():
                 # 4-th command is just copy CR into BusC
                 seq_cr.append(c_val)
 
-        display_trace_vcd("dist", "f", trace_res)
+        # display_trace_vcd("dist", "f", trace_res)
 
         print("TARGET CR:", RAM)
         print("REAL   CR:", seq_cr)

@@ -17,4 +17,5 @@ class MachineTestReport:
     trace_tick: TraceData
     trace_instr: TraceData
     stdout: str
+    logs: str
     code: ForthCompilationArtifact

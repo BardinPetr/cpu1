@@ -155,8 +155,11 @@ def run_sim(
         except FileExistsError:
             pass
 
-        # For some reason config_sim() ignores path argument, so move manually
-        os.rename(vcd_file, os.path.join(build_path, vcd_file))
+        try:
+            # For some reason config_sim() ignores path argument, so move manually
+            os.rename(vcd_file, os.path.join(build_path, vcd_file))
+        except FileNotFoundError:
+            pass
 
         if gtk_wave:
             display_sim_trace(build_path, name, root)
