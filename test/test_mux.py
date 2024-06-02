@@ -19,7 +19,7 @@ def test_mux():
     @instance
     def stimulus():
         for i, dim in enumerate([1, 5]):
-            for v in range(2 ** dim):
+            for v in range(2**dim):
                 ctrls[i].next = v
                 yield delay(1)
                 assert outputs[i].val == v
@@ -45,8 +45,7 @@ def test_demux():
             yield delay(20)
 
             assert all(
-                outputs[i].val == (data if i == v else 0)
-                for i in range(len(outputs))
+                outputs[i].val == (data if i == v else 0) for i in range(len(outputs))
             )
             yield delay(5)
 

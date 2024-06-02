@@ -25,7 +25,7 @@ def test_base_trig():
         for i in range(10):
             yield clk.negedge
 
-            val = random.randrange(2 ** 8)
+            val = random.randrange(2**8)
             d_in.next = val
 
             if i == r_test:

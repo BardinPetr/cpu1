@@ -22,7 +22,7 @@ class FunctionLibrary:
 
         self.__functions[name] = body
 
-    def __iadd__(self, other: 'FunctionLibrary'):
+    def __iadd__(self, other: "FunctionLibrary"):
         if isinstance(other, FunctionLibrary):
             for f in other:
                 self[f.name] = f
@@ -70,5 +70,8 @@ class FunctionLibrary:
     """OUTPUT"""
 
     def to_memory(self, usages: Optional[Set[str]] = None) -> List[ForthFunction]:
-        return [f for name, f in self.__functions.items()
-                if not f.is_inline and (not usages or f.name in usages)]
+        return [
+            f
+            for name, f in self.__functions.items()
+            if not f.is_inline and (not usages or f.name in usages)
+        ]

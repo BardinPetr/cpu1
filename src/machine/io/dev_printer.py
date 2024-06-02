@@ -13,10 +13,15 @@ L = get_logger()
 
 @hdl_block
 def IODevPrinter(
-        bus_clk,
-        bus_ctrl, bus_addr, bus_data,
-        address, address_count,
-        output: TextIO = stdout, simulate_delay=0):
+    bus_clk,
+    bus_ctrl,
+    bus_addr,
+    bus_data,
+    address,
+    address_count,
+    output: TextIO = stdout,
+    simulate_delay=0,
+):
     end_address = address_count + address - 1
     data_drv = bus_data.driver()
 
@@ -59,7 +64,11 @@ def IODevPrinter(
             yield bus_clk.negedge
 
             if print_control != 0:
-                text = chr(int(print_value)) if print_control == 1 else str(int(print_value))
+                text = (
+                    chr(int(print_value))
+                    if print_control == 1
+                    else str(int(print_value))
+                )
                 print(text, file=output, end="")
 
                 yield delay(simulate_delay)

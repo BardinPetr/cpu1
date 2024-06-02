@@ -21,13 +21,7 @@ def test_stack():
     in_data, out_tos0, out_tos1 = [Bus(bits=DATA_BITS) for _ in range(3)]
     out_full, out_empty = Bus1(0), Bus1(1)
     in_ctrl = Bus(enum=StackCtrl)
-    st = Stack(
-        clk,
-        in_ctrl, in_data,
-        out_tos0, out_tos1,
-        out_empty, out_full,
-        DEPTH
-    )
+    st = Stack(clk, in_ctrl, in_data, out_tos0, out_tos1, out_empty, out_full, DEPTH)
 
     introspect()
     intro = IntrospectionTree.build(st)

@@ -5,11 +5,10 @@ from myhdl import *
 from machine.utils.hdl import Bus, Bus1
 from machine.utils.introspection import introspect
 from machine.utils.testutils import myhdl_pytest
-
 from src.machine.components import Clock
 from src.machine.config import MC_INSTR_SZ
-from src.machine.mc.mcinstr import MCInstructionJump, MCInstructionExec
 from src.machine.mc.components.mcseq import MCSequencer, L as MCS_LOG
+from src.machine.mc.mcinstr import MCInstructionJump, MCInstructionExec
 
 MCS_LOG.setLevel(logging.DEBUG)
 
@@ -39,14 +38,9 @@ def test_mc():
     # running to 0x5
     # jumped from 0x5 to 0x1
     # loop from 0x1
-    TARGET_SEQ = [
-        *MC_ROM,
-        *MC_ROM[1:],
-        *MC_ROM[1:],
-        *MC_ROM[1:]
-    ]
+    TARGET_SEQ = [*MC_ROM, *MC_ROM[1:], *MC_ROM[1:], *MC_ROM[1:]]
 
-    mcc = MCSequencer(clk, clkd, mc_cr, busc, mc_rom_data=MC_ROM)
+    mcc = MCSequencer(clk, clkd, clkd, mc_cr, busc, mc_rom_data=MC_ROM)
 
     @instance
     def stimulus():

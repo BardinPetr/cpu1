@@ -31,7 +31,9 @@ def _insert_signal_block_classic(gtkw: GTKWSave, root: _Block, base_name: str = 
             _insert_signal_block_classic(gtkw, sub, base_name=name)
 
 
-def gtkw_update_traces(gtkw: GTKWSave, base: str, example: Dict[str, _Signal], sizes: List[int] = []):
+def gtkw_update_traces(
+    gtkw: GTKWSave, base: str, example: Dict[str, _Signal], sizes: List[int] = []
+):
     for (name, sig), sig_len in zip_longest(example.items(), sizes, fillvalue=None):
         if sig_len is None:
             sig_len = len(sig)
@@ -39,31 +41,38 @@ def gtkw_update_traces(gtkw: GTKWSave, base: str, example: Dict[str, _Signal], s
         is_bool = sig_len == 1
 
         trace_name = f"{base}.{name}"
-        trace_fmt = 'hex'
+        trace_fmt = "hex"
         trace_color = GTKWColor.green
         trace_translate_path = None
 
         if is_bool:
             trace_color = GTKWColor.red
-            trace_fmt = 'bin'
+            trace_fmt = "bin"
         else:
             trace_name += f"[{sig_len - 1}:0]"
 
         if sig.val is None:
             trace_color = GTKWColor.yellow
-        elif 'ctrl' in trace_name.lower():
+        elif "ctrl" in trace_name.lower():
             trace_color = GTKWColor.orange
         elif 1 < sig_len < 32:
             trace_color = GTKWColor.indigo
 
-        enc: Type[CtrlEnum] = getattr(sig, 'encoding', None)
+        enc: Type[CtrlEnum] = getattr(sig, "encoding", None)
         if enc is not None:
             trace_translate_path = gtkwave_generate_translation(enc)
 
-        gtkw.trace(trace_name, color=trace_color, datafmt=trace_fmt, translate_filter_file=trace_translate_path)
+        gtkw.trace(
+            trace_name,
+            color=trace_color,
+            datafmt=trace_fmt,
+            translate_filter_file=trace_translate_path,
+        )
 
 
-def _insert_signal_block(gtkw: GTKWSave, root: _Block, base_name: str, is_root: bool = False):
+def _insert_signal_block(
+    gtkw: GTKWSave, root: _Block, base_name: str, is_root: bool = False
+):
     intro: BlockIntrospection = root.introspection
 
     presentation_name = intro.name if intro.name is not None else intro.type
@@ -72,11 +81,8 @@ def _insert_signal_block(gtkw: GTKWSave, root: _Block, base_name: str, is_root: 
     with gtkw.group(presentation_name):
         traces = dict(
             sorted(
-                filter(
-                    lambda i: i[0] != 'clk' or is_root,
-                    intro.signals.items()
-                ),
-                key=lambda x: x[0]
+                filter(lambda i: i[0] != "clk" or is_root, intro.signals.items()),
+                key=lambda x: x[0],
             )
         )
 
@@ -87,15 +93,16 @@ def _insert_signal_block(gtkw: GTKWSave, root: _Block, base_name: str, is_root: 
 
 
 def display_trace_vcd(build_dir: str, name: str, data: TraceData):
-    data.as_vcd(f'{build_dir}/{name}.vcd')
+    data.as_vcd(f"{build_dir}/{name}.vcd")
 
     def _update(gtkw: GTKWSave):
-        base = 'main'
+        base = "main"
         with gtkw.group(base):
             gtkw_update_traces(
-                gtkw, base,
+                gtkw,
+                base,
                 {k: Signal(v) for k, v in data.as_dict()[0].items()},
-                data.dims
+                data.dims,
             )
 
     display_vcd(build_dir, name, _update)
@@ -129,20 +136,27 @@ def display_sim_trace(build_dir: str, name: str, root_block: _Block):
     display_vcd(build_dir, name, _update)
 
 
-def run_sim(root: _Block, duration: Optional[int], gtk_wave: bool = False, build_path: str = "dist"):
+def run_sim(
+    root: _Block,
+    duration: Optional[int],
+    gtk_wave: bool = False,
+    build_path: str = "dist",
+):
     name = root.name
     vcd_file = f"{name}.vcd"
 
     root.config_sim(trace=True, tracebackup=False, name=name)
-    root.run_sim(duration, quiet=0)
 
     try:
-        os.mkdir(build_path)
-    except FileExistsError:
-        pass
+        root.run_sim(duration, quiet=0)
+    finally:
+        try:
+            os.mkdir(build_path)
+        except FileExistsError:
+            pass
 
-    # For some reason config_sim() ignores path argument, so move manually
-    os.rename(vcd_file, os.path.join(build_path, vcd_file))
+        # For some reason config_sim() ignores path argument, so move manually
+        os.rename(vcd_file, os.path.join(build_path, vcd_file))
 
-    if gtk_wave:
-        display_sim_trace(build_path, name, root)
+        if gtk_wave:
+            display_sim_trace(build_path, name, root)

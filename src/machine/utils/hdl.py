@@ -5,7 +5,7 @@ from myhdl import block, intbv, modbv, TristateSignal
 from myhdl._ShadowSignal import _TristateSignal
 from myhdl._Signal import _Signal, Signal
 
-from src.machine.config import DATA_BITS
+from src.machine.config import DATA_BITS, REG_SZ
 from src.machine.utils.enums import CtrlEnum
 
 
@@ -13,11 +13,14 @@ def hdl_block(func):
     return functools.wraps(func)(block(func))
 
 
-def Bus(bits: Optional[int] = None,
-        state=0,
-        min=None, max=None,
-        enum: Optional[Type[CtrlEnum]] = None,
-        tristate=False) -> _Signal | _TristateSignal:
+def Bus(
+    bits: Optional[int] = None,
+    state=0,
+    min=None,
+    max=None,
+    enum: Optional[Type[CtrlEnum]] = None,
+    tristate=False,
+) -> _Signal | _TristateSignal:
     if min is not None or max is not None:
         content = intbv(state, min=min, max=max)
     else:
@@ -48,7 +51,7 @@ def dim(sig: _Signal | intbv | modbv) -> int:
     return sig._nrbits
 
 
-def create_reg_signals(reg_size: int) -> tuple[_Signal, _Signal, _Signal]:
+def create_reg_signals(reg_size: int = REG_SZ) -> tuple[_Signal, _Signal, _Signal]:
     return Bus(reg_size), Bus(reg_size), Bus1(False)
 
 

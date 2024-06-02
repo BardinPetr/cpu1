@@ -24,7 +24,7 @@ def execute_test(spec: MachineTestSpec) -> MachineTestReport:
             io_input=io_input_buffer,
             io_output=io_output_buffer,
             io_input_delay=0,
-            io_output_delay=0
+            io_output_delay=0,
         ),
         tick_trace_data,
         inst_trace_data,
@@ -39,5 +39,5 @@ def execute_test(spec: MachineTestSpec) -> MachineTestReport:
         trace_tick=tick_trace_data,
         trace_instr=inst_trace_data,
         stdout=out_text,
-        code=fca
+        code=fca,
     )

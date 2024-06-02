@@ -6,10 +6,7 @@ from src.mcasm.parse import mc_compile
 
 
 def _load():
-    file = (pathlib.Path(__file__)
-            .parent
-            .resolve()
-            .joinpath("main.mcasm"))
+    file = pathlib.Path(__file__).parent.resolve().joinpath("main.mcasm")
     with open(file, "r") as f:
         text = f.read()
     return mc_compile(text)

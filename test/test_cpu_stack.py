@@ -1,8 +1,8 @@
 from myhdl import *
 
-from machine.arch import RegFileIdCtrl
 from machine.cpu import CPU
 from machine.utils.log import get_logger
+from machine.utils.runutils import display_trace_vcd
 from src.machine.utils.introspection import IntrospectionTree, TraceTick, TraceData
 from src.machine.utils.testutils import myhdl_pytest
 from src.mcasm.parse import mc_compile
@@ -39,20 +39,20 @@ def test_cpu_stack():
         clk,
         trace_res,
         {
-            "CLK":    clk,
-            "A":      dp.bus_a,
-            "B":      dp.bus_b,
-            "C":      dp.bus_c,
-            "IP":     dp.rf.registers[RegFileIdCtrl.IP],
-            "DS_S":   dp.d_stack.in_shift,
-            "DS_W":   dp.d_stack.in_wr_top,
-            "DS_IN":  dp.d_stack_in,
+            "CLK": clk,
+            "A": dp.bus_a,
+            "B": dp.bus_b,
+            "C": dp.bus_c,
+            "IP": dp.reg_ip_out,
+            "DS_S": dp.d_stack.in_shift,
+            "DS_W": dp.d_stack.in_wr_top,
+            "DS_IN": dp.d_stack_in,
             "DS_TOP": dp.d_stack_tos0,
             "DS_PRV": dp.d_stack_tos1,
-            "DS_SP":  dp.d_stack.sp,
+            "DS_SP": dp.d_stack.sp,
             "RS_TOP": dp.r_stack_tos0,
-            "RS_SP":  dp.r_stack.sp,
-        }
+            "RS_SP": dp.r_stack.sp,
+        },
     )
 
     @instance
@@ -77,16 +77,15 @@ def test_cpu_stack():
             stack.append(1 + stack[-1])
             stack_target.append(tuple(stack))
 
-        stack_real = trace_res.peek(
-            front=0,
-            names=["DS_PRV", "DS_TOP"]
-        )
+        stack_real = trace_res.peek(front=0, names=["DS_PRV", "DS_TOP"])
         stack_real = stack_real[2:]
-        stack_real = stack_real[6::loop_size]  # time after 6th instruction in loop (JMP)
+        stack_real = stack_real[
+            6::loop_size
+        ]  # time after 6th instruction in loop (JMP)
         stack_real = [(i["DS_PRV"], i["DS_TOP"]) for i in stack_real]
 
-        # print(stack_real)
-        # print(stack_target)
+        print(stack_real)
+        print(stack_target)
         assert stack_real == stack_target
 
         # display_trace_vcd('dist', 'f', trace_res)
@@ -119,28 +118,28 @@ def test_cpu_stack_rep():
         clk,
         trace_res,
         {
-            "CLK":    clk,
-            "IP":     dp.rf.registers[RegFileIdCtrl.IP],
+            "CLK": clk,
+            "IP": dp.reg_ip_out,
             "DS_TOP": dp.d_stack_tos0,
             "DS_PRV": dp.d_stack_tos1,
-            "DS_SP":  dp.d_stack.sp,
-        }
+            "DS_SP": dp.d_stack.sp,
+        },
     )
 
     @instance
     def stimulus():
         for i in range(len(MC_ROM) + 1):
-            yield clk.negedge
             yield clk.posedge
+            yield clk.negedge
 
         a = 2
         b = 1
-        target = [b, a, b + a, b << (b + a), 0]
+        target = [b, a, b + a, b << (b + a)]
 
-        res = trace_res.peek(0, ['DS_TOP'])
-        res = [i['DS_TOP'] for i in res]
+        res = trace_res.peek(0, ["DS_TOP"])
+        res = [i["DS_TOP"] for i in res]
 
-        assert res[:len(target)] == target
+        assert res[1:] == target
 
         # display_trace_vcd('dist', 'f', trace_res)
         raise StopSimulation()

@@ -58,21 +58,25 @@ class IntrospectionTree(BlockIntrospection):
         raise AttributeError(f"Symbol {item} not found in block {self}")
 
     def __repr__(self):
-        return (f"<{self.name}: "
-                f"c=[{','.join([str(i) for i in self._children])}]"
-                f"; "
-                f"s=[{','.join([str(i) for i in self._symbols])}]"
-                f">")
+        return (
+            f"<{self.name}: "
+            f"c=[{','.join([str(i) for i in self._children])}]"
+            f"; "
+            f"s=[{','.join([str(i) for i in self._symbols])}]"
+            f">"
+        )
 
     @staticmethod
-    def build(blk: _Block, is_root: bool = True) -> 'IntrospectionTree':
+    def build(blk: _Block, is_root: bool = True) -> "IntrospectionTree":
         if not hasattr(blk, "introspection"):
             raise ValueError(f"Block {blk.name} should be introspected first")
 
         # noinspection PyUnresolvedReferences
         base: BlockIntrospection = blk.introspection
         name = base.type if is_root else base.name
-        return IntrospectionTree(name, base.type, base.modules, base.signals, base.memories)
+        return IntrospectionTree(
+            name, base.type, base.modules, base.signals, base.memories
+        )
 
     def draw(self, level: int = 0):
         padding = "|  " * level
@@ -97,7 +101,6 @@ class IntrospectionTree(BlockIntrospection):
 
 
 class TraceData:
-
     def __init__(self, period_ns: int = 10):
         self._run = True
         self.labels: List[str] = []
@@ -117,8 +120,7 @@ class TraceData:
         return [
             {name: i[name] for name in names}
             for i in self.as_dict()
-            if (front is None) or
-               (front is not None and i['CLK'] == front)
+            if (front is None) or (front is not None and i["CLK"] == front)
         ]
 
     def set_labels(self, labels: Iterable[str]):
@@ -135,7 +137,7 @@ class TraceData:
         :param front_val: 0 - falling, 1 - rising
         :return:
         """
-        return self._history[1 - front_val::2]
+        return self._history[1 - front_val :: 2]
 
     def as_list_joined(self) -> List[Tuple[List[intbv], List[intbv]]]:
         return list(zip(self.as_list_front(1), self.as_list_front(0)))
@@ -154,17 +156,17 @@ class TraceData:
         if not self._history:
             return False
 
-        with open(filepath, 'w') as file:
-            with vcd.VCDWriter(file, timescale='1 ns') as writer:
+        with open(filepath, "w") as file:
+            with vcd.VCDWriter(file, timescale="1 ns") as writer:
                 vars = [
-                    writer.register_var('main', name, 'reg', size=sz)
+                    writer.register_var("main", name, "reg", size=sz)
                     for name, sz in zip(self.labels, self.dims)
                 ]
 
                 ts = 0
                 for line in self._history:
                     for var, value in zip(vars, line):
-                        writer.change(var, ts, int(value) if value is not None else 'z')
+                        writer.change(var, ts, int(value) if value is not None else "z")
                     ts += self._half_period
 
                 for var in vars:
@@ -180,8 +182,9 @@ def TraceTick(clk: _Signal, data: TraceData, watches: Dict[str, _Signal]):
     data.set_types(watches.values())
 
     def checkpoint():
-        data.add([intbv(tp.val) if tp.val is not None else None
-                  for tp in watches.values()])
+        data.add(
+            [intbv(tp.val) if tp.val is not None else None for tp in watches.values()]
+        )
 
     @instance
     def pull():
@@ -198,11 +201,11 @@ def TraceTick(clk: _Signal, data: TraceData, watches: Dict[str, _Signal]):
 
 @hdl_block
 def TraceInstr(
-        clk: _Signal,
-        data: TraceData,
-        watches: Dict[str, _Signal],
-        mc_pc: _Signal,
-        mc_pc_trigger_value: int
+    clk: _Signal,
+    data: TraceData,
+    watches: Dict[str, _Signal],
+    mc_pc: _Signal,
+    mc_pc_trigger_value: int,
 ):
     data.clear()
     data.set_labels(watches.keys())
@@ -254,7 +257,7 @@ def introspect():
 
     # this is a call of block definition-function itself inside _Block.__init__ (which called by decorator)
     block_class_init_call = frames[2]
-    block_instance: _Block = block_class_init_call.frame.f_locals['self']
+    block_instance: _Block = block_class_init_call.frame.f_locals["self"]
 
     block_def.type = block_classname
     block_instance.introspection = block_def
@@ -281,11 +284,7 @@ def introspect():
     # print(f"Registered {block_classname}")
 
     # mimic MyHDL instances() and return all submodules that should be evaluated (blocks and functions with decorators)
-    return [
-        blk
-        for name, blk in block_locals.items()
-        if _is_hdl_runnable(blk)
-    ]
+    return [blk for name, blk in block_locals.items() if _is_hdl_runnable(blk)]
 
 
 def use():

@@ -27,27 +27,18 @@ def compile_forth(text: str) -> ForthCompilationArtifact:
     code = translate_forth(text)
     link_res = linker(code)
     words, binary = pack_binary(link_res.mem)
-    return ForthCompilationArtifact(
-        text, code, link_res.mem, link_res, words, binary
-    )
+    return ForthCompilationArtifact(text, code, link_res.mem, link_res, words, binary)
 
 
 if __name__ == "__main__":
-    parser = ArgumentParser(description='Forth parser & compiler')
+    parser = ArgumentParser(description="Forth parser & compiler")
+    parser.add_argument("input_file", type=str, help="Forth file path")
+    parser.add_argument("output_file", type=str, help="Output file for compiled binary")
     parser.add_argument(
-        "input_file",
-        type=str,
-        help="Forth file path"
-    )
-    parser.add_argument(
-        "output_file",
-        type=str,
-        help="Output file for compiled binary"
-    )
-    parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
-        help="Print out detailed information on compilation process and precompiled non-binary code"
+        help="Print out detailed information on compilation process and precompiled non-binary code",
     )
 
     args = parser.parse_args()
@@ -60,7 +51,7 @@ if __name__ == "__main__":
         f.write(res.mem_binary)
 
     if args.verbose:
-        loc = text.count('\n')
+        loc = text.count("\n")
         icnt = len(res.linker_output.instructions)
         print(f"""
         LoC: {loc}
@@ -69,15 +60,32 @@ if __name__ == "__main__":
         """)
 
         print("-" * 20)
-        print("MEM")
-        print("\n".join([
-            f"{pos:03x}h: " + (f"{i:08x}h" if isinstance(i, int) else str(i))
-            for pos, i in enumerate(res.flat)
-        ]))
+        print("MEMORY IMAGE")
+        print(
+            "\n".join(
+                [
+                    f"{pos:03x}h: " + (f"{i:08x}h" if isinstance(i, int) else str(i))
+                    for pos, i in enumerate(res.flat)
+                ]
+            )
+        )
 
         print("-" * 20)
-        print("VARS")
-        print("\n".join([
-            f"#{pos:<2d}: '{i.name}' at {i.loc + res.linker_output.reloc_vars} of {i.size_slots} slots"
-            for pos, i in enumerate(res.translated.variables.values())
-        ]))
+        print("STATIC VARIABLES")
+        print(
+            "\n".join(
+                [
+                    f"#{pos:<2d}: '{i.name}' at {i.loc + res.linker_output.reloc_vars} of {i.size_slots} slots"
+                    for pos, i in enumerate(res.translated.variables.values())
+                ]
+            )
+        )
+
+        print("-" * 20)
+        print("-" * 20)
+        print("BINARY")
+        print(
+            "\n".join(
+                [f"{pos:03x}h: {int(i):08x}h" for pos, i in enumerate(res.mem_words)]
+            )
+        )

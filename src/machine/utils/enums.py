@@ -12,7 +12,6 @@ class EnumEncodingType(Enum):
 
 
 class CtrlEnum(IntEnum):
-
     @classmethod
     def encoding_type(cls) -> EnumEncodingType:
         return EnumEncodingType.AS_IS
@@ -28,15 +27,15 @@ class CtrlEnum(IntEnum):
     #     return len(cls) - zeroes
 
     @classmethod
-    def decode_names(cls, names: List[str]) -> List['CtrlEnum']:
+    def decode_names(cls, names: List[str]) -> List["CtrlEnum"]:
         return [cls[i] for i in names]
 
     @classmethod
-    def encode_from_names(cls, items: List[str]) -> 'EncodedEnum':
+    def encode_from_names(cls, items: List[str]) -> "EncodedEnum":
         return cls.encode(cls.decode_names(items))
 
     @classmethod
-    def encode(cls, items: List['CtrlEnum']) -> 'EncodedEnum':
+    def encode(cls, items: List["CtrlEnum"]) -> "EncodedEnum":
         return EncodedEnum(cls, items)
 
 
@@ -64,7 +63,7 @@ class CEnumM(CtrlEnum):
         return EnumEncodingType.MULTIPLE
 
     @classmethod
-    def encode(cls, items: List[CtrlEnum]) -> 'EncodedEnum':
+    def encode(cls, items: List[CtrlEnum]) -> "EncodedEnum":
         return EncodedEnum(cls, items)
 
 
@@ -88,5 +87,5 @@ class EncodedEnum:
         return str(self)
 
     def __str__(self):
-        lst = ','.join([i.name for i in self.items])
+        lst = ",".join([i.name for i in self.items])
         return f"[{lst}]" if len(self.items) > 1 else lst

@@ -27,11 +27,7 @@ def alu_apply_port(port_data: intbv, port_ctrl):
 
 
 @hdl_block
-def ALU(operation,
-        porta_ctrl, portb_ctrl,
-        in_a, in_b,
-        out,
-        flags_out):
+def ALU(operation, porta_ctrl, portb_ctrl, in_a, in_b, out, flags_out):
     """
     Asynchronous 2-port ALU with operations from ALUCtrl enum.
     Each port has individual ALU_PORT_CTRL operations applied to it before main operation.
@@ -50,10 +46,10 @@ def ALU(operation,
 
     @always_comb
     def run():
-        op_a = intbv(alu_apply_port(in_a.val, porta_ctrl))[DATA_BITS + 1:]
-        op_b = intbv(alu_apply_port(in_b.val, portb_ctrl))[DATA_BITS + 1:]
+        op_a = intbv(alu_apply_port(in_a.val, porta_ctrl))[DATA_BITS + 1 :]
+        op_b = intbv(alu_apply_port(in_b.val, portb_ctrl))[DATA_BITS + 1 :]
 
-        res = intbv(0)[DATA_BITS + 1:]
+        res = intbv(0)[DATA_BITS + 1 :]
         match operation:
             case ALUCtrl.ZERO:
                 res[:] = 0
@@ -80,7 +76,11 @@ def ALU(operation,
 
         out.next = res[DATA_BITS:]
 
-        a_sign, b_sign, out_sign = op_a[DATA_BITS - 1], op_b[DATA_BITS - 1], res[DATA_BITS - 1]
+        a_sign, b_sign, out_sign = (
+            op_a[DATA_BITS - 1],
+            op_b[DATA_BITS - 1],
+            res[DATA_BITS - 1],
+        )
 
         tmp_flags = intbv(0)[4:]
         tmp_flags[PSFlags.Z] = not res[DATA_BITS:]

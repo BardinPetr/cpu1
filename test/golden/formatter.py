@@ -13,10 +13,7 @@ def format_test_code_output(fca: ForthCompilationArtifact) -> str:
 
 
 def format_test_trace_output(trace: TraceData):
-    checkpoints = [
-        [str(i) for i in cp]
-        for cp in trace.as_list()
-    ]
+    checkpoints = [[str(i) for i in cp] for cp in trace.as_list()]
 
     return tabulate(
         checkpoints,

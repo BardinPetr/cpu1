@@ -2,8 +2,17 @@ from dataclasses import dataclass
 from typing import Annotated
 
 import src.machine.mc.mcisa as MCLocs
-from src.machine.arch import ALUCtrl, ALUPortCtrl, StackCtrl, MemCtrl, BusOutCtrl, ALUFlagCtrl, BusInCtrl, MachineCtrl, \
-    MachineIOCtrl
+from src.machine.arch import (
+    ALUCtrl,
+    ALUPortCtrl,
+    StackCtrl,
+    MemCtrl,
+    BusOutCtrl,
+    ALUFlagCtrl,
+    BusInCtrl,
+    MachineCtrl,
+    MachineIOCtrl,
+)
 from src.machine.mc.base import BaseMCInstruction
 
 
@@ -20,9 +29,11 @@ class MCInstruction(BaseMCInstruction):
         return str(self)
 
     def __str__(self):
-        return (f"<{self.alu_ctrl}"
-                f" A={self.alu_port_a_ctrl}({self.bus_a_in_ctrl}) "
-                f"B={self.alu_port_b_ctrl}({self.bus_b_in_ctrl})>")
+        return (
+            f"<{self.alu_ctrl}"
+            f" A={self.alu_port_a_ctrl}({self.bus_a_in_ctrl}) "
+            f"B={self.alu_port_b_ctrl}({self.bus_b_in_ctrl})>"
+        )
 
 
 @dataclass

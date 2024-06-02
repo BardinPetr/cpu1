@@ -9,3 +9,10 @@ def create_io_bus():
     iobus_data = Bus(bits=IO_DATA_BUS_SIZE, tristate=True)
     iobus_clk = Bus1(0)
     return iobus_clk, iobus_ctrl, iobus_addr, iobus_data
+
+
+def create_clk_bus():
+    """
+    :return: mc decoder clk, main dp clk, dp write-back clk
+    """
+    return Bus1(), Bus1(delay=1), Bus1(delay=2)

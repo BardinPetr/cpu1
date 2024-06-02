@@ -7,7 +7,7 @@ for name, vals in enums.items():
     print(*vals, sep="\n")
 
 res = "\n".join(
-    f'{name.upper()}: ' + " | ".join([f'"{i}"' for i in vals.keys()])
+    f"{name.upper()}: " + " | ".join([f'"{i}"' for i in vals.keys()])
     for name, vals in enums.items()
 )
 

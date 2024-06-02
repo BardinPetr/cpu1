@@ -24,12 +24,7 @@ def test_regfile():
     out0id, out1id, inid = [Bus(bits) for _ in range(3)]
     out0bus, out1bus, inbus = [Bus() for _ in range(3)]
 
-    rf = RegisterFile(
-        clk, we,
-        out0id, out1id, inid,
-        out0bus, out1bus, inbus,
-        count=sz
-    )
+    rf = RegisterFile(clk, we, out0id, out1id, inid, out0bus, out1bus, inbus, count=sz)
 
     rf_sim = [0 for _ in range(sz)]
 

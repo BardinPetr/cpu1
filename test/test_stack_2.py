@@ -22,11 +22,7 @@ def test_stack_2():
     in_shift = Bus(min=-1, max=2)
 
     st = ExtendedStack(
-        clk,
-        in_shift, in_wr, in_data,
-        out_tos0, out_tos1,
-        out_empty, out_full,
-        DEPTH
+        clk, in_shift, in_wr, in_data, out_tos0, out_tos1, out_empty, out_full, DEPTH
     )
 
     introspect()

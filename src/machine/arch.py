@@ -11,26 +11,17 @@ class PSFlags(CEnumM):
     N = 1
     C = 2
     V = 3
-    RUN = 4
 
     @staticmethod
-    def decode_flags(val: Union['PSFlags', int]) -> dict:
+    def decode_flags(val: Union["PSFlags", int]) -> dict:
         val = int(val)
         return {i.name: bool(val & (1 << i.value)) for i in PSFlags}
 
     @staticmethod
-    def print_flags(val: Union['PSFlags', int]) -> str:
+    def print_flags(val: Union["PSFlags", int]) -> str:
         decoded = PSFlags.decode_flags(val)
         decoded = sorted(decoded.items(), key=lambda x: -PSFlags[x[0]].value)
-        return ''.join((n if v else '-') for n, v in decoded)
-
-
-class RegFileIdCtrl(CEnumS):
-    R0 = 0
-    IP = 1
-    CR = 2
-    R1 = 3
-    R2 = 4
+        return "".join((n if v else "-") for n, v in decoded)
 
 
 class BusInCtrl(CEnumS):
@@ -39,6 +30,7 @@ class BusInCtrl(CEnumS):
     0xxx - xx is classic source
     1xxx - xx is regfile ID
     """
+
     Z = 0  # ноль
     PS = 0b0001  # регистр PS
     DR = 0b0010  # регистр вывода данных из памяти
@@ -47,29 +39,19 @@ class BusInCtrl(CEnumS):
     DSS = 0b0101  # значение под вершиной стека D
     RST = 0b0110  # значение вершины стека R
     RSS = 0b0111  # значение под вершиной стека R
-    IP = 0b1000 + RegFileIdCtrl.IP  # регистр IP
-    CR = 0b1000 + RegFileIdCtrl.CR  # регистр CR
+    IP = 0b1000  # регистр IP
+    CR = 0b1001  # регистр CR
 
 
 class BusOutCtrl(CEnumS):
-    """
-    Format:
-    00xx - xx is classic source
-    10xx - xx is regfile ID
-    """
-    Z = 0b0000  # нет записи
-    PS = 0b0001  # запись в PS
-    DR = 0b0010  # запись во входной регистр данных памяти
-    AR = 0b0011  # запись в AR
-    DS = 0b0100  # передача входного значения в контроллер стека D
-    RS = 0b0101  # передача входного значения в контроллер стека R
-    IP = 0b1000 + RegFileIdCtrl.IP  # запись в IP
-    CR = 0b1000 + RegFileIdCtrl.CR  # запись в CR
-
-
-class RegFileOrNormalRegister(CEnumS):
-    NR = 0
-    RF = 1
+    Z = 0b000  # нет записи
+    PS = 0b001  # запись в PS
+    DR = 0b010  # запись во входной регистр данных памяти
+    AR = 0b011  # запись в AR
+    DS = 0b100  # передача входного значения в контроллер стека D
+    RS = 0b101  # передача входного значения в контроллер стека R
+    IP = 0b110  # запись в IP
+    CR = 0b111  # запись в CR
 
 
 class MemCtrl(CEnumS):
@@ -81,6 +63,7 @@ class ALUCtrl(CEnumS):
     """
     Операции АЛУ
     """
+
     ZERO = 0
     PASSA = auto()
     AND = auto()
@@ -97,6 +80,7 @@ class ALUPortCtrl(CEnumM):
     """
     Набор операций применяемый к порту АЛУ перед вычислением, множественный выбор
     """
+
     PASS = 0b0000  # прямая передача аргумента
     NOT = 0b0001  # инверсия бит
     INC = 0b0010  # инкремент
@@ -116,6 +100,7 @@ class StackCtrl(CEnumS):
     биты 0-1 определяют сдвиг вершины стека
     бит 2 отвечает за произведение записи после сдвига в вершину (1 - запись)
     """
+
     NONE = 0b000  # не менять стек
     PUSH = 0b101  # классический push со сдвигом
     POP = 0b011  # классический pop со сдвигом

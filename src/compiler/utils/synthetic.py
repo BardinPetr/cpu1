@@ -8,20 +8,21 @@ from src.isa.model.instructions import Instruction
 
 @dataclass
 class Synthetic:
-    contents: Tuple[Union[Instruction, 'Synthetic']]
+    contents: Tuple[Union[Instruction, "Synthetic"]]
 
     def unwrap(self) -> List[Instruction]:
         return reduce(
             lambda acc, i: acc + (i.unwrap() if isinstance(i, Synthetic) else [i]),
-            self.contents, []
+            self.contents,
+            [],
         )
 
     @staticmethod
-    def one(instr: Instruction) -> 'Synthetic':
+    def one(instr: Instruction) -> "Synthetic":
         return Synthetic((instr,))
 
     @staticmethod
-    def many(*instr: Union[Instruction, 'Synthetic']) -> 'Synthetic':
+    def many(*instr: Union[Instruction, "Synthetic"]) -> "Synthetic":
         return Synthetic(instr)
 
 

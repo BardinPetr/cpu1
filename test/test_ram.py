@@ -28,8 +28,7 @@ def test_sp_sync_ram():
     def stimulus():
         test_mem = {}
         test_data = [
-            (randrange(0, size), intbv(randrange(0, 1 << 8)))
-            for _ in range(size)
+            (randrange(0, size), intbv(randrange(0, 1 << 8))) for _ in range(size)
         ]
         print()
 

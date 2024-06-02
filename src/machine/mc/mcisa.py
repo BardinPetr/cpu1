@@ -1,12 +1,21 @@
 from enum import IntEnum
 from typing import TypeVar
 
-from src.machine.arch import BusInCtrl, BusOutCtrl, MemCtrl, ALUCtrl, ALUPortCtrl, ALUFlagCtrl, StackCtrl, MachineCtrl, \
-    MachineIOCtrl
+from src.machine.arch import (
+    BusInCtrl,
+    BusOutCtrl,
+    MemCtrl,
+    ALUCtrl,
+    ALUPortCtrl,
+    ALUFlagCtrl,
+    StackCtrl,
+    MachineCtrl,
+    MachineIOCtrl,
+)
 from src.machine.mc.base import MCLocator as L
 from src.machine.utils.enums import CEnumS
 
-T = TypeVar('T', bound=IntEnum)
+T = TypeVar("T", bound=IntEnum)
 
 
 class MCType(CEnumS):
@@ -38,6 +47,8 @@ MCJmpTarget = L(bits=11).after(MCJmpCmpVal)
 
 MCHeadNormal = MCMachineIOCtrl
 MCHeadJump = MCJmpTarget
+
+print(MCMachineIOCtrl)
 
 if __name__ == "__main__":
     print(f"MCN LEN={MCHeadNormal.loc_end}")

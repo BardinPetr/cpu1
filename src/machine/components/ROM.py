@@ -11,12 +11,7 @@ L = get_logger()
 
 
 @hdl_block
-def ROM(
-        clk: _Signal,
-        addr: _Signal,
-        data: _Signal,
-        in_contents: List[int]
-):
+def ROM(clk: _Signal, addr: _Signal, data: _Signal, in_contents: List[int]):
     """
     ROM emulation component
     Outputs data from memory to data bus on OE pos front

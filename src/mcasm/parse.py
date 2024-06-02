@@ -11,18 +11,17 @@ from src.mcasm.grammar import load_grammar
 
 
 class MCASMCompiler:
-
     def __init__(self):
         self._lark = Lark(load_grammar())
         self._location_resolver = LocationResolver()
         self._transform = (
-                TypeTransformer() *
-                SwitchTransformer() *
-                IfTransformer() *
-                self._location_resolver *
-                ControlInstructionTransformer() *
-                JumpInstructionTransformer() *
-                CodeTransformer()
+            TypeTransformer()
+            * SwitchTransformer()
+            * IfTransformer()
+            * self._location_resolver
+            * ControlInstructionTransformer()
+            * JumpInstructionTransformer()
+            * CodeTransformer()
         )
 
     def compile(self, text: str) -> CompiledMC:

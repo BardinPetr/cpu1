@@ -8,7 +8,8 @@ from src.machine.mc.mcinstr import MCInstructionExec
 
 
 class ControlInstructionTransformer(Transformer):
-    """Here we are translating asm each line into arguments of MCInstruction """
+    """Here we are translating asm each line into arguments of MCInstruction"""
+
     instr_exec = lambda self, x: MCInstructionExec(**merge_dicts(x))
 
     """ALU control section"""
@@ -20,8 +21,9 @@ class ControlInstructionTransformer(Transformer):
     alu_op_c = lambda self, x: dict(bus_c_out_ctrl=arch.BusOutCtrl.encode_from_names(x))
 
     def alu_op(self, val: List[Token]):
-        return arch.BusInCtrl.encode_from_names(val[0:1]), \
-            arch.ALUPortCtrl.encode_from_names(val[1:])
+        return arch.BusInCtrl.encode_from_names(
+            val[0:1]
+        ), arch.ALUPortCtrl.encode_from_names(val[1:])
 
     def exec_alu_flags(self, vals: List[Token]):
         # enum = arch.ALUFlagCtrl.encode_from_names(
@@ -30,10 +32,14 @@ class ControlInstructionTransformer(Transformer):
         return dict(alu_flag_ctrl=arch.ALUFlagCtrl.WRITE)
 
     def exec_machine(self, vals: List[Token]):
-        return dict(machine_ctrl=arch.MachineCtrl.encode_from_names([i.upper() for i in vals]))
+        return dict(
+            machine_ctrl=arch.MachineCtrl.encode_from_names([i.upper() for i in vals])
+        )
 
     def exec_io(self, vals: List[Token]):
-        return dict(io_ctrl=arch.MachineIOCtrl.encode_from_names([i.upper() for i in vals]))
+        return dict(
+            io_ctrl=arch.MachineIOCtrl.encode_from_names([i.upper() for i in vals])
+        )
 
     def exec_stack(self, vals: List[Token]):
         stack_name = vals[1]
@@ -41,7 +47,9 @@ class ControlInstructionTransformer(Transformer):
         stack_cmd = arch.StackCtrl.encode_from_names([cmd_name])
         res = {f"stack_{stack_name.lower()}_ctrl": stack_cmd}
         if cmd_name not in ["POP", "NONE"]:
-            res["bus_c_out_ctrl"] = arch.BusOutCtrl.encode_from_names([f"{stack_name.upper()}S"])
+            res["bus_c_out_ctrl"] = arch.BusOutCtrl.encode_from_names(
+                [f"{stack_name.upper()}S"]
+            )
         return res
 
     """IO control"""

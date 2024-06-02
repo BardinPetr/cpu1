@@ -13,19 +13,15 @@ L = get_logger()
 
 
 @hdl_block
-def MCSequencer(clk, clk_dp, mc_cr, cpu_bus_c, mc_rom_data):
+def MCSequencer(clk, clk_dp, clk_dp_wr, mc_cr, cpu_bus_c, mc_rom_data):
     mc_pc = Bus(MC_ADDR_SZ)
 
-    mc_rom = ROM(
-        clk,
-        mc_pc,
-        mc_cr,
-        mc_rom_data
-    )
+    mc_rom = ROM(clk, mc_pc, mc_cr, mc_rom_data)
 
     @always_comb
     def dp_clg():
         clk_dp.next = clk
+        clk_dp_wr.next = clk
 
     @always(clk.negedge)
     def load():
@@ -51,6 +47,7 @@ def MCSequencer(clk, clk_dp, mc_cr, cpu_bus_c, mc_rom_data):
                     mc_pc.next = jmp
 
                 L.debug(
-                    f"JMP IF BUSC[{bit}] == {val} TO {jmp} -- (cur {cpu_bus_c[bit]:b}) => {'SKIP' if skip else 'JUMP'}")
+                    f"JMP IF BUSC[{bit}] == {val} TO {jmp} -- (cur {cpu_bus_c[bit]:b}) => {'SKIP' if skip else 'JUMP'}"
+                )
 
     return introspect()

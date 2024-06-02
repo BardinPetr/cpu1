@@ -5,26 +5,22 @@ from argparse import ArgumentParser
 from src.mcasm.parse import mc_compile
 
 if __name__ == "__main__":
-    parser = ArgumentParser(description='Microcode ASM parser & compiler')
+    parser = ArgumentParser(description="Microcode ASM parser & compiler")
+    parser.add_argument("input_file", type=str, help="ASM file path")
     parser.add_argument(
-        "input_file",
-        type=str,
-        help="ASM file path"
-    )
-    parser.add_argument(
-        "-p", "--parse",
+        "-p",
+        "--parse",
         action="store_true",
-        help="Only parse and print source microcommands as Python objects"
+        help="Only parse and print source microcommands as Python objects",
     )
     parser.add_argument(
-        "-b", "--bin",
+        "-b",
+        "--bin",
         action="store_true",
-        help="Compile print binary encoded instructions"
+        help="Compile print binary encoded instructions",
     )
     parser.add_argument(
-        "-j", "--json",
-        type=str,
-        help="Compile and output binary to file"
+        "-j", "--json", type=str, help="Compile and output binary to file"
     )
 
     args = parser.parse_args()

@@ -10,13 +10,15 @@ from src.machine.utils.introspection import introspect
 
 @hdl_block
 def Stack(
-        clk,
-        in_ctrl, in_data,
-        out_tos0, out_tos1,
-        out_empty,
-        out_full,
-        depth: int,
-        width: int = DATA_BITS
+    clk,
+    in_ctrl,
+    in_data,
+    out_tos0,
+    out_tos1,
+    out_empty,
+    out_full,
+    depth: int,
+    width: int = DATA_BITS,
 ):
     """
     LIFO stack. Grows up from 0 to depth-1.

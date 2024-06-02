@@ -23,7 +23,7 @@ def test_cpu_regio():
     intro = IntrospectionTree.build(cpu)
     clk = intro.clk_dp
     bus_a, bus_b, bus_c = intro.bus_a, intro.bus_b, intro.bus_c
-    mc_pc = intro.control.mc_pc
+    mc_pc = intro.control.seq.mc_pc
 
     seq_mc_pc = []
     seq_bus_c = []

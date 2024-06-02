@@ -14,40 +14,29 @@ from test.golden.testbench import machine_testbench
 L = get_logger()
 
 if __name__ == "__main__":
-    parser = ArgumentParser(description='CLI machine integration test runner')
+    parser = ArgumentParser(description="CLI machine integration test runner")
+    parser.add_argument("ram_file", type=str, help="RAM image binary file")
+    parser.add_argument("-i", "--stdin", type=str, help="Input text source file")
     parser.add_argument(
-        "ram_file",
-        type=str,
-        help="RAM image binary file"
+        "-o", "--stdout", type=str, help="File to which to store model output"
     )
     parser.add_argument(
-        "-i", "--stdin",
+        "-t",
+        "--trace",
         type=str,
-        help="Input text source file"
+        help="Directory path where would be placed instruction- and tick-level traces and VCD files",
     )
     parser.add_argument(
-        "-o", "--stdout",
-        type=str,
-        help="File to which to store model output"
-    )
-    parser.add_argument(
-        "-t", "--trace",
-        type=str,
-        help="Directory path where would be placed instruction- and tick-level traces and VCD files"
-    )
-    parser.add_argument(
-        "-g", "--gtkwave",
-        action="store_true",
-        help="Launch gtkwave with traces"
+        "-g", "--gtkwave", action="store_true", help="Launch gtkwave with traces"
     )
 
     args = parser.parse_args()
 
-    with open(args.ram_file, 'rb') as f:
+    with open(args.ram_file, "rb") as f:
         mem_binary = f.read()
 
     if args.stdin:
-        input_text = open(args.stdin, 'r').read()
+        input_text = open(args.stdin, "r").read()
     else:
         input_text = ""
 
@@ -60,22 +49,18 @@ if __name__ == "__main__":
             io_input=io_input_buffer,
             io_output=io_output_buffer,
             io_input_delay=0,
-            io_output_delay=0
+            io_output_delay=0,
         ),
         tick_trace_data,
         inst_trace_data,
     )
 
     # Run testbench
-    run_sim(
-        dut,
-        duration=10000,
-        gtk_wave=args.gtkwave
-    )
+    run_sim(dut, duration=10000, gtk_wave=args.gtkwave)
 
     if args.gtkwave:
-        display_trace_vcd('dist', 'instr_trace', inst_trace_data)
-        display_trace_vcd('dist', 'tick_trace', tick_trace_data)
+        display_trace_vcd("dist", "instr_trace", inst_trace_data)
+        display_trace_vcd("dist", "tick_trace", tick_trace_data)
 
     if args.trace:
         try:

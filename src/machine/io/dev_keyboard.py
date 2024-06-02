@@ -14,10 +14,15 @@ L = get_logger()
 
 @hdl_block
 def IODevKeyboard(
-        bus_clk,
-        bus_ctrl, bus_addr, bus_data,
-        address, address_count,
-        source: TextIO = stdin, simulate_delay=0):
+    bus_clk,
+    bus_ctrl,
+    bus_addr,
+    bus_data,
+    address,
+    address_count,
+    source: TextIO = stdin,
+    simulate_delay=0,
+):
     end_address = address_count + address - 1
     data_drv = bus_data.driver()
     last_read_time = Bus(bits=128)
@@ -28,7 +33,9 @@ def IODevKeyboard(
             register = bus_addr - address
 
             if bus_ctrl & IOBusCtrl.RD:
-                L.info(f"READ DEV {address:02x} REG {register:02x} {sim.now():d} {int(last_read_time.val):d}")
+                L.info(
+                    f"READ DEV {address:02x} REG {register:02x} {sim.now():d} {int(last_read_time.val):d}"
+                )
                 busy = (sim.now() - last_read_time) < simulate_delay
 
                 if register == 0:  # busy register

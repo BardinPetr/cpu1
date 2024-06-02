@@ -30,9 +30,15 @@ class ForthTransformer(Transformer):
         self.__variables: Dict[str, ForthVariable] = {}
 
     def __is_name_exists(self, name) -> bool:
-        return name in self.__variables or name in self.__functions or name in self.__constants
+        return (
+            name in self.__variables
+            or name in self.__functions
+            or name in self.__constants
+        )
 
-    def __create_variable(self, name, slots=1, init_value: Optional[List[int] | bytes] = None) -> ForthVariable:
+    def __create_variable(
+        self, name, slots=1, init_value: Optional[List[int] | bytes] = None
+    ) -> ForthVariable:
         """
         Create name variable of given size
         :return: created variable
@@ -60,7 +66,7 @@ class ForthTransformer(Transformer):
         String is stored as [length_byte, *data_bytes]
         """
         text = token.value
-        text_enc = text.encode('ascii')
+        text_enc = text.encode("ascii")
         data = [len(text_enc), *text_enc]
 
         name = const_string_var_name(text)
@@ -71,10 +77,7 @@ class ForthTransformer(Transformer):
 
     def cmd_io_str(self, token: Token) -> Synthetic:
         """For inplace print string"""
-        return Syn.many(
-            self.cmd_str(token),
-            self.cmd_call("type")
-        )
+        return Syn.many(self.cmd_str(token), self.cmd_call("type"))
 
     """ Definitions """
 
@@ -99,18 +102,14 @@ class ForthTransformer(Transformer):
             return self.cmd_push(const)
 
         if var := self.__variables.get(word, None):
-            return Syn.one(
-                AbsImmInstr(Opcode.ISTKPSH, imm=var.loc)
-            )
+            return Syn.one(AbsImmInstr(Opcode.ISTKPSH, imm=var.loc))
 
         if func := self.__functions[word]:
             if func.is_inline:
                 return Syn.many(*func.code)
 
             # relative address would be substituted in second pass
-            return Syn.one(
-                IPRelImmInstr(Opcode.RCALL, abs=func.loc)
-            )
+            return Syn.one(IPRelImmInstr(Opcode.RCALL, abs=func.loc))
 
         raise ValueError(f"Word {word} has no meaning")
 
@@ -126,21 +125,20 @@ class ForthTransformer(Transformer):
         if len(branches) == 1:
             # if-then
             br_true = branches[0]
-            return Syn.many(
-                IPRelImmInstr(Opcode.CJMP, rel=len(br_true)),
-                *br_true
-            )
+            return Syn.many(IPRelImmInstr(Opcode.CJMP, rel=len(br_true)), *br_true)
 
         # if-else-then
         br_true, br_false = branches
         rel_jump_to_false = len(br_true) + 1
         rel_jump_to_end = len(br_false)
         return Syn.many(
-            IPRelImmInstr(Opcode.CJMP, rel=rel_jump_to_false),  # if `FALSE` jump to `label_false`
+            IPRelImmInstr(
+                Opcode.CJMP, rel=rel_jump_to_false
+            ),  # if `FALSE` jump to `label_false`
             *br_true,
             IPRelImmInstr(Opcode.RJMP, rel=rel_jump_to_end),  # jump to `label_end`
             # label_false
-            *br_false
+            *br_false,
             # label_end
         )
 
@@ -194,7 +192,7 @@ class ForthTransformer(Transformer):
             *post,
             IPRelImmInstr(Opcode.CJMP, rel=-to_body),
             Instr(Opcode.STKPOP, stack=1),
-            Instr(Opcode.STKPOP, stack=1)
+            Instr(Opcode.STKPOP, stack=1),
         )
 
     """Functions"""
@@ -225,11 +223,7 @@ class ForthTransformer(Transformer):
 
     def program(self, *lines) -> ForthCode:
         lines = unwrap_code(lines)
-        return ForthCode(
-            lines,
-            self.__variables,
-            self.__functions.to_memory()
-        )
+        return ForthCode(lines, self.__variables, self.__functions.to_memory())
 
 
 def preprocess_forth(code: str) -> str:

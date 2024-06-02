@@ -13,9 +13,14 @@ class IfTransformer(Transformer):
 
     def block_content(self, tree: List[Tree]):
         return reduce(
-            lambda acc, cur: acc + (
-                self.block_content(line.children) if (line := cur.children[0]).data == 'block' else [cur]),
-            tree, []
+            lambda acc, cur: acc
+            + (
+                self.block_content(line.children)
+                if (line := cur.children[0]).data == "block"
+                else [cur]
+            ),
+            tree,
+            [],
         )
 
     @v_args(inline=True)
@@ -31,11 +36,9 @@ class IfTransformer(Transformer):
 
         jump_instr = gen_jump(
             **check,
-            target=true_label  # jump if TRUE!
+            target=true_label,  # jump if TRUE!
         )
-        false_exit_instr = gen_jump(
-            target=end_loc
-        )
+        false_exit_instr = gen_jump(target=end_loc)
         return gen_tree(
             "block",
             [
@@ -44,6 +47,6 @@ class IfTransformer(Transformer):
                 gen_line(false_exit_instr),
                 gen_line(label=true_label),
                 *true_branch_block,
-                gen_line(label=end_loc)
-            ]
+                gen_line(label=end_loc),
+            ],
         )

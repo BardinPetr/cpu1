@@ -71,4 +71,3 @@ class Opcode(OpcodeEnum):
 
 def compile_instructions(code: List[Instruction]) -> List[int]:
     return [int(i.pack()) for i in code]
-

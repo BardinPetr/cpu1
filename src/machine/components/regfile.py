@@ -9,10 +9,17 @@ L = get_logger()
 
 
 @hdl_block
-def RegisterFile(clk, write_enable,
-                 out_port0_reg, out_port1_reg, in_port_reg,
-                 out_port0_bus, out_port1_bus, in_port_bus,
-                 count=8):
+def RegisterFile(
+    clk,
+    write_enable,
+    out_port0_reg,
+    out_port1_reg,
+    in_port_reg,
+    out_port0_bus,
+    out_port1_bus,
+    in_port_bus,
+    count=8,
+):
     assert count == (1 << dim(out_port0_reg))
     assert count == (1 << dim(out_port1_reg))
     assert count == (1 << dim(in_port_reg))

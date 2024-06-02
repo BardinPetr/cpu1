@@ -44,12 +44,17 @@ def test_alu_flags():
         (dict(a=UINT_MAX), dict(C=0)),
         (dict(mode=ALUCtrl.ADD, a=UINT_MAX, b=1), dict(C=1)),
         # (dict(mode=ALUCtrl.ADC, cin=1, a=UINT_MAX, b=0), dict(C=1)),
-        *[(
-            dict(mode=ALUCtrl.ADD,
-                 a=UINT_MAX - randrange(1000, UINT_MAX // 2),
-                 b=randrange(UINT_MAX // 2 + 1, UINT_MAX)),
-            dict(C=1)
-        ) for _ in range(10)],
+        *[
+            (
+                dict(
+                    mode=ALUCtrl.ADD,
+                    a=UINT_MAX - randrange(1000, UINT_MAX // 2),
+                    b=randrange(UINT_MAX // 2 + 1, UINT_MAX),
+                ),
+                dict(C=1),
+            )
+            for _ in range(10)
+        ],
         # signed overflow
         (dict(a=SINT_MAX), dict(V=0)),
         (dict(a=SINT_MIN), dict(V=0)),
@@ -57,18 +62,28 @@ def test_alu_flags():
         (dict(mode=ALUCtrl.ADD, a=SINT_MIN, b=negate(1)), dict(V=1)),
         (dict(mode=ALUCtrl.ADD, a=SINT_MAX, b=negate(1)), dict(V=0)),
         (dict(mode=ALUCtrl.ADD, a=SINT_MIN, b=1), dict(V=0)),
-        *[(
-            dict(mode=ALUCtrl.ADD,
-                 a=SINT_MAX - randrange(1000, SINT_MAX // 2),
-                 b=randrange(SINT_MAX // 2 + 10, SINT_MAX)),
-            dict(V=1)
-        ) for _ in range(10)],
-        *[(
-            dict(mode=ALUCtrl.ADD,
-                 a=SINT_MIN + randrange(1000, SINT_MAX // 2),
-                 b=negate(randrange(SINT_MAX // 2 + 10, SINT_MAX))),
-            dict(V=1)
-        ) for _ in range(10)],
+        *[
+            (
+                dict(
+                    mode=ALUCtrl.ADD,
+                    a=SINT_MAX - randrange(1000, SINT_MAX // 2),
+                    b=randrange(SINT_MAX // 2 + 10, SINT_MAX),
+                ),
+                dict(V=1),
+            )
+            for _ in range(10)
+        ],
+        *[
+            (
+                dict(
+                    mode=ALUCtrl.ADD,
+                    a=SINT_MIN + randrange(1000, SINT_MAX // 2),
+                    b=negate(randrange(SINT_MAX // 2 + 10, SINT_MAX)),
+                ),
+                dict(V=1),
+            )
+            for _ in range(10)
+        ],
         # signed overflow with carry addition
         # (dict(mode=ALUCtrl.ADC, a=SINT_MAX, b=0, cin=1), dict(V=1)),
         # (dict(mode=ALUCtrl.ADC, a=SINT_MAX, b=negate(1), cin=1), dict(V=0)),
@@ -80,14 +95,15 @@ def test_alu_flags():
 
     @instance
     def stimulus():
-
         for test, flags in TESTS:
             call_alu(**test)
             yield delay(1)
 
             real_flags = PSFlags.decode_flags(flag_out)
 
-            L.debug(f"Got flags: {PSFlags.print_flags(flag_out)}; Valid: {flags}; Test was: {test}")
+            L.debug(
+                f"Got flags: {PSFlags.print_flags(flag_out)}; Valid: {flags}; Test was: {test}"
+            )
 
             for flag, val in flags.items():
                 assert real_flags[flag] == val

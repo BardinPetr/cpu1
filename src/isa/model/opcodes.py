@@ -6,7 +6,6 @@ class OpcodeGroupEnum(IntEnum):
 
 
 class OpcodeEnum(Enum):
-
     @property
     def group(self) -> OpcodeGroupEnum:
         return self.value[0]
@@ -22,7 +21,9 @@ class OpcodeEnum(Enum):
     @staticmethod
     def _generate_next_value_(name, start, count, last_values):
         if not last_values:
-            raise ValueError("In OpcodeEnum each group should start with explicitly defined (group,alt)")
+            raise ValueError(
+                "In OpcodeEnum each group should start with explicitly defined (group,alt)"
+            )
         grp, alt = last_values[-1]
         return grp, alt + 1
 

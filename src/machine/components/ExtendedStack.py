@@ -9,13 +9,16 @@ from src.machine.utils.introspection import introspect
 
 @hdl_block
 def ExtendedStack(
-        clk,
-        in_shift, in_wr_top, in_data,
-        out_tos0, out_tos1,
-        out_empty,
-        out_full,
-        depth: int,
-        width: int = DATA_BITS
+    clk,
+    in_shift,
+    in_wr_top,
+    in_data,
+    out_tos0,
+    out_tos1,
+    out_empty,
+    out_full,
+    depth: int,
+    width: int = DATA_BITS,
 ):
     """
     LIFO stack. Grows up from 0 to depth-1.
@@ -44,12 +47,14 @@ def ExtendedStack(
 
     @always(clk.negedge)
     def neg():
-        if (in_shift == 1 and not out_full) or \
-                (in_shift == -1 and not out_empty) or \
-                (in_shift == 0):
-            sp.next = sp + in_shift
+        if (
+            (in_shift == 1 and not out_full)
+            or (in_shift == -1 and not out_empty)
+            or (in_shift == 0)
+        ):
             if in_wr_top:
                 top = sp + in_shift - 1
                 mem[top].next = in_data
+            sp.next = sp + in_shift
 
     return introspect()

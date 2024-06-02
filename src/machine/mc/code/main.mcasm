@@ -206,7 +206,8 @@ switch (CR ADD)[30:28] {
       # STORE [val,addr] -> []
       case 0b1 {
         (DST(TKW) ADD) -> AR, pop(D);
-        (DST ADD) -> DR, store, pop(D);
+        (DST ADD) -> DR, pop(D);
+        store;
       }
     };
   }

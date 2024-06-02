@@ -11,7 +11,7 @@ in_forth: |-
         5 mod 0 = if 5 else 0 then 
       then 
       . cr ;
-    
+
   1 func2 3 func2 5 func2 10 func2 15 func2 18 func2 20 func2
   halt
 in_stdin: ''

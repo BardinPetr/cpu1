@@ -16,7 +16,6 @@ class CompiledMC:
 
 
 class CodeTransformer(Transformer):
-
     def line(self, line: List[Token]):
         return line[-1]
 

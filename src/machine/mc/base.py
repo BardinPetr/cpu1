@@ -9,10 +9,12 @@ from src.machine.utils.enums import EncodedEnum, EnumEncodingType, CtrlEnum
 
 
 class MCLocator:
-    def __init__(self,
-                 content: Optional[Sized | CtrlEnum] = None,
-                 bits: Optional[int] = None,
-                 select=EnumEncodingType.AS_IS):
+    def __init__(
+        self,
+        content: Optional[Sized | CtrlEnum] = None,
+        bits: Optional[int] = None,
+        select=EnumEncodingType.AS_IS,
+    ):
         if bits is None:
             assert content is not None, "No way to deduce partial locator size"
 
@@ -40,16 +42,16 @@ class MCLocator:
             source = int(source)
         except ValueError:
             raise ValueError(f"Failed to compile field {source} of type {type(source)}")
-        target[self.loc_end:self.loc_start] = source
+        target[self.loc_end : self.loc_start] = source
 
     def get(self, source: intbv) -> intbv:
-        return source[self.loc_end:self.loc_start]
+        return source[self.loc_end : self.loc_start]
 
-    def at(self, pos: int) -> 'MCLocator':
+    def at(self, pos: int) -> "MCLocator":
         self.loc_start = pos
         return self
 
-    def after(self, prev: 'MCLocator') -> 'MCLocator':
+    def after(self, prev: "MCLocator") -> "MCLocator":
         self.loc_start = prev.loc_end
         return self
 
@@ -59,7 +61,6 @@ class MCLocator:
 
 @dataclass
 class BaseMCInstruction:
-
     def __post_init__(self):
         self._init_locators()
         self.fields = self.inspect_fields()
@@ -77,9 +78,9 @@ class BaseMCInstruction:
         return int(res)
 
     @staticmethod
-    def decompile(data: intbv | bytes) -> 'BaseMCInstruction':
+    def decompile(data: intbv | bytes) -> "BaseMCInstruction":
         if isinstance(data, bytes):
-            data = intbv(int.from_bytes(data, byteorder='little'))
+            data = intbv(int.from_bytes(data, byteorder="little"))
         return BaseMCInstruction()
 
     @classmethod
@@ -105,11 +106,13 @@ class BaseMCInstruction:
         name = cls.__name__.replace("MCInstruction", "")
         fields = cls.inspect_fields()
         fields = [
-            (f"[{loc.loc_start:2d}:{loc.loc_end:2d}) "
-             f"{loc.size:2d}b   "
-             f"{annot.__args__[0].__name__:12s}"
-             f"as {name}")
+            (
+                f"[{loc.loc_start:2d}:{loc.loc_end:2d}) "
+                f"{loc.size:2d}b   "
+                f"{annot.__args__[0].__name__:12s}"
+                f"as {name}"
+            )
             for name, annot, loc in fields
         ]
-        sep = '\n  '
+        sep = "\n  "
         return f"{name} [{sep}{sep.join(fields)}\n]"

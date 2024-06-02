@@ -6,7 +6,6 @@ from mcasm.utils import Location
 
 
 class TypeTransformer(Transformer):
-
     def LOC(self, val):
         vals = str(val)
         if vals.startswith("0x"):

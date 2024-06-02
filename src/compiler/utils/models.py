@@ -26,11 +26,11 @@ class ForthFunction:
         self.size_slots = len(self.code) * 1
 
     @staticmethod
-    def inline(name: str, code: List[Instruction]) -> 'ForthFunction':
+    def inline(name: str, code: List[Instruction]) -> "ForthFunction":
         return ForthFunction(name, code, is_inline=True)
 
     @staticmethod
-    def external(name: str, loc: int, code: List[Instruction]) -> 'ForthFunction':
+    def external(name: str, loc: int, code: List[Instruction]) -> "ForthFunction":
         return ForthFunction(name, code, loc=loc, is_inline=False)
 
 
@@ -43,6 +43,7 @@ class ForthCode:
     Provides compiled code, with separated functions, code and variables.
 
     """
+
     code: List[Instruction]
     variables: Dict[str, ForthVariable]
     functions: List[ForthFunction]

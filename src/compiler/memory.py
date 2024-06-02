@@ -60,7 +60,7 @@ def linker(source: ForthCode) -> ForthLinkResults:
         mem=code,
         instructions=out_instr,
         reloc_vars=variable_relocate_pos,
-        reloc_funcs=function_relocate_pos
+        reloc_funcs=function_relocate_pos,
     )
 
 
@@ -69,13 +69,11 @@ def pack_binary(source: List[int | Instr]) -> Tuple[List[intbv], bytearray]:
     Compiles flattened instruction and data list
     :return: representation as list of INSTR_BITS words and as byte array packed as 32 little-endian numbers
     """
-    words = [
-        intbv(i)[INSTR_BITS:] if isinstance(i, int) else i.pack()
-        for i in source
-    ]
+    words = [intbv(i)[INSTR_BITS:] if isinstance(i, int) else i.pack() for i in source]
     as_bytes = reduce(
-        lambda acc, i: acc + int(i).to_bytes(length=INSTR_BYTE, byteorder='little'),
-        words, bytearray()
+        lambda acc, i: acc + int(i).to_bytes(length=INSTR_BYTE, byteorder="little"),
+        words,
+        bytearray(),
     )
     return words, as_bytes
 
@@ -85,6 +83,8 @@ def unpack_binary(source: bytes) -> List[intbv]:
     if len(source) % INSTR_BYTE != 0:
         raise ValueError("Padding invalid")
     return [
-        intbv(int.from_bytes(source[i:i + INSTR_BYTE], byteorder='little'))[INSTR_BITS:]
+        intbv(int.from_bytes(source[i : i + INSTR_BYTE], byteorder="little"))[
+            INSTR_BITS:
+        ]
         for i in range(0, len(source), INSTR_BYTE)
     ]

@@ -9,10 +9,7 @@ L = get_logger()
 
 
 @hdl_block
-def ALUDecoder(
-        control_bus,
-        alu_ctrl, alu_port_a_ctrl, alu_port_b_ctrl, alu_flag_ctrl
-):
+def ALUDecoder(control_bus, alu_ctrl, alu_port_a_ctrl, alu_port_b_ctrl, alu_flag_ctrl):
     @always_comb
     def run():
         alu_flag_ctrl.next = MCLocs.MCALUFlagCtrl.get(control_bus)
@@ -24,60 +21,35 @@ def ALUDecoder(
 
 
 @hdl_block
-def RegReadDecoder(
-        control_bus,
-        mux_busa_nr_rf_ctrl, mux_busb_nr_rf_ctrl,
-        mux_busa_in_ctrl, mux_busb_in_ctrl,
-        regfile_out0_id, regfile_out1_id
-):
+def RegReadDecoder(control_bus, mux_busa_in_ctrl, mux_busb_in_ctrl):
     @always_comb
     def run():
-        rd_a = MCLocs.MCBusACtrl.get(control_bus)
-        rd_b = MCLocs.MCBusBCtrl.get(control_bus)
-
-        # if rd_X[3] == 1 then  rd_X[3:] is regfile register, else register source
-        mux_busa_nr_rf_ctrl.next = rd_a[3]
-        mux_busb_nr_rf_ctrl.next = rd_b[3]
-        mux_busa_in_ctrl.next = rd_a[3:]
-        mux_busb_in_ctrl.next = rd_b[3:]
-        regfile_out0_id.next = rd_a[3:]
-        regfile_out1_id.next = rd_b[3:]
+        mux_busa_in_ctrl.next = MCLocs.MCBusACtrl.get(control_bus)
+        mux_busb_in_ctrl.next = MCLocs.MCBusBCtrl.get(control_bus)
 
     return introspect()
 
 
 @hdl_block
 def RegWriteDecoder(
-        clk,
-        control_bus,
-        ram_a_wr,
-        reg_ps_wr,
-        register_wr, register_demux_id, demux_bus_c_nr_rf,
-        regfile_wr, regfile_in_id
+    clk, control_bus, ram_a_wr, reg_ps_wr, register_wr, register_demux_id
 ):
-    @always_comb
-    def update():
-        is_exec_cmd = MCLocs.MCLType.get(control_bus) == MCLocs.MCType.MC_RUN
-
-        mem_ctrl = MCLocs.MCMemCtrl.get(control_bus)
-        ram_a_wr.next = mem_ctrl[0] & is_exec_cmd
-
-        wr_ctrl = MCLocs.MCBusCCtrl.get(control_bus)
-        regfile_in_id.next = wr_ctrl[3:]
-        register_demux_id.next = wr_ctrl[3:]
-        demux_bus_c_nr_rf.next = wr_ctrl[3]
-
-        # if wr_ctrl[2] == 1 then  wr_ctrl[2:] is regfile register, else register source
-        # regfile write occurring on neg edge of clk!
-        regfile_wr.next = is_exec_cmd & wr_ctrl[3]
+    @always(clk.posedge)
+    def select():
+        c_out_ctrl = MCLocs.MCBusCCtrl.get(control_bus)
 
     @always(clk.negedge)
-    def run():
+    def write():
         is_exec_cmd = MCLocs.MCLType.get(control_bus) == MCLocs.MCType.MC_RUN
-        alu_flag_ctrl = MCLocs.MCALUFlagCtrl.get(control_bus)
-        wr_ctrl = MCLocs.MCBusCCtrl.get(control_bus)
 
-        register_wr.next = is_exec_cmd & (wr_ctrl != 0) & (not wr_ctrl[3])
+        c_out_ctrl = MCLocs.MCBusCCtrl.get(control_bus)
+        register_wr.next = is_exec_cmd & (c_out_ctrl != 0)
+        register_demux_id.next = c_out_ctrl
+
+        ram_ctrl = MCLocs.MCMemCtrl.get(control_bus)[0]
+        ram_a_wr.next = is_exec_cmd & ram_ctrl
+
+        alu_flag_ctrl = MCLocs.MCALUFlagCtrl.get(control_bus)
         reg_ps_wr.next = is_exec_cmd & (alu_flag_ctrl != 0)
 
     @always(clk.posedge)
@@ -89,10 +61,7 @@ def RegWriteDecoder(
 
 @hdl_block
 def StackDecoder(
-        clk,
-        control_bus,
-        d_stack_shift, d_stack_wr,
-        r_stack_shift, r_stack_wr
+    clk, control_bus, d_stack_shift, d_stack_wr, r_stack_shift, r_stack_wr
 ):
     @always_comb
     def run():

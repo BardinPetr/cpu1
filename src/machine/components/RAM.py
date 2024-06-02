@@ -12,14 +12,15 @@ L = get_logger()
 
 @hdl_block
 def RAMSyncSP(
-        clk: _Signal,
-        wr: _Signal,
-        addr: _Signal,
-        in_data: _Signal,
-        out_data: _Signal,
-        depth: int,
-        width: int,
-        contents: Optional[List[int]] = None):
+    clk: _Signal,
+    wr: _Signal,
+    addr: _Signal,
+    in_data: _Signal,
+    out_data: _Signal,
+    depth: int,
+    width: int,
+    contents: Optional[List[int]] = None,
+):
     """
     Synchronous RAM emulation component
     Read on rising clk, write when rising clk and WR
@@ -61,19 +62,20 @@ def RAMSyncSP(
 
 @hdl_block
 def RAMSyncDP(
-        clk_a: _Signal,
-        addr_a: _Signal,
-        wr_a: _Signal,
-        di_a: _Signal,
-        do_a: _Signal,
-        clk_b: _Signal,
-        addr_b: _Signal,
-        wr_b: _Signal,
-        di_b: _Signal,
-        do_b: _Signal,
-        depth: int,
-        width: int,
-        contents: Optional[List[int]] = None):
+    clk_a: _Signal,
+    addr_a: _Signal,
+    wr_a: _Signal,
+    di_a: _Signal,
+    do_a: _Signal,
+    clk_b: _Signal,
+    addr_b: _Signal,
+    wr_b: _Signal,
+    di_b: _Signal,
+    do_b: _Signal,
+    depth: int,
+    width: int,
+    contents: Optional[List[int]] = None,
+):
     """
     Synchronous read-first "true"-dual-port RAM emulation component
     Read on rising clk, write when rising clk and WR

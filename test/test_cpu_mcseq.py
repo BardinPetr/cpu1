@@ -25,7 +25,7 @@ def test_cpu_mcseq():
     clk = intro.clk_dp
     bus_a, bus_b, bus_c = intro.bus_a, intro.bus_b, intro.bus_c
 
-    mc_pc = intro.control.mc_pc
+    mc_pc = intro.control.seq.mc_pc
     mc_cr = intro.control_bus
 
     seq_mc_pc = []

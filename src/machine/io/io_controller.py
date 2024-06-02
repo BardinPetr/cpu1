@@ -3,7 +3,7 @@ from myhdl import always, always_comb
 import src.machine.mc.mcisa as MCLocs
 from machine.arch import MachineIOCtrl, IOBusCtrl
 from machine.utils.log import get_logger
-from src.machine.utils.hdl import hdl_block, Bus1
+from src.machine.utils.hdl import hdl_block
 from src.machine.utils.introspection import introspect
 
 L = get_logger()
@@ -11,9 +11,8 @@ L = get_logger()
 
 @hdl_block
 def IOController(
-        clk, clk_out, mc_control,
-        bus_ctrl, bus_addr, bus_data,
-        bus_c, data_output):
+    clk, clk_out, mc_control, bus_ctrl, bus_addr, bus_data, bus_c, data_output
+):
     data_drv = bus_data.driver()
 
     @always(clk.negedge)
@@ -28,15 +27,19 @@ def IOController(
 
         match ctrl:
             case MachineIOCtrl.SET_ADDR:
+                L.debug("set addr {}", bus_c.val)
                 bus_addr.next = bus_c
 
             case MachineIOCtrl.SET_DATA:
+                L.debug("set data {}", bus_c.val)
                 data_drv.next = bus_c
 
             case MachineIOCtrl.REQ_WRITE:
+                L.debug("req write")
                 bus_ctrl.next = IOBusCtrl.WR
 
             case MachineIOCtrl.REQ_READ:
+                L.debug("req read")
                 bus_ctrl.next = IOBusCtrl.RD
 
             case MachineIOCtrl.GET_DATA:

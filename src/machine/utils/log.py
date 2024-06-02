@@ -7,7 +7,7 @@ IS_DEBUG = False
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(relativeCreated)dms [%(levelname)s] (%(module)s) %(message)s",
-    force=True
+    force=True,
 )
 
 

@@ -28,7 +28,7 @@ class Instruction:
         return str(self)
 
     def str_stack(self):
-        return '@R' if self.stack is not None and self.stack == 1 else ""
+        return "@R" if self.stack is not None and self.stack == 1 else ""
 
     def __str__(self):
         return f"<{self.opcode}{self.str_stack()}>"
@@ -36,9 +36,9 @@ class Instruction:
     def pack(self) -> intbv:
         res = intbv()[INSTR_BITS:]
         res[16:] = signed(self.imm, 16)
-        res[16 + 4:16] = self.ctrl
-        res[20 + 8:20] = self.alt
-        res[28 + 4:28] = self.group
+        res[16 + 4 : 16] = self.ctrl
+        res[20 + 8 : 20] = self.alt
+        res[28 + 4 : 28] = self.group
         return res
 
 
@@ -47,7 +47,6 @@ Instr = Instruction
 
 @dataclass
 class ImmInstr(Instruction):
-
     def __repr__(self):
         return str(self)
 
@@ -73,13 +72,11 @@ class IPRelImmInstr(Instruction):
         elif self.abs is not None:
             relative = base + self.abs - (cur_ip + 1)
         else:
-            raise ValueError("Failed to get IP-relative location. Nor abs, nor rel fields specified")
+            raise ValueError(
+                "Failed to get IP-relative location. Nor abs, nor rel fields specified"
+            )
 
-        return ImmInstr(
-            opcode=self.opcode,
-            ctrl=self.ctrl,
-            imm=relative
-        )
+        return ImmInstr(opcode=self.opcode, ctrl=self.ctrl, imm=relative)
 
     def __repr__(self):
         return str(self)
@@ -100,8 +97,4 @@ class AbsImmInstr(Instruction):
         :param base: offset added
         :return: ImmInstr with configured imm field to absolute position
         """
-        return ImmInstr(
-            opcode=self.opcode,
-            ctrl=self.ctrl,
-            imm=base + self.imm
-        )
+        return ImmInstr(opcode=self.opcode, ctrl=self.ctrl, imm=base + self.imm)
