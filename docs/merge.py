@@ -4,6 +4,7 @@ def load(path):
 
 FILE_ORDER = [
     "arch.md",
+    "mcisa.md",
     "mcisa/readme.md",
     "enums/readme.md",
     "mcasm.md",
@@ -22,4 +23,3 @@ base = base.format(contents)
 
 with open("../readme.md", "w") as f:
     f.write(base)
-

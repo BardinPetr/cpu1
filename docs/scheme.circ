@@ -2051,27 +2051,31 @@
     <a name="circuit" val="ctrl_stack"/>
     <a name="circuitnamedboxfixedsize" val="true"/>
     <a name="simulationFrequency" val="1.0"/>
-    <comp lib="0" loc="(2510,1160)" name="Tunnel">
+    <comp lib="0" loc="(2540,1110)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="stack_d_ctrl"/>
+      <a name="width" val="3"/>
+    </comp>
+    <comp lib="0" loc="(2540,1170)" name="Tunnel">
       <a name="facing" val="east"/>
       <a name="label" val="is_exec_cmd"/>
     </comp>
-    <comp lib="0" loc="(2650,1120)" name="Tunnel">
+    <comp lib="0" loc="(2540,1240)" name="Tunnel">
       <a name="facing" val="east"/>
       <a name="label" val="stack_d_ctrl"/>
       <a name="width" val="3"/>
     </comp>
-    <comp lib="0" loc="(2650,1230)" name="Tunnel">
-      <a name="facing" val="east"/>
-      <a name="label" val="stack_d_ctrl"/>
-      <a name="width" val="3"/>
+    <comp lib="0" loc="(2600,1170)" name="Bit Extender">
+      <a name="in_width" val="1"/>
+      <a name="out_width" val="3"/>
     </comp>
-    <comp lib="0" loc="(2670,1120)" name="Splitter">
+    <comp lib="0" loc="(2710,1120)" name="Splitter">
       <a name="bit1" val="0"/>
       <a name="bit2" val="1"/>
       <a name="incoming" val="3"/>
       <a name="spacing" val="4"/>
     </comp>
-    <comp lib="0" loc="(2670,1230)" name="Splitter">
+    <comp lib="0" loc="(2710,1230)" name="Splitter">
       <a name="bit1" val="0"/>
       <a name="bit2" val="1"/>
       <a name="incoming" val="3"/>
@@ -2084,7 +2088,7 @@
       <a name="output" val="true"/>
       <a name="width" val="2"/>
     </comp>
-    <comp lib="0" loc="(2750,1120)" name="Pin">
+    <comp lib="0" loc="(2750,1110)" name="Pin">
       <a name="appearance" val="NewPins"/>
       <a name="facing" val="west"/>
       <a name="label" val="d_stack_wr"/>
@@ -2097,34 +2101,34 @@
       <a name="output" val="true"/>
       <a name="width" val="2"/>
     </comp>
-    <comp lib="0" loc="(2750,1230)" name="Pin">
+    <comp lib="0" loc="(2750,1220)" name="Pin">
       <a name="appearance" val="NewPins"/>
       <a name="facing" val="west"/>
       <a name="label" val="r_stack_wr"/>
       <a name="output" val="true"/>
     </comp>
-    <comp lib="1" loc="(2740,1120)" name="AND Gate">
+    <comp lib="1" loc="(2690,1120)" name="AND Gate">
       <a name="size" val="30"/>
+      <a name="width" val="3"/>
     </comp>
-    <comp lib="1" loc="(2740,1230)" name="AND Gate">
+    <comp lib="1" loc="(2690,1230)" name="AND Gate">
       <a name="size" val="30"/>
+      <a name="width" val="3"/>
     </comp>
-    <wire from="(2510,1160)" to="(2530,1160)"/>
-    <wire from="(2530,1160)" to="(2530,1270)"/>
-    <wire from="(2530,1160)" to="(2690,1160)"/>
-    <wire from="(2530,1270)" to="(2690,1270)"/>
-    <wire from="(2650,1120)" to="(2670,1120)"/>
-    <wire from="(2650,1230)" to="(2670,1230)"/>
-    <wire from="(2690,1070)" to="(2750,1070)"/>
-    <wire from="(2690,1110)" to="(2710,1110)"/>
-    <wire from="(2690,1130)" to="(2690,1160)"/>
-    <wire from="(2690,1130)" to="(2710,1130)"/>
-    <wire from="(2690,1180)" to="(2750,1180)"/>
-    <wire from="(2690,1220)" to="(2710,1220)"/>
-    <wire from="(2690,1240)" to="(2690,1270)"/>
-    <wire from="(2690,1240)" to="(2710,1240)"/>
-    <wire from="(2740,1120)" to="(2750,1120)"/>
-    <wire from="(2740,1230)" to="(2750,1230)"/>
+    <wire from="(2540,1110)" to="(2660,1110)"/>
+    <wire from="(2540,1170)" to="(2560,1170)"/>
+    <wire from="(2540,1240)" to="(2660,1240)"/>
+    <wire from="(2600,1170)" to="(2630,1170)"/>
+    <wire from="(2630,1130)" to="(2630,1170)"/>
+    <wire from="(2630,1130)" to="(2660,1130)"/>
+    <wire from="(2630,1170)" to="(2630,1220)"/>
+    <wire from="(2630,1220)" to="(2660,1220)"/>
+    <wire from="(2690,1120)" to="(2710,1120)"/>
+    <wire from="(2690,1230)" to="(2710,1230)"/>
+    <wire from="(2730,1070)" to="(2750,1070)"/>
+    <wire from="(2730,1110)" to="(2750,1110)"/>
+    <wire from="(2730,1180)" to="(2750,1180)"/>
+    <wire from="(2730,1220)" to="(2750,1220)"/>
   </circuit>
   <circuit name="ctrl_reg">
     <a name="appearance" val="logisim_evolution"/>
